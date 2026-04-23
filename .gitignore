@@ -137,3 +137,6 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# Raw Stitch export — kept locally for reference, not committed yet (see Q7 in design/REQUIREMENTS.md)
+design/stitch-export/

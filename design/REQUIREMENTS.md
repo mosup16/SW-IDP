@@ -1,0 +1,153 @@
+# SW-IDP — Requirements extracted from the Stitch export
+
+This document summarises what the uploaded Stitch export (`stitch-export/stitch_system_user_interface/`) actually contains, and what SW-IDP is asking to be built. It is intended to be reviewed before we pick a stack and start coding.
+
+## 1. Product scope (from the SRS)
+
+The project is a **Proof-of-Concept Identity Provider (IdP)** — a simplified "Login with X" system. Source: `stitch-export/stitch_system_user_interface/srs_poc_identity_provider_idp.txt`.
+
+Three capabilities:
+
+1. **Identity Management (end-user)**
+   - Register with email + password
+   - Log in
+   - View profile / log out / manage sessions
+2. **OAuth 2.0 Authorization Server**
+   - `GET /authorize` (authorization code flow)
+   - `POST /token` (exchange code → access token)
+   - Tokens as JWTs
+3. **Admin Dashboard**
+   - Client applications: create, list, rotate `client_secret`, delete
+   - Identities: create, list, enable/disable
+
+The SRS PNG (`screenshot_20260418_052650_samsung_notes.jpg/screen.png`) additionally contains a **system-architecture diagram** and an **OAuth code-flow sequence diagram** that aren't in the `.txt` file — useful as a reference for backend routes later.
+
+## 2. Export format — what Stitch gave us
+
+- 17 standalone HTML files, one per screen, under folders named after the screen.
+- Each file is self-contained and uses **Tailwind via CDN** (`cdn.tailwindcss.com?plugins=forms,container-queries`) with an inline `tailwind.config` block.
+- 18 PNG screenshots, one per screen (`screen.png` in each folder), for visual reference.
+- 1 design-system manifesto: `aegis_core/DESIGN.md` ("Tonal Architecture & The Secure Monolith").
+- 1 SRS document: `srs_poc_identity_provider_idp.txt`.
+- 1 PDF-reader screenshot of the SRS with architecture diagrams.
+
+There is **no** framework code, no `package.json`, no JSX — pure HTML + Tailwind classes.
+
+## 3. Screen inventory
+
+| # | Folder | Title (from `<title>`) | Purpose | Lines |
+|---|---|---|---|---|
+| 1 | `user_login` | Login \| Sovereign IdP | End-user login form | 181 |
+| 2 | `user_registration` | Register \| Sovereign IdP | End-user registration form | 191 |
+| 3 | `user_profile_sessions_1` | Sovereign IdP - User Profile | Profile view (variant 1) | 320 |
+| 4 | `user_profile_sessions_2` | Sovereign IdP - User Profile | Profile view (variant 2) | ? |
+| 5 | `admin_client_management` | Sovereign IdP - Client Overview | OAuth client list | 395 |
+| 6 | `admin_create_edit_client` | Sovereign IdP - Client Configuration | OAuth client form | 305 |
+| 7 | `admin_identity_management` | Sovereign IdP - Identities | User list | 388 |
+| 8 | `admin_role_management` | Aegis Core - Role Management | Role list | 371 |
+| 9 | `admin_create_edit_role` | Edit Role - Aegis Core | Role form | ? |
+| 10 | `admin_access_policies_1` | Sovereign IdP - Role Management | Shows "Role Management" content — **looks like a duplicate** of #8 (see open question Q1) | 302 |
+| 11 | `admin_access_policies_2` | Sovereign IdP - Access Policies | Policies + OAuth scopes | ? |
+| 12 | `admin_audit_logs` | Sovereign IdP - Audit Logs | Log viewer | 316 |
+| 13 | `admin_system_settings` | Admin Settings - Sovereign IdP | System settings | 268 |
+| 14 | `modal_create_identity` | Sovereign IDP - Create New Identity | Modal — create user | 240 |
+| 15 | `modal_delete_role_confirmation` | Delete Role Confirmation - Aegis Core | Modal — confirm delete | 182 |
+| 16 | `modal_secret_rotation_success` | Sovereign IDP - Client Secret Rotated | Modal — success/secret-reveal | ? |
+| 17 | `popup_delete_confirmation` | Sovereign IDP - Delete Client Application | Popup — confirm delete client | 133 |
+
+> The SRS only explicitly lists client management, identity management, login/register, and profile. Roles, access policies, audit logs, and system settings appear in the design but **not** in the SRS (see Q3).
+
+## 4. Reusable component inventory
+
+Shared across many screens — worth extracting as first-class components in Step 2:
+
+- **AdminLayout** (sidebar + main): fixed 256px-wide `<aside>` with logo mark, "Security Console / Enterprise Tier" branding, nav items (Clients, Identities, Access Policies, Audit Logs, Settings, Sign Out). Uses `bg-surface-container-low` with no border.
+- **Sidebar nav item**: icon (Material Symbols) + label, active state indicated by a `surface-tint` vertical pill on the left, hover via background tone shift.
+- **PageHeader**: large Manrope headline + supporting paragraph in `on-surface-variant`, right-aligned action buttons.
+- **DataTable**: no horizontal row dividers; rows separated by whitespace; `surface-container-low` hover; uppercase, wide-letter-spaced `label-sm` column headers.
+- **StatusBadge**: fully-rounded, soft tonal fill (e.g. success = `on-tertiary-container` text on `tertiary-fixed @ 30%`).
+- **GhostInput**: `bg-surface-container-high` with `border-b-2 border-outline-variant`, focus border becomes `surface-tint`. Error state uses `error` color with 10% `error-container` fill.
+- **PrimaryButton** ("monolith gradient"): linear gradient `#000 → #001b3d`, rounded `lg`, `active:scale-[0.98]`.
+- **SecondaryButton**: `secondary-container` background, no border.
+- **GlassCard / GlassPanel**: `rgba(255,255,255,0.85)` + 24px backdrop-blur, used for login/modals.
+- **AmbientShadowCard**: `surface-container-lowest` + `box-shadow: 0 12px 32px rgba(25,28,30,0.12)`.
+- **Modal**: centred glass card + full-screen dim backdrop.
+- **Popup** (smaller): same pattern at a tighter width — use the same component.
+- **BrandMark**: `shield_person` Material Symbol in a gradient tile + "Sovereign IdP" wordmark.
+
+## 5. Design tokens (from inline `tailwind.config` + `aegis_core/DESIGN.md`)
+
+Token naming follows **Material Design 3**. The palette is already authored once per file (identical across screens) and should be lifted into a shared `tailwind.config.ts` in Step 2.
+
+**Colors** (26 tokens — partial list):
+- Base: `primary #000000`, `on-primary #ffffff`, `primary-container #001b3d`, `primary-fixed #d6e3ff`
+- Secondary: `secondary #515f74`, `secondary-container #d5e3fc`
+- Tertiary (trust-blue): `tertiary #000000`, `tertiary-container #001e2f`, `tertiary-fixed #c9e6ff`
+- Surfaces: `surface #f7f9fb`, `surface-container-low #f2f4f6`, `surface-container #eceef0`, `surface-container-high #e6e8ea`, `surface-container-highest #e0e3e5`, `surface-container-lowest #ffffff`
+- Text: `on-surface #191c1e`, `on-surface-variant #45464d`
+- Lines/outlines: `outline #76777d`, `outline-variant #c6c6cd`
+- Accent: `surface-tint #005db5` (active-state blue), `error #ba1a1a`, `error-container #ffdad6`
+
+**Typography**:
+- `headline` = Manrope (400/600/700/800) — titles, brand wordmarks
+- `body` / `label` = Inter (400/500/600) — form labels, body, table data
+- Editorial rule: `label-sm` + `uppercase` + `0.05–0.1em` letter-spacing for table headers and form labels
+
+**Radii**:
+- `DEFAULT 0.125rem` · `lg 0.25rem` · `xl 0.5rem` · `full 0.75rem`
+
+**Elevation** (no hard shadows):
+- Ambient shadow: `0 12px 32px rgba(25,28,30,0.12)` — only for floating elements
+- Tonal layering — preferred. Contrast between `surface` and `surface-container-*` replaces borders.
+- Glassmorphism: `rgba(255,255,255,0.85)` + `backdrop-blur(24px)` for auth cards / modals
+
+**Spacing**: Tailwind default scale. DESIGN.md emphasises `16px` row padding and generous whitespace.
+
+## 6. Asset inventory
+
+- **Fonts** (Google Fonts CDN): Manrope, Inter, Material Symbols Outlined.
+- **Icons**: Material Symbols Outlined (icon font). Used throughout — e.g. `shield_person`, `security`, `group`, `policy`, `history_edu`, `settings`, `logout`, `arrow_forward`, `check_circle`, `menu_book`. No raster icons.
+- **Images**: one noise/grain texture served from `lh3.googleusercontent.com/aida-public/...` (Stitch's asset CDN) — used as a 3%-opacity soft-light overlay on the login screen. **Will need to be re-hosted or swapped** (external CDN is not reliable).
+- **No local SVG, no logo files** — brand is rendered entirely from icon-font + typography.
+
+## 7. Implied dependencies (for Step 2)
+
+If we go Next.js + Tailwind + shadcn (the default recommendation):
+
+- `tailwindcss` + `@tailwindcss/forms` + `@tailwindcss/container-queries` (Stitch already pulls both plugins)
+- **Fonts** via `next/font/google` for Manrope + Inter (avoids render-blocking link tags)
+- **Icons**: either keep Material Symbols Outlined (icon font) for 1:1 fidelity, **or** swap to `lucide-react` for tree-shakeable SVGs. 1:1 fidelity argues for Material Symbols; bundle size argues for Lucide. → **open question Q4**
+- **Interactive behaviour needed** (none of it is implemented in the export — it's static HTML):
+  - modal open/close + focus trap → shadcn `Dialog`
+  - confirmation popup → shadcn `AlertDialog`
+  - dropdowns / select menus (seen on admin pages) → shadcn `Select` / `DropdownMenu`
+  - tabs (seen on profile/settings) → shadcn `Tabs`
+  - form validation → react-hook-form + zod
+- **Auth/backend**: the SRS requires real OAuth flows — out of scope for UI porting, but the pages need to render against an API. Recommend stubbing API routes in `src/app/api/*` initially.
+
+## 8. Known inconsistencies / open questions
+
+**Q1. Duplicate role/policy pages?** `admin_access_policies_1` has `<h1>Role Management</h1>` — identical scope to `admin_role_management`. Is this an older draft that should be discarded, or a deliberate variant?
+
+**Q2. Profile variants.** `user_profile_sessions_1` and `_2` both title "User Profile". Which is canonical — or should we ship both and the user picks later?
+
+**Q3. Scope beyond the SRS.** The SRS only mentions client-app management, identity management, and end-user auth. The design also includes: Role Management, Access Policies / OAuth Scopes, Audit Logs, and System Settings. Are these in-scope for the PoC build, or reference-only? (They'll significantly expand the data-model work in Step 2.)
+
+**Q4. Icons.** Keep Material Symbols Outlined (icon font, pixel-perfect match to the export) or switch to `lucide-react` (smaller bundle, React-idiomatic, but different glyphs)?
+
+**Q5. Brand naming.** The export uses **three** names interchangeably: "Sovereign IdP" (22×), "Sovereign IDP" (5×), and "Aegis Core" (5×). Which is the real product name? I'll standardise on the choice in Step 2.
+
+**Q6. Noise-texture image.** The login screen references a Google-hosted aida-public CDN image for the background grain. Download and self-host in `public/`, or drop the overlay?
+
+**Q7. Repo artefacts.** The raw export now lives under `design/stitch-export/`. Do you want that committed to the branch (helpful for comparing against the ported output) or git-ignored?
+
+## 9. Suggested next step (for you to confirm)
+
+Once you've answered the questions above, Step 2 would be:
+- Pick the stack (default: **Next.js 15 + TypeScript + Tailwind v4 + shadcn/ui**).
+- Bootstrap the project in `/home/user/SW-IDP`.
+- Lift the design tokens into `tailwind.config.ts`.
+- Build `AdminLayout` and the shared component primitives first.
+- Port each screen in the table above into a route under `src/app/`.
+
+Nothing in Step 2 will happen until you approve.
