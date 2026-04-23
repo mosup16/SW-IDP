@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sovereign IDP - Create New Identity</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "background": "#f7f9fb",
+                        "on-error": "#ffffff",
+                        "surface-container-low": "#f2f4f6",
+                        "surface-container-high": "#e6e8ea",
+                        "outline-variant": "#c6c6cd",
+                        "surface-container-highest": "#e0e3e5",
+                        "primary-fixed-dim": "#a8c8ff",
+                        "outline": "#76777d",
+                        "tertiary-fixed-dim": "#89ceff",
+                        "on-error-container": "#93000a",
+                        "on-tertiary-fixed": "#001e2f",
+                        "on-surface-variant": "#45464d",
+                        "on-secondary-fixed-variant": "#3a485b",
+                        "surface-tint": "#005db5",
+                        "on-secondary": "#ffffff",
+                        "secondary-fixed-dim": "#b9c7df",
+                        "inverse-primary": "#a8c8ff",
+                        "surface-container": "#eceef0",
+                        "tertiary": "#000000",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-container": "#4184df",
+                        "on-tertiary-fixed-variant": "#004c6e",
+                        "on-primary": "#ffffff",
+                        "secondary-fixed": "#d5e3fc",
+                        "inverse-on-surface": "#eff1f3",
+                        "error-container": "#ffdad6",
+                        "secondary": "#515f74",
+                        "primary": "#000000",
+                        "tertiary-container": "#001e2f",
+                        "primary-container": "#001b3d",
+                        "on-secondary-container": "#57657a",
+                        "error": "#ba1a1a",
+                        "on-secondary-fixed": "#0d1c2e",
+                        "on-background": "#191c1e",
+                        "surface": "#f7f9fb",
+                        "on-surface": "#191c1e",
+                        "on-primary-fixed-variant": "#00468b",
+                        "surface-dim": "#d8dadc",
+                        "secondary-container": "#d5e3fc",
+                        "surface-bright": "#f7f9fb",
+                        "on-tertiary": "#ffffff",
+                        "surface-variant": "#e0e3e5",
+                        "inverse-surface": "#2d3133",
+                        "tertiary-fixed": "#c9e6ff",
+                        "on-primary-fixed": "#001b3d",
+                        "primary-fixed": "#d6e3ff",
+                        "on-tertiary-container": "#008cc7"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope", "sans-serif"],
+                        "body": ["Inter", "sans-serif"],
+                        "label": ["Inter", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .glass-overlay {
+            background-color: rgba(247, 249, 251, 0.6);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+        .ghost-input {
+            border: none;
+            border-bottom: 2px solid theme('colors.outline-variant');
+            border-radius: 0;
+            background-color: theme('colors.surface-container-high');
+        }
+        .ghost-input:focus {
+            box-shadow: none;
+            border-bottom-color: theme('colors.surface-tint');
+            outline: none;
+        }
+        .ambient-shadow {
+            box-shadow: 0 12px 32px rgba(25, 28, 30, 0.12);
+        }
+        .btn-gradient {
+            background: linear-gradient(to right, theme('colors.primary'), theme('colors.primary-container'));
+        }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface antialiased h-screen overflow-hidden flex relative">
+<!-- Background Content (Blurred out) -->
+<div class="flex-1 flex flex-col h-full opacity-40 select-none pointer-events-none filter blur-[2px]">
+<!-- TopNavBar Structure -->
+<header class="bg-slate-50 docked full-width top-0 shadow-none flex justify-between items-center w-full px-8 py-4 max-w-[1440px] mx-auto border-b-0 bg-slate-100 z-10">
+<div class="flex items-center space-x-8">
+<span class="text-xl font-black text-slate-900 tracking-tighter">Sovereign IDP</span>
+<nav class="hidden md:flex space-x-6 items-center">
+<!-- Identities Tab (Active visually in background) -->
+<a class="text-slate-900 border-b-2 border-slate-900 pb-1 font-headline tracking-tight font-bold scale-98 active:opacity-80 transition-all hover:text-slate-900 transition-colors" href="#">Identities</a>
+<a class="text-slate-500 font-medium font-headline tracking-tight hover:text-slate-900 transition-colors scale-98 active:opacity-80 transition-all" href="#">Clients</a>
+<a class="text-slate-500 font-medium font-headline tracking-tight hover:text-slate-900 transition-colors scale-98 active:opacity-80 transition-all" href="#">Audit Logs</a>
+<a class="text-slate-500 font-medium font-headline tracking-tight hover:text-slate-900 transition-colors scale-98 active:opacity-80 transition-all" href="#">Settings</a>
+</nav>
+</div>
+<div class="flex items-center space-x-6">
+<!-- Search on_right placeholder -->
+<div class="relative hidden lg:block">
+<span class="material-symbols-outlined absolute left-3 top-2.5 text-outline text-sm">search</span>
+<input class="bg-surface-container-high border-none rounded-full py-2 pl-9 pr-4 text-sm w-48 focus:ring-0" placeholder="Search..." type="text"/>
+</div>
+<div class="flex space-x-4 items-center">
+<button class="text-slate-500 hover:text-slate-900 transition-colors">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="text-slate-500 hover:text-slate-900 transition-colors">
+<span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+</button>
+</div>
+<div class="w-8 h-8 rounded-full bg-surface-container-highest overflow-hidden border border-outline-variant">
+<img alt="Admin Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDSLib9rDIgK3HXcCCoOT9UUiDM0qa0V8jL26MLE7FJyXXMtYLoNc5EnE4e9htMvzha6UOfj0J1u6KLrwc1-9EzYNz-p0QeIprsrhe4K_gq4B3TC5Nhx_5OenoCvyvZxADLkQ1YdZFM4YcEeLGm9hhIpPMmKiLNHC8JXjg2XYHKoVzOxLH7ViA0nF_9u_O0pJjy_Ku4kDMsNApm01SPmIJcQagcbx5NYNRxXCy61dpqqllJ7E_c9j4AcGZckEPl3g3p9HUOkV4O2hjh"/>
+</div>
+</div>
+</header>
+<main class="flex-1 p-8 max-w-[1440px] mx-auto w-full">
+<div class="flex justify-between items-end mb-8">
+<div>
+<h1 class="font-headline text-3xl font-bold tracking-tight text-on-surface">Identity Management</h1>
+<p class="text-on-surface-variant text-sm mt-1">Manage user identities, access policies, and lifecycle events.</p>
+</div>
+<button class="bg-primary text-on-primary px-4 py-2 rounded-lg font-medium text-sm flex items-center gap-2 pointer-events-none">
+<span class="material-symbols-outlined text-sm">add</span>
+                    Create Identity
+                </button>
+</div>
+<!-- Faux Table -->
+<div class="bg-surface-container-lowest rounded-xl p-6">
+<div class="space-y-4">
+<!-- Table Header -->
+<div class="grid grid-cols-4 gap-4 pb-4 border-b border-surface-container-high">
+<div class="font-label text-xs uppercase tracking-wider text-on-surface-variant font-medium">Identity</div>
+<div class="font-label text-xs uppercase tracking-wider text-on-surface-variant font-medium">Status</div>
+<div class="font-label text-xs uppercase tracking-wider text-on-surface-variant font-medium">Role</div>
+<div class="font-label text-xs uppercase tracking-wider text-on-surface-variant font-medium text-right">Last Login</div>
+</div>
+<!-- Faux Rows -->
+<div class="grid grid-cols-4 gap-4 py-3 bg-surface-container-low rounded-DEFAULT px-2">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center text-xs font-bold">JD</div>
+<div>
+<div class="font-medium text-sm">John Doe</div>
+<div class="text-xs text-on-surface-variant">john.doe@example.com</div>
+</div>
+</div>
+<div class="flex items-center">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-tertiary-fixed bg-opacity-30 text-on-tertiary-container">
+                                Active
+                             </span>
+</div>
+<div class="flex items-center text-sm text-on-surface-variant">Admin</div>
+<div class="flex items-center justify-end text-sm text-on-surface-variant">2 mins ago</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Modal Overlay -->
+<div class="fixed inset-0 z-50 flex items-center justify-center glass-overlay p-4 sm:p-6">
+<!-- Modal Content -->
+<div aria-labelledby="modal-title" aria-modal="true" class="bg-surface-container-lowest w-full max-w-md rounded-xl ambient-shadow flex flex-col relative overflow-hidden" role="dialog">
+<!-- Header -->
+<div class="px-6 py-5 flex items-center justify-between border-b-0 bg-surface-container-lowest z-10 relative">
+<h2 class="font-headline text-xl font-bold tracking-tight text-on-surface" id="modal-title">Create New Identity</h2>
+<button class="text-on-surface-variant hover:text-on-surface transition-colors rounded-DEFAULT p-1 hover:bg-surface-container-low focus:outline-none focus:ring-2 focus:ring-surface-tint" type="button">
+<span aria-hidden="true" class="material-symbols-outlined block text-xl" data-icon="close">close</span>
+</button>
+</div>
+<!-- Body -->
+<div class="px-6 py-6 space-y-6 flex-1 bg-surface-container-lowest relative z-10">
+<p class="text-sm text-on-surface-variant mb-4 font-body">Provision a new identity within the Sovereign IDP. An invitation will be dispatched securely.</p>
+<form class="space-y-6">
+<!-- Email Input -->
+<div>
+<label class="block font-label text-sm font-medium text-on-surface mb-2" for="email">Email Address</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-3 text-outline text-sm" data-icon="mail">mail</span>
+<input class="ghost-input block w-full pl-10 pr-3 py-2.5 text-sm text-on-surface focus:ring-0 transition-colors" id="email" name="email" placeholder="user@domain.com" required="" type="email"/>
+</div>
+</div>
+<!-- Password Input -->
+<div>
+<label class="block font-label text-sm font-medium text-on-surface mb-2" for="password">Temporary Password</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-3 text-outline text-sm" data-icon="lock">lock</span>
+<input class="ghost-input block w-full pl-10 pr-10 py-2.5 text-sm text-on-surface focus:ring-0 transition-colors" id="password" name="password" placeholder="••••••••" required="" type="password"/>
+<button class="absolute inset-y-0 right-0 pr-3 flex items-center text-outline hover:text-on-surface focus:outline-none" type="button">
+<span class="material-symbols-outlined text-sm" data-icon="visibility_off">visibility_off</span>
+</button>
+</div>
+<p class="mt-2 text-xs text-on-surface-variant font-body">Must be at least 12 characters and include a symbol.</p>
+</div>
+<!-- Checkbox -->
+<div class="flex items-start pt-2">
+<div class="flex items-center h-5">
+<input checked="" class="h-4 w-4 rounded-DEFAULT border-outline-variant text-surface-tint focus:ring-surface-tint bg-surface-container-high transition-colors cursor-pointer" id="send-invite" name="send-invite" type="checkbox"/>
+</div>
+<div class="ml-3 text-sm">
+<label class="font-medium text-on-surface font-label cursor-pointer select-none" for="send-invite">Send invite email</label>
+<p class="text-on-surface-variant text-xs mt-0.5">Dispatches onboarding instructions to the user's inbox.</p>
+</div>
+</div>
+</form>
+</div>
+<!-- Footer / Actions -->
+<div class="px-6 py-5 bg-surface-container flex items-center justify-end space-x-3 rounded-b-xl z-10 relative">
+<button class="px-5 py-2.5 bg-secondary-container text-on-secondary-container rounded-lg font-label text-sm font-semibold hover:bg-surface-container-highest active:scale-98 transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-surface-container focus:ring-surface-tint" type="button">
+                    Cancel
+                </button>
+<button class="px-5 py-2.5 btn-gradient text-on-primary rounded-lg font-label text-sm font-semibold hover:opacity-90 active:scale-98 transition-all flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-surface-container focus:ring-primary shadow-sm" type="button">
+                    Create Identity
+                </button>
+</div>
+<!-- Decorative Accent (Subtle) -->
+<div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-surface-tint to-primary opacity-50 z-20"></div>
+</div>
+</div>
+</body></html>

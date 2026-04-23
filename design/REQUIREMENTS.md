@@ -125,21 +125,22 @@ If we go Next.js + Tailwind + shadcn (the default recommendation):
   - form validation → react-hook-form + zod
 - **Auth/backend**: the SRS requires real OAuth flows — out of scope for UI porting, but the pages need to render against an API. Recommend stubbing API routes in `src/app/api/*` initially.
 
-## 8. Known inconsistencies / open questions
+## 8. Decisions so far
 
-**Q1. Duplicate role/policy pages?** `admin_access_policies_1` has `<h1>Role Management</h1>` — identical scope to `admin_role_management`. Is this an older draft that should be discarded, or a deliberate variant?
+- **Q1 — Role Management layout: `admin_access_policies_1` (minimal)** is canonical. Implication: the canonical admin sidebar is the *shorter* one (User Profile, Role Management, Audit Logs, System Settings), which differs from the longer sidebar in `admin_client_management` (Clients, Identities, Access Policies, Audit Logs, Settings, Sign Out). I'll merge the two into one nav that contains every page in the build (see §10 below).
+- **Q2 — User profile: `user_profile_sessions_2`** (the variant with the Assigned Roles checkbox section).
+- **Q3 — PoC scope: port every screen in the design**, beyond just the SRS minimum. Roles, Access Policies, Audit Logs, and System Settings are all in scope.
+- **Q4 — Icons: `lucide-react`**. Material Symbols will be mapped to the nearest Lucide equivalent during porting; the mapping lives in `src/components/icons.ts` so swaps stay centralised.
+- **Q5 — Brand name: configurable via env**. All screens reference a single `<Brand />` component that reads `NEXT_PUBLIC_BRAND_NAME` (default still TBD — likely "Sovereign IdP" as the most-used string).
+- **Q6 — Noise overlay: drop it**. Login renders without the 3%-opacity grain; the abstract blurred shapes still provide texture.
+- **Q7 — Commit the raw Stitch export**. `design/stitch-export/` is tracked in git for visual diffing during porting.
 
-**Q2. Profile variants.** `user_profile_sessions_1` and `_2` both title "User Profile". Which is canonical — or should we ship both and the user picks later?
+## 10. Notes that emerge from the decisions (for Step 2 to handle)
 
-**Q3. Scope beyond the SRS.** The SRS only mentions client-app management, identity management, and end-user auth. The design also includes: Role Management, Access Policies / OAuth Scopes, Audit Logs, and System Settings. Are these in-scope for the PoC build, or reference-only? (They'll significantly expand the data-model work in Step 2.)
-
-**Q4. Icons.** Keep Material Symbols Outlined (icon font, pixel-perfect match to the export) or switch to `lucide-react` (smaller bundle, React-idiomatic, but different glyphs)?
-
-**Q5. Brand naming.** The export uses **three** names interchangeably: "Sovereign IdP" (22×), "Sovereign IDP" (5×), and "Aegis Core" (5×). Which is the real product name? I'll standardise on the choice in Step 2.
-
-**Q6. Noise-texture image.** The login screen references a Google-hosted aida-public CDN image for the background grain. Download and self-host in `public/`, or drop the overlay?
-
-**Q7. Repo artefacts.** The raw export now lives under `design/stitch-export/`. Do you want that committed to the branch (helpful for comparing against the ported output) or git-ignored?
+- **Unified sidebar.** With "everything in the design" in scope (Q3) but the minimal-layout sidebar chosen as canonical (Q1), the final sidebar must list every top-level page: User Profile, Clients, Identities, Roles, Access Policies, Audit Logs, System Settings, Sign Out. I'll keep the visual style of `admin_access_policies_1`'s sidebar (no top-nav bar, simple icon+label rows, active state pill) and just extend its item list.
+- **Brand naming.** The export currently mixes "Sovereign IdP", "Sovereign IDP", and "Aegis Core". After Q5, all of these become `{brand}` and the value comes from env at render time.
+- **Mock data.** Pages without a corresponding SRS-defined backend (Roles, Policies, Audit Logs, Settings) will still need data to render — Step 2 will define a `src/lib/mock-data/*` shape so the UI is buildable before the API exists.
+- **Lucide mapping (preview).** `shield_person → ShieldUser`, `security → ShieldCheck`, `group → Users`, `policy → ScrollText`, `history_edu → ClipboardList`, `settings → Settings`, `logout → LogOut`, `arrow_forward → ArrowRight`, `check_circle → CheckCircle2`, `menu_book → BookOpen`. Final list confirmed in Step 2.
 
 ## 9. Suggested next step (for you to confirm)
 
