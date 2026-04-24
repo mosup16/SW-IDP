@@ -134,6 +134,7 @@ If we go Next.js + Tailwind + shadcn (the default recommendation):
 - **Q5 — Brand name: configurable via env**. All screens reference a single `<Brand />` component that reads `NEXT_PUBLIC_BRAND_NAME` (default still TBD — likely "Sovereign IdP" as the most-used string).
 - **Q6 — Noise overlay: drop it**. Login renders without the 3%-opacity grain; the abstract blurred shapes still provide texture.
 - **Q7 — Commit the raw Stitch export**. `design/stitch-export/` is tracked in git for visual diffing during porting.
+- **Scopes cut from the PoC.** OAuth 2.0 scopes (`openid`, `profile`, `email`, per-client allowlist) are not supported. The "OAuth 2.0 Scopes" panel on `admin_access_policies_2` renders but is non-functional. Tokens and authorization codes do not carry a `scopes` field. See `design/ERD.md` for the updated model.
 
 ## 10. Notes that emerge from the decisions (for Step 2 to handle)
 

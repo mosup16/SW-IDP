@@ -7,7 +7,7 @@ Assumptions baked into the model:
 - **Admin vs. end-user is a role, not a separate entity.** The SRS distinguishes "Identity" from "Identity Admin", but since the design already introduces RBAC with a `Global Administrator` role, admins are modelled as `Identity` rows that hold that role. This avoids duplicate user tables.
 - **Tokens are stored for revocation/audit.** Access tokens are JWTs (self-contained), but we persist a row per issuance so "Rotate Secret", revoke-on-logout, and audit trails work.
 - **`RedirectUri` is its own table** because `admin_create_edit_client` shows multiple URIs per client.
-- **Scopes** are a first-class entity (`openid`, `profile`, `email`, custom). Clients are allowlisted to scopes; access policies target scopes.
+- **OAuth scopes are out of scope for the PoC.** No `Scope` entity, no per-client scope allowlist, no scopes field on tokens/codes. The "OAuth 2.0 Scopes" panel on `admin_access_policies_2` will render but remain non-functional. `AccessPolicy.target_scope` is kept as a simple string enum (`GLOBAL_AUTH | NETWORK_EDGE | OAUTH2_TOKEN | SESSION_MGT`) — it's a policy domain, not an OAuth scope.
 - Surrogate `uuid` PKs everywhere. Timestamps are `timestamptz`.
 
 ---
@@ -26,14 +26,10 @@ erDiagram
     Identity ||--o{ RefreshToken : "issued to"
     Identity ||--o{ AuditLog : "actor of"
     ClientApplication ||--o{ RedirectUri : "allows"
-    ClientApplication ||--o{ ClientScope : "allowlist"
-    Scope ||--o{ ClientScope : "granted to"
     ClientApplication ||--o{ AuthorizationCode : "issues to"
     ClientApplication ||--o{ AccessToken : "issues to"
     ClientApplication ||--o{ RefreshToken : "issues to"
     AccessToken ||--o| RefreshToken : "paired with"
-    AccessPolicy ||--o{ AccessPolicyScope : "targets"
-    Scope ||--o{ AccessPolicyScope : "governed by"
 ```
 
 ---
@@ -125,24 +121,11 @@ erDiagram
         string uri
     }
 
-    Scope {
-        uuid id PK
-        string name UK "openid | profile | email | custom.*"
-        string description
-        boolean is_default
-    }
-
-    ClientScope {
-        uuid client_id PK,FK
-        uuid scope_id PK,FK
-    }
-
     AuthorizationCode {
         string code PK "opaque, single-use"
         uuid client_id FK
         uuid identity_id FK
         string redirect_uri "must match one in RedirectUri"
-        string scopes "space-separated"
         string code_challenge "PKCE, nullable"
         string code_challenge_method "S256 | plain"
         timestamptz issued_at
@@ -154,7 +137,6 @@ erDiagram
         string jti PK "JWT id"
         uuid client_id FK
         uuid identity_id FK
-        string scopes
         timestamptz issued_at
         timestamptz expires_at
         timestamptz revoked_at "nullable"
@@ -166,15 +148,12 @@ erDiagram
         uuid client_id FK
         uuid identity_id FK
         string token_hash
-        string scopes
         timestamptz issued_at
         timestamptz expires_at
         timestamptz revoked_at "nullable"
     }
 
     ClientApplication ||--o{ RedirectUri : "registers"
-    ClientApplication ||--o{ ClientScope : "allowed"
-    Scope ||--o{ ClientScope : "granted to"
     ClientApplication ||--o{ AuthorizationCode : "issued for"
     ClientApplication ||--o{ AccessToken : "issued for"
     ClientApplication ||--o{ RefreshToken : "issued for"
@@ -198,11 +177,6 @@ erDiagram
         uuid created_by FK "Identity"
     }
 
-    AccessPolicyScope {
-        uuid policy_id PK,FK
-        uuid scope_id PK,FK
-    }
-
     AuditLog {
         uuid id PK
         timestamptz timestamp_utc
@@ -223,8 +197,6 @@ erDiagram
         uuid updated_by FK "Identity"
     }
 
-    AccessPolicy ||--o{ AccessPolicyScope : "applies to"
-    AccessPolicyScope }o--|| Scope : "scope"
     AuditLog }o--|| Identity : "performed by"
     SystemSetting }o--|| Identity : "last updated by"
 ```
@@ -239,7 +211,6 @@ erDiagram
 | `Session` | `user_profile_sessions_2` table (Device/Application, Location (IP), Last Active, Action) |
 | `Role` | `admin_access_policies_1` (Role Name, Description, Assigned Identities); `admin_role_management` adds Type (Built-in/Custom) + Last Modified |
 | `ClientApplication` + `RedirectUri` | `admin_create_edit_client` (Application Name, Redirect URIs, Client ID, Client Secret); `admin_client_management` table |
-| `Scope` | `admin_access_policies_2` (OAuth 2.0 Scopes: openid, profile, email) |
 | `AccessPolicy` | `admin_access_policies_2` (Policy Name, Target Scope, Status + values GLOBAL_AUTH / NETWORK_EDGE / OAUTH2_TOKEN / SESSION_MGT) |
 | `AuditLog` | `admin_audit_logs` table (Timestamp UTC, Actor, Action/Event, Status, IP Address) |
 | `SystemSetting` | `admin_system_settings` (Access Token Expiration, Refresh Token Expiration, Password Complexity, Min Password Length, Primary Color, Company Logo) |
