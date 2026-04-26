@@ -110,46 +110,43 @@ Token naming follows **Material Design 3**. The palette is already authored once
 - **Images**: one noise/grain texture served from `lh3.googleusercontent.com/aida-public/...` (Stitch's asset CDN) — used as a 3%-opacity soft-light overlay on the login screen. **Will need to be re-hosted or swapped** (external CDN is not reliable).
 - **No local SVG, no logo files** — brand is rendered entirely from icon-font + typography.
 
-## 7. Implied dependencies (for Step 2)
+## 7. Stack
 
-If we go Next.js + Tailwind + shadcn (the default recommendation):
+**Locked. See `design/STACK.md` for the canonical decisions.** Key points relevant to porting the screens:
 
-- `tailwindcss` + `@tailwindcss/forms` + `@tailwindcss/container-queries` (Stitch already pulls both plugins)
-- **Fonts** via `next/font/google` for Manrope + Inter (avoids render-blocking link tags)
-- **Icons**: either keep Material Symbols Outlined (icon font) for 1:1 fidelity, **or** swap to `lucide-react` for tree-shakeable SVGs. 1:1 fidelity argues for Material Symbols; bundle size argues for Lucide. → **open question Q4**
-- **Interactive behaviour needed** (none of it is implemented in the export — it's static HTML):
-  - modal open/close + focus trap → shadcn `Dialog`
-  - confirmation popup → shadcn `AlertDialog`
-  - dropdowns / select menus (seen on admin pages) → shadcn `Select` / `DropdownMenu`
-  - tabs (seen on profile/settings) → shadcn `Tabs`
-  - form validation → react-hook-form + zod
-- **Auth/backend**: the SRS requires real OAuth flows — out of scope for UI porting, but the pages need to render against an API. Recommend stubbing API routes in `src/app/api/*` initially.
+- React + Vite + TypeScript + Tailwind v4 (with the tokens lifted into `tailwind.config.ts`).
+- `lucide-react` for icons (see Q4 below + §10 mapping).
+- `react-hook-form` + `zod` for form validation.
+- shadcn-style locally-owned primitives for the interactive behaviours that the static Stitch export does not implement (modal, alert dialog, select, dropdown menu, tabs).
+- The SPA is the only frontend artefact and talks **only** to the Spring Cloud Gateway — there is no Next.js BFF.
+
+Anything not on this list (server framework, service discovery, persistence, OAuth implementation) lives in `STACK.md` and `ARCHITECTURE.md`, not here.
 
 ## 8. Decisions so far
 
 - **Q1 — Role Management layout: `admin_access_policies_1` (minimal)** is canonical. Implication: the canonical admin sidebar is the *shorter* one (User Profile, Role Management, Audit Logs, System Settings), which differs from the longer sidebar in `admin_client_management` (Clients, Identities, Access Policies, Audit Logs, Settings, Sign Out). I'll merge the two into one nav that contains every page in the build (see §10 below).
 - **Q2 — User profile: `user_profile_sessions_2`** (the variant with the Assigned Roles checkbox section).
-- **Q3 — PoC scope: port every screen in the design**, beyond just the SRS minimum. Roles, Access Policies, Audit Logs, and System Settings are all in scope.
+- **Q3 — PoC scope: port every screen in the design except access policies.** Roles, Audit Logs, and System Settings are in scope. The two `admin_access_policies_*` screens and the `AccessPolicy` entity are dropped — policy-shaped requirements are absorbed by role management. See `STACK.md` ("Out of scope").
 - **Q4 — Icons: `lucide-react`**. Material Symbols will be mapped to the nearest Lucide equivalent during porting; the mapping lives in `src/components/icons.ts` so swaps stay centralised.
 - **Q5 — Brand name: configurable via env**. All screens reference a single `<Brand />` component that reads `NEXT_PUBLIC_BRAND_NAME` (default still TBD — likely "Sovereign IdP" as the most-used string).
 - **Q6 — Noise overlay: drop it**. Login renders without the 3%-opacity grain; the abstract blurred shapes still provide texture.
 - **Q7 — Commit the raw Stitch export**. `design/stitch-export/` is tracked in git for visual diffing during porting.
-- **Scopes cut from the PoC.** OAuth 2.0 scopes (`openid`, `profile`, `email`, per-client allowlist) are not supported. The "OAuth 2.0 Scopes" panel on `admin_access_policies_2` renders but is non-functional. Tokens and authorization codes do not carry a `scopes` field. See `design/ERD.md` for the updated model.
+- **Scopes cut from the PoC.** OAuth 2.0 scopes (`openid`, `profile`, `email`, per-client allowlist) are not supported. Tokens and authorization codes do not carry a `scopes` field. The `admin_access_policies_2` screen (which previously rendered the non-functional scopes panel) is no longer ported. See `design/ERD.md` and `design/STACK.md`.
 
 ## 10. Notes that emerge from the decisions (for Step 2 to handle)
 
-- **Unified sidebar.** With "everything in the design" in scope (Q3) but the minimal-layout sidebar chosen as canonical (Q1), the final sidebar must list every top-level page: User Profile, Clients, Identities, Roles, Access Policies, Audit Logs, System Settings, Sign Out. I'll keep the visual style of `admin_access_policies_1`'s sidebar (no top-nav bar, simple icon+label rows, active state pill) and just extend its item list.
+- **Unified sidebar.** With the in-scope screens (Q3) and the minimal-layout sidebar chosen as canonical (Q1), the final sidebar lists: User Profile, Clients, Identities, Roles, Audit Logs, System Settings, Sign Out. (Access Policies is removed — see Q3.) The visual style of `admin_access_policies_1`'s sidebar (no top-nav bar, simple icon+label rows, active-state pill) is kept; only the item list is extended.
 - **Brand naming.** The export currently mixes "Sovereign IdP", "Sovereign IDP", and "Aegis Core". After Q5, all of these become `{brand}` and the value comes from env at render time.
 - **Mock data.** Pages without a corresponding SRS-defined backend (Roles, Policies, Audit Logs, Settings) will still need data to render — Step 2 will define a `src/lib/mock-data/*` shape so the UI is buildable before the API exists.
 - **Lucide mapping (preview).** `shield_person → ShieldUser`, `security → ShieldCheck`, `group → Users`, `policy → ScrollText`, `history_edu → ClipboardList`, `settings → Settings`, `logout → LogOut`, `arrow_forward → ArrowRight`, `check_circle → CheckCircle2`, `menu_book → BookOpen`. Final list confirmed in Step 2.
 
-## 9. Suggested next step (for you to confirm)
+## 9. Build sequence
 
-Once you've answered the questions above, Step 2 would be:
-- Pick the stack (default: **Next.js 15 + TypeScript + Tailwind v4 + shadcn/ui**).
-- Bootstrap the project in `/home/user/SW-IDP`.
-- Lift the design tokens into `tailwind.config.ts`.
-- Build `AdminLayout` and the shared component primitives first.
-- Port each screen in the table above into a route under `src/app/`.
+Stack is now locked (see `STACK.md`). The build order, encoded as GitHub issues under `epic:foundation`, is:
 
-Nothing in Step 2 will happen until you approve.
+1. Bootstrap `apps/web/` (Vite + React + TS + Tailwind v4) with the design tokens from §5 lifted into `tailwind.config.ts`.
+2. Build the shared primitive set (Button, Input, Card, Modal, Dialog, AlertDialog, Tabs, Select, DropdownMenu, DataTable, StatusBadge, GhostInput, GlassCard, BrandMark, AdminLayout) — this is the FE reference.
+3. Wire React Router + protected routes + auth context + TanStack Query.
+4. Port each in-scope screen from §3 into a route under `apps/web/src/`.
+
+Service-side build sequence is owned by `epic:foundation` + the three BE epics in `ARCHITECTURE.md` §1.

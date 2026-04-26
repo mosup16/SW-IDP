@@ -7,7 +7,9 @@ Assumptions baked into the model:
 - **Admin vs. end-user is a role, not a separate entity.** The SRS distinguishes "Identity" from "Identity Admin", but since the design already introduces RBAC with a `Global Administrator` role, admins are modelled as `Identity` rows that hold that role. This avoids duplicate user tables.
 - **Tokens are stored for revocation/audit.** Access tokens are JWTs (self-contained), but we persist a row per issuance so "Rotate Secret", revoke-on-logout, and audit trails work.
 - **`RedirectUri` is its own table** because `admin_create_edit_client` shows multiple URIs per client.
-- **OAuth scopes are out of scope for the PoC.** No `Scope` entity, no per-client scope allowlist, no scopes field on tokens/codes. The "OAuth 2.0 Scopes" panel on `admin_access_policies_2` will render but remain non-functional. `AccessPolicy.target_scope` is kept as a simple string enum (`GLOBAL_AUTH | NETWORK_EDGE | OAUTH2_TOKEN | SESSION_MGT`) — it's a policy domain, not an OAuth scope.
+- **OAuth scopes are out of scope for the PoC.** No `Scope` entity, no per-client scope allowlist, no scopes field on tokens/codes. See `design/STACK.md` ("Out of scope").
+- **Access Policies are out of scope.** No `AccessPolicy` entity, no policy table, no policy endpoints. Policy-shaped requirements are absorbed by role management (`Role` + `Permission` + `RolePermission`). See `STACK.md`.
+- **PKCE is out of scope.** `AuthorizationCode` does not carry `code_challenge` / `code_challenge_method`. See `STACK.md`.
 - Surrogate `uuid` PKs everywhere. Timestamps are `timestamptz`.
 
 ---
@@ -126,8 +128,6 @@ erDiagram
         uuid client_id FK
         uuid identity_id FK
         string redirect_uri "must match one in RedirectUri"
-        string code_challenge "PKCE, nullable"
-        string code_challenge_method "S256 | plain"
         timestamptz issued_at
         timestamptz expires_at "typically +60s"
         timestamptz used_at "nullable"
@@ -162,21 +162,10 @@ erDiagram
 
 ---
 
-## 4. Governance — Access Policies, Audit Logs, Settings
+## 4. Governance — Audit Logs, Settings
 
 ```mermaid
 erDiagram
-    AccessPolicy {
-        uuid id PK
-        string name "Policy Name"
-        string target_scope "GLOBAL_AUTH | NETWORK_EDGE | OAUTH2_TOKEN | SESSION_MGT"
-        string status "ACTIVE | DISABLED"
-        jsonb rules "enforcement predicates"
-        timestamptz created_at
-        timestamptz last_modified_at
-        uuid created_by FK "Identity"
-    }
-
     AuditLog {
         uuid id PK
         timestamptz timestamp_utc
@@ -209,16 +198,15 @@ erDiagram
 |---|---|
 | `Identity` | SRS §2.1 (email/password, enable/disable); `admin_identity_management` table columns (User Entity, Status, Registration Date, Access Control) |
 | `Session` | `user_profile_sessions_2` table (Device/Application, Location (IP), Last Active, Action) |
-| `Role` | `admin_access_policies_1` (Role Name, Description, Assigned Identities); `admin_role_management` adds Type (Built-in/Custom) + Last Modified |
+| `Role` | `admin_role_management` (Role Name, Description, Type, Last Modified); `admin_create_edit_role` (Permissions picker) |
 | `ClientApplication` + `RedirectUri` | `admin_create_edit_client` (Application Name, Redirect URIs, Client ID, Client Secret); `admin_client_management` table |
-| `AccessPolicy` | `admin_access_policies_2` (Policy Name, Target Scope, Status + values GLOBAL_AUTH / NETWORK_EDGE / OAUTH2_TOKEN / SESSION_MGT) |
 | `AuditLog` | `admin_audit_logs` table (Timestamp UTC, Actor, Action/Event, Status, IP Address) |
 | `SystemSetting` | `admin_system_settings` (Access Token Expiration, Refresh Token Expiration, Password Complexity, Min Password Length, Primary Color, Company Logo) |
 | `AuthorizationCode` / `AccessToken` / `RefreshToken` | SRS §2.2 (authorize + token endpoints, JWT) — fields are OAuth 2.0 spec standards |
 
-## Open modelling questions (flag before Step 2)
+## Open modelling questions
 
 1. **Permission seeding.** Should `Permission` be a static enum in code (simpler) or a table you can grow from the UI (more flexible but needs a management screen that doesn't exist in the design)? Default: static enum, but tracked in DB so `RolePermission` FKs are valid.
-2. **PKCE.** Do we require PKCE for public clients (mobile/SPA), or only support confidential clients? The design doesn't say. Default: support both, make PKCE optional at the code-challenge columns.
+2. ~~**PKCE.**~~ **Resolved: dropped.** See `design/STACK.md`.
 3. **Multi-tenant?** Nothing in the SRS or design suggests tenants/orgs. Model assumes single-tenant.
-4. **Policy rules schema.** `AccessPolicy.rules` is `jsonb` today. If the UI ever gets a rules editor, we'll need a stricter schema (allow/deny list, conditions). Leaving flexible for PoC.
+4. ~~**Policy rules schema.**~~ **Resolved: AccessPolicy dropped from the PoC.** Policy-shaped requirements are absorbed by `Role` + `Permission`. See `STACK.md`.
