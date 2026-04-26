@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Aegis Core - Role Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Manrope:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary": "#ffffff",
+                        "inverse-surface": "#2d3133",
+                        "primary-fixed-dim": "#a8c8ff",
+                        "surface-bright": "#f7f9fb",
+                        "on-error-container": "#93000a",
+                        "tertiary": "#000000",
+                        "surface-variant": "#e0e3e5",
+                        "secondary-container": "#d5e3fc",
+                        "outline": "#76777d",
+                        "on-surface-variant": "#45464d",
+                        "primary-fixed": "#d6e3ff",
+                        "surface-tint": "#005db5",
+                        "secondary-fixed": "#d5e3fc",
+                        "inverse-primary": "#a8c8ff",
+                        "secondary": "#515f74",
+                        "on-background": "#191c1e",
+                        "on-secondary-container": "#57657a",
+                        "surface-container-low": "#f2f4f6",
+                        "on-secondary-fixed-variant": "#3a485b",
+                        "surface-container-lowest": "#ffffff",
+                        "background": "#f7f9fb",
+                        "surface": "#f7f9fb",
+                        "on-tertiary-container": "#008cc7",
+                        "on-surface": "#191c1e",
+                        "surface-container-high": "#e6e8ea",
+                        "error": "#ba1a1a",
+                        "tertiary-fixed-dim": "#89ceff",
+                        "tertiary-fixed": "#c9e6ff",
+                        "outline-variant": "#c6c6cd",
+                        "on-primary-fixed": "#001b3d",
+                        "on-tertiary-fixed": "#001e2f",
+                        "on-primary-container": "#4184df",
+                        "surface-container-highest": "#e0e3e5",
+                        "on-tertiary-fixed-variant": "#004c6e",
+                        "secondary-fixed-dim": "#b9c7df",
+                        "surface-dim": "#d8dadc",
+                        "on-secondary-fixed": "#0d1c2e",
+                        "on-error": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-container": "#001e2f",
+                        "primary-container": "#001b3d",
+                        "error-container": "#ffdad6",
+                        "on-primary-fixed-variant": "#00468b",
+                        "on-primary": "#ffffff",
+                        "inverse-on-surface": "#eff1f3",
+                        "primary": "#000000",
+                        "surface-container": "#eceef0"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {},
+                    "fontFamily": {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body min-h-screen flex antialiased">
+<!-- SideNavBar (from JSON) -->
+<nav class="h-screen w-64 fixed left-0 top-0 overflow-y-auto bg-slate-100 dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col gap-2 p-4 hidden md:flex z-40">
+<!-- Brand Header -->
+<div class="mb-8 px-2 flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center overflow-hidden flex-shrink-0">
+<img alt="Aegis Logo" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDHobmHaQoH2VGVYQs6xRURFS0VYZub5qZVEW0hBc-WPP83kyw7PRfKHf567HP8p2Xm-6s6oPta2JqsMjM5dGeHF0AT6Wj7dMCY6r_Jdd14SBakhidy6mOuL4apYNt0_mWchplsPNuHv7u5fm3Coue1iKjL8QWw7HSjs5FuhEZ4Dx-AMw9MO08l9Hyrxhkwk9o1gowaat8KbwS-JChExVZbKBidbKXNGJDyaJctEQ5atxDsmYaISmTfxGBlgNqmA39v17aRJr9Kn9C0"/>
+</div>
+<div class="flex flex-col">
+<span class="font-headline font-extrabold text-slate-900 dark:text-slate-50 tracking-tight text-lg">Aegis IdP</span>
+<span class="text-xs text-slate-500 font-medium tracking-wide">Enterprise Security</span>
+</div>
+</div>
+<!-- CTA Button -->
+<button class="w-full bg-primary text-on-primary py-2.5 px-4 rounded-lg font-medium text-sm flex items-center justify-center gap-2 mb-6 hover:bg-primary-container active:scale-[0.98] transition-all duration-200 bg-gradient-to-b from-primary to-primary-container shadow-sm">
+<span class="material-symbols-outlined text-lg">add</span>
+            New Policy
+        </button>
+<!-- Navigation Links -->
+<div class="flex flex-col gap-1 flex-1">
+<a class="flex items-center gap-3 text-slate-500 dark:text-slate-400 px-4 py-3 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-lg hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined text-outline">fingerprint</span>
+<span class="font-['Inter'] text-sm antialiased font-medium">Identity</span>
+</a>
+<a class="flex items-center gap-3 bg-white dark:bg-slate-800 text-slate-950 dark:text-white rounded-lg px-4 py-3 shadow-sm relative overflow-hidden group" href="#">
+<div class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-3/4 bg-surface-tint rounded-r-full"></div>
+<span class="material-symbols-outlined text-primary">admin_panel_settings</span>
+<span class="font-['Inter'] text-sm antialiased font-medium">Access Control</span>
+</a>
+<a class="flex items-center gap-3 text-slate-500 dark:text-slate-400 px-4 py-3 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-lg hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined text-outline">shield</span>
+<span class="font-['Inter'] text-sm antialiased font-medium">Security</span>
+</a>
+<a class="flex items-center gap-3 text-slate-500 dark:text-slate-400 px-4 py-3 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-lg hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined text-outline">history_edu</span>
+<span class="font-['Inter'] text-sm antialiased font-medium">Audit</span>
+</a>
+<a class="flex items-center gap-3 text-slate-500 dark:text-slate-400 px-4 py-3 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-lg hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined text-outline">tune</span>
+<span class="font-['Inter'] text-sm antialiased font-medium">Settings</span>
+</a>
+</div>
+<!-- Footer Links -->
+<div class="mt-auto pt-4 flex flex-col gap-1 border-t border-slate-200/50 dark:border-slate-800/50">
+<a class="flex items-center gap-3 text-slate-500 dark:text-slate-400 px-4 py-3 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-lg text-sm" href="#">
+<span class="material-symbols-outlined text-outline">help_outline</span>
+                Support
+            </a>
+<a class="flex items-center gap-3 text-slate-500 dark:text-slate-400 px-4 py-3 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-lg text-sm" href="#">
+<span class="material-symbols-outlined text-outline">description</span>
+                Documentation
+            </a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 ml-0 md:ml-64 flex flex-col min-h-screen bg-surface">
+<!-- TopNavBar (from JSON) -->
+<header class="docked full-width top-0 sticky z-50 bg-slate-50/80 dark:bg-slate-950/80 backdrop-blur-xl shadow-sm dark:shadow-none">
+<div class="flex justify-between items-center w-full px-6 py-3">
+<!-- Mobile Menu & Brand -->
+<div class="flex items-center gap-4 md:hidden">
+<button class="text-slate-500 hover:text-slate-900 transition-colors">
+<span class="material-symbols-outlined text-2xl">menu</span>
+</button>
+<span class="text-xl font-black text-slate-900 dark:text-slate-50 tracking-tighter">Aegis Core</span>
+</div>
+<!-- Desktop Navigation Links -->
+<nav class="hidden md:flex items-center gap-6">
+<a class="font-['Manrope'] font-bold tracking-tight text-slate-500 dark:text-slate-400 font-medium hover:text-slate-900 dark:hover:text-slate-200 transition-colors active:scale-95 duration-200" href="#">Dashboard</a>
+<a class="font-['Manrope'] font-bold tracking-tight text-slate-500 dark:text-slate-400 font-medium hover:text-slate-900 dark:hover:text-slate-200 transition-colors active:scale-95 duration-200" href="#">Users</a>
+<a class="font-['Manrope'] font-bold tracking-tight text-slate-900 dark:text-white border-b-2 border-slate-900 dark:border-white pb-1 active:scale-95 duration-200" href="#">Roles</a>
+<a class="font-['Manrope'] font-bold tracking-tight text-slate-500 dark:text-slate-400 font-medium hover:text-slate-900 dark:hover:text-slate-200 transition-colors active:scale-95 duration-200" href="#">Policies</a>
+<a class="font-['Manrope'] font-bold tracking-tight text-slate-500 dark:text-slate-400 font-medium hover:text-slate-900 dark:hover:text-slate-200 transition-colors active:scale-95 duration-200" href="#">Logs</a>
+</nav>
+<!-- Right Actions -->
+<div class="flex items-center gap-4">
+<!-- Search (On Right as per JSON) -->
+<div class="hidden md:flex relative group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-surface-tint transition-colors">search</span>
+<input class="bg-surface-container-high border-b-2 border-outline-variant focus:border-surface-tint focus:ring-0 pl-10 pr-4 py-2 w-64 transition-all outline-none font-body text-sm rounded-t-sm" placeholder="Search roles..." type="text"/>
+</div>
+<button class="text-slate-500 hover:text-slate-900 transition-colors relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-0 right-0 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="text-slate-500 hover:text-slate-900 transition-colors">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant cursor-pointer ml-2">
+<img alt="Administrator Avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDc_2AXYB8D8Yx5a0ohGIU7G-6P-jBLZTvbc0qoxo4zmVetOIwGy2RvC3JRcu3qijEA3K6HqeSAT6vwS06tIXSZ1BEIoQqSzWCj8XkZ2adxPPxE3_uIC3QNn92RElf92WDd-tdgW0OIG6KXTiESZMbhKogT5SCthgssCUbkgwyXo_beMR-s1BF6-Rys-FyTrLDnDTq2vsM8YWkubyropdwoXj7ZSxo98VmHnEH89J1k_C2PWFWzisz3j6o8riAzE_gtWtPJLXprZ7DB"/>
+</div>
+</div>
+</div>
+<!-- Separation Logic -->
+<div class="bg-slate-200/50 dark:bg-slate-800/50 h-[1px] w-full"></div>
+</header>
+<!-- Page Content -->
+<div class="p-6 md:p-10 flex-1 max-w-7xl mx-auto w-full">
+<!-- Page Header -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+<div>
+<h1 class="font-headline text-3xl font-bold text-on-surface tracking-tight mb-1">Role Management</h1>
+<p class="text-on-surface-variant text-sm max-w-2xl">Define and manage access levels across your organization. Roles act as collections of permissions granted to assigned identities.</p>
+</div>
+<div class="flex items-center gap-3">
+<button class="bg-secondary-container text-on-secondary-container px-4 py-2 rounded-lg font-medium text-sm flex items-center gap-2 hover:bg-surface-dim transition-colors">
+<span class="material-symbols-outlined text-sm">filter_list</span>
+                        Filter
+                    </button>
+<button class="bg-primary text-on-primary px-5 py-2 rounded-lg font-medium text-sm flex items-center gap-2 hover:bg-primary-container active:scale-95 transition-all bg-gradient-to-b from-primary to-primary-container shadow-sm">
+<span class="material-symbols-outlined text-sm">add</span>
+                        Create New Role
+                    </button>
+</div>
+</div>
+<!-- Bento Grid Stats (Contextualizing the list) -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+<div class="bg-surface-container-lowest rounded-xl p-6 relative overflow-hidden" style="box-shadow: 0 12px 32px -4px rgba(25, 28, 30, 0.05);">
+<div class="absolute -right-4 -top-4 text-surface-container w-24 h-24 opacity-50 flex items-center justify-center">
+<span class="material-symbols-outlined text-6xl">verified_user</span>
+</div>
+<div class="relative z-10">
+<h3 class="text-on-surface-variant text-sm font-medium mb-2 uppercase tracking-wider">Total Roles</h3>
+<p class="font-headline text-4xl font-bold text-on-surface">12</p>
+<p class="text-xs text-outline mt-2">+2 created this month</p>
+</div>
+</div>
+<div class="bg-surface-container-lowest rounded-xl p-6 relative overflow-hidden" style="box-shadow: 0 12px 32px -4px rgba(25, 28, 30, 0.05);">
+<div class="absolute -right-4 -top-4 text-surface-container w-24 h-24 opacity-50 flex items-center justify-center">
+<span class="material-symbols-outlined text-6xl">group</span>
+</div>
+<div class="relative z-10">
+<h3 class="text-on-surface-variant text-sm font-medium mb-2 uppercase tracking-wider">Assigned Identities</h3>
+<p class="font-headline text-4xl font-bold text-on-surface">1,492</p>
+<p class="text-xs text-outline mt-2">Active across all roles</p>
+</div>
+</div>
+<div class="bg-surface-container-lowest rounded-xl p-6 relative overflow-hidden flex flex-col justify-between" style="box-shadow: 0 12px 32px -4px rgba(25, 28, 30, 0.05);">
+<div>
+<h3 class="text-on-surface-variant text-sm font-medium mb-2 uppercase tracking-wider">System Health</h3>
+<div class="flex items-center gap-2 mb-2">
+<div class="w-2 h-2 rounded-full bg-tertiary-fixed-dim"></div>
+<span class="font-headline font-semibold text-lg">Optimal</span>
+</div>
+</div>
+<p class="text-xs text-outline">No conflicting role assignments detected in the last 30 days.</p>
+</div>
+</div>
+<!-- Role Data Table container -->
+<div class="bg-surface-container-lowest rounded-xl overflow-hidden" style="box-shadow: 0 12px 32px -4px rgba(25, 28, 30, 0.05);">
+<!-- Table Header -->
+<div class="grid grid-cols-12 gap-4 px-6 py-4 bg-surface-container-low border-b border-outline-variant/15 text-xs font-semibold text-on-surface-variant uppercase tracking-[0.05em] font-label">
+<div class="col-span-4">Role Name &amp; Description</div>
+<div class="col-span-2">Type</div>
+<div class="col-span-2">Identities</div>
+<div class="col-span-2">Last Modified</div>
+<div class="col-span-2 text-right">Actions</div>
+</div>
+<!-- Table Body (List) -->
+<div class="flex flex-col">
+<!-- Row 1 -->
+<div class="grid grid-cols-12 gap-4 px-6 py-5 items-center hover:bg-surface-container-low transition-colors border-b border-outline-variant/15 group">
+<div class="col-span-4 flex flex-col">
+<span class="font-headline font-semibold text-on-surface text-base">Super Admin</span>
+<span class="text-sm text-outline mt-0.5 truncate pr-4">Unrestricted access to all core systems and configurations.</span>
+</div>
+<div class="col-span-2">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-secondary-container text-on-secondary-container">
+                                Built-in
+                            </span>
+</div>
+<div class="col-span-2 flex items-center gap-2">
+<span class="material-symbols-outlined text-outline text-sm">person</span>
+<span class="text-sm font-medium text-on-surface">3</span>
+</div>
+<div class="col-span-2 text-sm text-on-surface-variant">
+                            Oct 24, 2023
+                        </div>
+<div class="col-span-2 flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-1.5 text-outline hover:text-on-surface transition-colors rounded-lg hover:bg-surface-container-high" title="Edit">
+<span class="material-symbols-outlined text-sm">edit</span>
+</button>
+<button class="p-1.5 text-outline hover:text-on-surface transition-colors rounded-lg hover:bg-surface-container-high" title="More">
+<span class="material-symbols-outlined text-sm">more_vert</span>
+</button>
+</div>
+</div>
+<!-- Row 2 -->
+<div class="grid grid-cols-12 gap-4 px-6 py-5 items-center hover:bg-surface-container-low transition-colors border-b border-outline-variant/15 group">
+<div class="col-span-4 flex flex-col">
+<span class="font-headline font-semibold text-on-surface text-base">Developer</span>
+<span class="text-sm text-outline mt-0.5 truncate pr-4">Access to non-production environments and API keys.</span>
+</div>
+<div class="col-span-2">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-surface-container-high text-on-surface-variant border border-outline-variant/30">
+                                Custom
+                            </span>
+</div>
+<div class="col-span-2 flex items-center gap-2">
+<span class="material-symbols-outlined text-outline text-sm">person</span>
+<span class="text-sm font-medium text-on-surface">42</span>
+</div>
+<div class="col-span-2 text-sm text-on-surface-variant">
+                            Nov 12, 2023
+                        </div>
+<div class="col-span-2 flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-1.5 text-outline hover:text-on-surface transition-colors rounded-lg hover:bg-surface-container-high" title="Edit">
+<span class="material-symbols-outlined text-sm">edit</span>
+</button>
+<button class="p-1.5 text-outline hover:text-on-surface transition-colors rounded-lg hover:bg-surface-container-high" title="More">
+<span class="material-symbols-outlined text-sm">more_vert</span>
+</button>
+</div>
+</div>
+<!-- Row 3 -->
+<div class="grid grid-cols-12 gap-4 px-6 py-5 items-center hover:bg-surface-container-low transition-colors border-b border-outline-variant/15 group">
+<div class="col-span-4 flex flex-col">
+<span class="font-headline font-semibold text-on-surface text-base">Auditor</span>
+<span class="text-sm text-outline mt-0.5 truncate pr-4">Read-only access to compliance logs and reporting.</span>
+</div>
+<div class="col-span-2">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-surface-container-high text-on-surface-variant border border-outline-variant/30">
+                                Custom
+                            </span>
+</div>
+<div class="col-span-2 flex items-center gap-2">
+<span class="material-symbols-outlined text-outline text-sm">person</span>
+<span class="text-sm font-medium text-on-surface">8</span>
+</div>
+<div class="col-span-2 text-sm text-on-surface-variant">
+                            Jan 05, 2024
+                        </div>
+<div class="col-span-2 flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-1.5 text-outline hover:text-on-surface transition-colors rounded-lg hover:bg-surface-container-high" title="Edit">
+<span class="material-symbols-outlined text-sm">edit</span>
+</button>
+<button class="p-1.5 text-outline hover:text-on-surface transition-colors rounded-lg hover:bg-surface-container-high" title="More">
+<span class="material-symbols-outlined text-sm">more_vert</span>
+</button>
+</div>
+</div>
+<!-- Row 4 -->
+<div class="grid grid-cols-12 gap-4 px-6 py-5 items-center hover:bg-surface-container-low transition-colors group">
+<div class="col-span-4 flex flex-col">
+<div class="flex items-center gap-2">
+<span class="font-headline font-semibold text-on-surface text-base">Support Tier 1</span>
+<span class="w-2 h-2 rounded-full bg-error" title="Requires Review"></span>
+</div>
+<span class="text-sm text-outline mt-0.5 truncate pr-4">Basic customer support tooling and read-only user data.</span>
+</div>
+<div class="col-span-2">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-surface-container-high text-on-surface-variant border border-outline-variant/30">
+                                Custom
+                            </span>
+</div>
+<div class="col-span-2 flex items-center gap-2">
+<span class="material-symbols-outlined text-outline text-sm">person</span>
+<span class="text-sm font-medium text-on-surface">115</span>
+</div>
+<div class="col-span-2 text-sm text-on-surface-variant">
+                            Feb 20, 2024
+                        </div>
+<div class="col-span-2 flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-1.5 text-outline hover:text-on-surface transition-colors rounded-lg hover:bg-surface-container-high" title="Edit">
+<span class="material-symbols-outlined text-sm">edit</span>
+</button>
+<button class="p-1.5 text-outline hover:text-on-surface transition-colors rounded-lg hover:bg-surface-container-high" title="More">
+<span class="material-symbols-outlined text-sm">more_vert</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Pagination (Simple) -->
+<div class="mt-6 flex items-center justify-between">
+<span class="text-sm text-on-surface-variant">Showing 1 to 4 of 12 entries</span>
+<div class="flex items-center gap-2">
+<button class="px-3 py-1.5 rounded-lg border border-outline-variant text-sm font-medium text-on-surface-variant hover:bg-surface-container-low disabled:opacity-50" disabled="">Previous</button>
+<button class="px-3 py-1.5 rounded-lg border border-outline-variant text-sm font-medium text-on-surface-variant hover:bg-surface-container-low">Next</button>
+</div>
+</div>
+</div>
+</main>
+</body></html>
