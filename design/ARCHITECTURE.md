@@ -142,21 +142,20 @@ SW-IDP/
 ├── apps/
 │   └── web/                  # Vite + React SPA
 ├── services/
-│   ├── identity-service/
-│   ├── oauth-service/
-│   ├── admin-service/
-│   ├── gateway/
-│   ├── eureka/
-│   └── config-server/
+│   ├── identity-service/     # self-contained Gradle project
+│   ├── oauth-service/        # self-contained Gradle project
+│   ├── admin-service/        # self-contained Gradle project
+│   ├── gateway/              # self-contained Gradle project
+│   ├── eureka/               # self-contained Gradle project
+│   └── config-server/        # self-contained Gradle project
 ├── packages/
 │   └── shared-types/         # OpenAPI-derived TS types for the SPA
-├── pom.xml                   # Maven parent
 ├── infra/
 │   └── docker-compose.yaml
 └── design/
 ```
 
-Each Spring Boot module owns its own Flyway migrations under `src/main/resources/db/migration/`.
+There is no parent build file. Each `services/<name>/` is its own Spring Boot project (Gradle Kotlin DSL) you can `cd` into and run on its own. Each owns its Flyway migrations under `src/main/resources/db/migration/`.
 
 ## 8. What we're deliberately not doing, and when to add it back
 

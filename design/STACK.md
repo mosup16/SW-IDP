@@ -59,7 +59,7 @@ The SPA lives at `apps/web/` and is the only frontend artefact.
 |---|---|
 | Language | **Java 21** |
 | Framework | **Spring Boot 3.x** |
-| Build | **Maven multi-module** — one parent `pom.xml`, one module per service |
+| Build | **Gradle (Kotlin DSL)**. Each service under `services/<name>/` is a **self-contained Gradle project** — its own `build.gradle.kts`, its own `settings.gradle.kts`, its own `gradlew`. No parent project, no shared root build file. |
 | Persistence | **Spring Data JPA** on Postgres |
 | Migrations | **Flyway**, one migration history per service (each service writes only to its own schema) |
 | Inter-service RPC | **OpenFeign** over HTTP/JSON |
@@ -92,21 +92,20 @@ SW-IDP/
 ├── apps/
 │   └── web/                  # Vite + React SPA (TypeScript)
 ├── services/
-│   ├── identity-service/     # Spring Boot, owns identity.* schema
-│   ├── oauth-service/        # Spring Boot, owns oauth.* schema
-│   ├── admin-service/        # Spring Boot, owns admin.* schema
-│   ├── gateway/              # Spring Cloud Gateway
-│   ├── eureka/               # Eureka server
-│   └── config-server/        # Spring Cloud Config Server
+│   ├── identity-service/     # self-contained Gradle project (own gradlew + build file)
+│   ├── oauth-service/        # self-contained Gradle project
+│   ├── admin-service/        # self-contained Gradle project
+│   ├── gateway/              # self-contained Gradle project (Spring Cloud Gateway)
+│   ├── eureka/               # self-contained Gradle project (Eureka server)
+│   └── config-server/        # self-contained Gradle project (Spring Cloud Config Server)
 ├── packages/
 │   └── shared-types/         # OpenAPI-derived TS types for the SPA
-├── pom.xml                   # Maven parent
 ├── infra/
 │   └── docker-compose.yaml   # Postgres + 6 Spring containers + web (dev only)
 └── design/
 ```
 
-The six Spring apps share one Maven parent so dependency versions and plugin config live in one place.
+**There is no parent build file at the repo root.** Each `services/<name>/` directory is a Spring Boot project you can `cd` into and build / run on its own (`./gradlew bootRun`). This keeps each service genuinely independent — versioned, built, and shipped separately.
 
 ---
 
