@@ -1,0 +1,93 @@
+@import 'tailwindcss';
+@plugin '@tailwindcss/forms';
+
+/*
+ * Material-3 design tokens lifted from design/REQUIREMENTS.md §5
+ * and design/stitch-export/aegis_core/DESIGN.md.
+ *
+ * Edit only in coordination with those documents — they are the source of truth.
+ */
+@theme {
+  /* Brand / primary */
+  --color-primary: #000000;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #001b3d;
+  --color-primary-fixed: #d6e3ff;
+
+  /* Secondary */
+  --color-secondary: #515f74;
+  --color-secondary-container: #d5e3fc;
+
+  /* Tertiary (trust-blue) */
+  --color-tertiary: #000000;
+  --color-tertiary-container: #001e2f;
+  --color-tertiary-fixed: #c9e6ff;
+
+  /* Surfaces — tonal layering replaces borders */
+  --color-surface: #f7f9fb;
+  --color-surface-container-low: #f2f4f6;
+  --color-surface-container: #eceef0;
+  --color-surface-container-high: #e6e8ea;
+  --color-surface-container-highest: #e0e3e5;
+  --color-surface-container-lowest: #ffffff;
+
+  /* Foreground text */
+  --color-on-surface: #191c1e;
+  --color-on-surface-variant: #45464d;
+
+  /* Lines / outlines */
+  --color-outline: #76777d;
+  --color-outline-variant: #c6c6cd;
+
+  /* Accents */
+  --color-surface-tint: #005db5;
+  --color-error: #ba1a1a;
+  --color-error-container: #ffdad6;
+
+  /* Type families */
+  --font-headline: 'Manrope', system-ui, sans-serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+  --font-label: 'Inter', system-ui, sans-serif;
+
+  /* Radii (per REQUIREMENTS.md §5).
+     Note: design's `rounded-full` is 0.75rem, not a true circle.
+     For genuine circular shapes (avatars, dots), use `rounded-[100%]`. */
+  --radius-DEFAULT: 0.125rem;
+  --radius-lg: 0.25rem;
+  --radius-xl: 0.5rem;
+  --radius-full: 0.75rem;
+
+  /* Elevation — ambient only (no hard shadows) */
+  --shadow-ambient: 0 12px 32px rgba(25, 28, 30, 0.12);
+}
+
+/* Editorial rules from REQUIREMENTS.md §5 */
+@layer base {
+  html,
+  body {
+    background-color: var(--color-surface);
+    color: var(--color-on-surface);
+    font-family: var(--font-body);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-headline);
+  }
+}
+
+/* Glassmorphism preset — used by login card / modals. */
+@utility glass-panel {
+  background-color: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+
+/* Monolith-gradient primary button (per REQUIREMENTS.md §4). */
+@utility monolith-gradient {
+  background-image: linear-gradient(135deg, #000000 0%, #001b3d 100%);
+}
