@@ -61,7 +61,7 @@ The SPA lives at `apps/web/` and is the only frontend artefact.
 | Framework | **Spring Boot 3.x** |
 | Build | **Gradle (Kotlin DSL)**. Each service under `services/<name>/` is a **self-contained Gradle project** — its own `build.gradle.kts`, its own `settings.gradle.kts`, its own `gradlew`. No parent project, no shared root build file. |
 | Persistence | **Spring Data JPA** on Postgres |
-| Migrations | **Flyway**, one migration history per service (each service writes only to its own schema) |
+| Schema management | **Hibernate auto-DDL** (`spring.jpa.hibernate.ddl-auto=update` in dev). Tables are created from the JPA entities on startup. **No Flyway, no migration files** — this is a PoC and we trade migration ceremony for simplicity. Schemas (`identity`, `oauth`, `admin`) are pre-created by the Postgres init script in `infra/`. |
 | Inter-service RPC | **OpenFeign** over HTTP/JSON |
 | Internal-call auth | Shared header secret (`X-Internal-Auth: <secret>`), value pulled from Config Server |
 | Web security | **Spring Security**, role-based access on admin routes |
@@ -134,7 +134,7 @@ These are open and will be pinned during `epic:foundation`. Issues should NOT pr
 
 1. Password-hash algorithm (bcrypt vs argon2).
 2. JWT signing-key strategy (file-mounted keypair vs env-injected; JWKS shape).
-3. Local-dev seed strategy for Postgres (Flyway dev-only migration vs separate seed script).
+3. Local-dev seed mechanism (Spring `CommandLineRunner` populating data on startup vs. a SQL file run by the Postgres init container).
 4. Exact Lucide ↔ Material Symbols final mapping (preview in `REQUIREMENTS.md` §10).
 
 ---

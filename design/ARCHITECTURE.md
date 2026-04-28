@@ -155,7 +155,7 @@ SW-IDP/
 └── design/
 ```
 
-There is no parent build file. Each `services/<name>/` is its own Spring Boot project (Gradle Kotlin DSL) you can `cd` into and run on its own. Each owns its Flyway migrations under `src/main/resources/db/migration/`.
+There is no parent build file. Each `services/<name>/` is its own Spring Boot project (Gradle Kotlin DSL) you can `cd` into and run on its own. Tables are created by Hibernate auto-DDL from the JPA entities on startup — no Flyway, no migration files. See `STACK.md` ("Schema management").
 
 ## 8. What we're deliberately not doing, and when to add it back
 
