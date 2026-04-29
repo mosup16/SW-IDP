@@ -114,7 +114,7 @@ Token naming follows **Material Design 3**. The palette is already authored once
 
 **Locked. See `design/STACK.md` for the canonical decisions.** Key points relevant to porting the screens:
 
-- React + Vite + TypeScript + Tailwind v4 (with the tokens lifted into `tailwind.config.ts`).
+- React + Vite + plain JavaScript (no TypeScript) + Tailwind v4 (tokens configured globally per the design tokens in §5).
 - `lucide-react` for icons (see Q4 below + §10 mapping).
 - `react-hook-form` + `zod` for form validation.
 - shadcn-style locally-owned primitives for the interactive behaviours that the static Stitch export does not implement (modal, alert dialog, select, dropdown menu, tabs).
@@ -144,7 +144,7 @@ Anything not on this list (server framework, service discovery, persistence, OAu
 
 Stack is now locked (see `STACK.md`). The build order, encoded as GitHub issues under `epic:foundation`, is:
 
-1. Bootstrap `apps/web/` (Vite + React + TS + Tailwind v4) with the design tokens from §5 lifted into `tailwind.config.ts`.
+1. Bootstrap `apps/web/` (Vite + React + Tailwind v4) with the design tokens from §5 wired into the global stylesheet.
 2. Build the shared primitive set (Button, Input, Card, Modal, Dialog, AlertDialog, Tabs, Select, DropdownMenu, DataTable, StatusBadge, GhostInput, GlassCard, BrandMark, AdminLayout) — this is the FE reference.
 3. Wire React Router + protected routes + auth context + TanStack Query.
 4. Port each in-scope screen from §3 into a route under `apps/web/src/`.

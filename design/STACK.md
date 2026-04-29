@@ -41,7 +41,7 @@ Config Server  ── serves config to ── identity / oauth / admin / gateway
 |---|---|
 | Build / dev server | **Vite** |
 | Framework | **React 18+** |
-| Language | **TypeScript** |
+| Language | **JavaScript (ES2022+)** — plain JS, not TypeScript |
 | Routing | **React Router v6** |
 | Server state | **TanStack Query v5** |
 | Styling | **Tailwind v4** with the Material-3 tokens in `REQUIREMENTS.md` §5 + `stitch-export/aegis_core/DESIGN.md` |
@@ -99,7 +99,7 @@ SW-IDP/
 │   ├── eureka/               # self-contained Gradle project (Eureka server)
 │   └── config-server/        # self-contained Gradle project (Spring Cloud Config Server)
 ├── packages/
-│   └── shared-types/         # OpenAPI-derived TS types for the SPA
+│   └── shared-contracts/     # JSON request/response shapes shared by SPA + services (docs only — no codegen)
 ├── infra/
 │   └── docker-compose.yaml   # Postgres + 6 Spring containers + web (dev only)
 └── design/

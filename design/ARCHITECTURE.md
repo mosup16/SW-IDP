@@ -149,7 +149,7 @@ SW-IDP/
 │   ├── eureka/               # self-contained Gradle project
 │   └── config-server/        # self-contained Gradle project
 ├── packages/
-│   └── shared-types/         # OpenAPI-derived TS types for the SPA
+│   └── shared-contracts/     # JSON request/response shapes shared by SPA + services (docs only)
 ├── infra/
 │   └── docker-compose.yaml
 └── design/
