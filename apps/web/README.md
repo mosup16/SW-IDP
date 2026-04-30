@@ -1,6 +1,6 @@
 # `apps/web` — SW-IDP frontend
 
-Vite + React + TypeScript SPA, the only frontend artefact in the project. The SPA talks **only** to the Spring Cloud Gateway at runtime — see `design/STACK.md`.
+Vite + React SPA written in plain JavaScript, the only frontend artefact in the project. The SPA talks **only** to the Spring Cloud Gateway at runtime — see `design/STACK.md`.
 
 ## Stack at a glance
 
@@ -8,7 +8,7 @@ Vite + React + TypeScript SPA, the only frontend artefact in the project. The SP
 |---|---|
 | Build / dev server | Vite |
 | Framework | React 18 |
-| Language | TypeScript (strict) |
+| Language | JavaScript (ES2022+) — **not** TypeScript |
 | Styling | Tailwind v4 (CSS-first `@theme`) |
 | Icons | lucide-react |
 
@@ -20,7 +20,7 @@ Routing, server-state (TanStack Query), forms (react-hook-form + zod), and the s
 # from apps/web/
 npm install        # first run only
 npm run dev        # start the dev server on http://localhost:5173
-npm run build      # type-check + production build to ./dist
+npm run build      # production build to ./dist
 npm run preview    # serve the production build locally
 npm run lint       # eslint
 npm run format     # prettier --write
@@ -41,13 +41,9 @@ Two helper utilities are defined alongside the tokens:
 
 Manrope (headline) and Inter (body / label) load from Google Fonts via `<link>` tags in `index.html`. Use them via the `font-headline` / `font-body` utilities from the `@theme` block.
 
-## Path alias
-
-`@/*` resolves to `src/*` in TypeScript (see `tsconfig.app.json`). Vite resolves it the same way out of the box for `import` statements.
-
 ## Where new code goes
 
-This is the only foundation issue that's allowed to invent layout. Every later FE issue mirrors patterns established by issue #2 (`[foundation] Build shared primitive set + AdminLayout`). Until that lands, `src/App.tsx` is a placeholder that proves the build chain works.
+This is the only foundation issue that's allowed to invent layout. Every later FE issue mirrors patterns established by issue #2 (`[foundation] Build shared primitive set + AdminLayout`). Until that lands, `src/App.jsx` is a placeholder that proves the build chain works.
 
 ## Where to look when in doubt
 

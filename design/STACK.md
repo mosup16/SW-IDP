@@ -41,7 +41,7 @@ Config Server  ── serves config to ── identity / oauth / admin / gateway
 |---|---|
 | Build / dev server | **Vite** |
 | Framework | **React 18+** |
-| Language | **TypeScript** |
+| Language | **JavaScript (ES2022+)** — plain JS, not TypeScript |
 | Routing | **React Router v6** |
 | Server state | **TanStack Query v5** |
 | Styling | **Tailwind v4** with the Material-3 tokens in `REQUIREMENTS.md` §5 + `stitch-export/aegis_core/DESIGN.md` |
@@ -59,9 +59,9 @@ The SPA lives at `apps/web/` and is the only frontend artefact.
 |---|---|
 | Language | **Java 21** |
 | Framework | **Spring Boot 3.x** |
-| Build | **Maven multi-module** — one parent `pom.xml`, one module per service |
+| Build | **Gradle (Kotlin DSL)**. Each service under `services/<name>/` is a **self-contained Gradle project** — its own `build.gradle.kts`, its own `settings.gradle.kts`, its own `gradlew`. No parent project, no shared root build file. |
 | Persistence | **Spring Data JPA** on Postgres |
-| Migrations | **Flyway**, one migration history per service (each service writes only to its own schema) |
+| Schema management | **Hibernate auto-DDL** (`spring.jpa.hibernate.ddl-auto=update` in dev). Tables are created from the JPA entities on startup. **No Flyway, no migration files** — this is a PoC and we trade migration ceremony for simplicity. Schemas (`identity`, `oauth`, `admin`) are pre-created by the Postgres init script in `infra/`. |
 | Inter-service RPC | **OpenFeign** over HTTP/JSON |
 | Internal-call auth | Shared header secret (`X-Internal-Auth: <secret>`), value pulled from Config Server |
 | Web security | **Spring Security**, role-based access on admin routes |
@@ -92,21 +92,20 @@ SW-IDP/
 ├── apps/
 │   └── web/                  # Vite + React SPA (TypeScript)
 ├── services/
-│   ├── identity-service/     # Spring Boot, owns identity.* schema
-│   ├── oauth-service/        # Spring Boot, owns oauth.* schema
-│   ├── admin-service/        # Spring Boot, owns admin.* schema
-│   ├── gateway/              # Spring Cloud Gateway
-│   ├── eureka/               # Eureka server
-│   └── config-server/        # Spring Cloud Config Server
+│   ├── identity-service/     # self-contained Gradle project (own gradlew + build file)
+│   ├── oauth-service/        # self-contained Gradle project
+│   ├── admin-service/        # self-contained Gradle project
+│   ├── gateway/              # self-contained Gradle project (Spring Cloud Gateway)
+│   ├── eureka/               # self-contained Gradle project (Eureka server)
+│   └── config-server/        # self-contained Gradle project (Spring Cloud Config Server)
 ├── packages/
-│   └── shared-types/         # OpenAPI-derived TS types for the SPA
-├── pom.xml                   # Maven parent
+│   └── shared-contracts/     # JSON request/response shapes shared by SPA + services (docs only — no codegen)
 ├── infra/
 │   └── docker-compose.yaml   # Postgres + 6 Spring containers + web (dev only)
 └── design/
 ```
 
-The six Spring apps share one Maven parent so dependency versions and plugin config live in one place.
+**There is no parent build file at the repo root.** Each `services/<name>/` directory is a Spring Boot project you can `cd` into and build / run on its own (`./gradlew bootRun`). This keeps each service genuinely independent — versioned, built, and shipped separately.
 
 ---
 
@@ -135,7 +134,7 @@ These are open and will be pinned during `epic:foundation`. Issues should NOT pr
 
 1. Password-hash algorithm (bcrypt vs argon2).
 2. JWT signing-key strategy (file-mounted keypair vs env-injected; JWKS shape).
-3. Local-dev seed strategy for Postgres (Flyway dev-only migration vs separate seed script).
+3. Local-dev seed mechanism (Spring `CommandLineRunner` populating data on startup vs. a SQL file run by the Postgres init container).
 4. Exact Lucide ↔ Material Symbols final mapping (preview in `REQUIREMENTS.md` §10).
 
 ---
