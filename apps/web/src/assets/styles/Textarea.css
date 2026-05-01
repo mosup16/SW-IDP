@@ -1,0 +1,17 @@
+.ghost-textarea {
+  background: var(--input-bg);
+  border: none;
+  border-bottom: 2px solid var(--border);
+  border-radius: 4px 4px 0 0;
+  padding: 10px 12px;
+  font-size: 13px;
+  color: var(--text-body);
+  min-height: 88px;
+  width: 100%;
+}
+.ghost-textarea:focus {
+  outline: none;
+  border-bottom-color: var(--focus-outline);
+  background: #dde1e4;
+}
+.showcase { width: 900px; margin: 0 auto; padding: 48px 24px 72px; }
