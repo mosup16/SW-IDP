@@ -1,0 +1,16 @@
+.ghost-select {
+  background: var(--input-bg);
+  border: none;
+  border-bottom: 2px solid var(--border);
+  border-radius: 4px 4px 0 0;
+  padding: 10px 36px 10px 12px;
+  font-size: 13px;
+  font-family: 'IBM Plex Sans', sans-serif;
+  color: var(--text-body);
+  width: 10%;
+  cursor: pointer;
+  margin: 20px auto;
+}
+.ghost-select:focus {
+  outline: none;
+}
