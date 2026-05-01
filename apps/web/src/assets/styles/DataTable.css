@@ -1,0 +1,50 @@
+.cb-wrap {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.cb-wrap.cb-disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.cb-box {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  border: 2px solid var(--border-strong);
+  background: var(--card-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.cb-box.cb-checked {
+  background: var(--btn-primary);
+  border-color: var(--btn-primary);
+}
+
+.cb-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cb-label {
+  font-size: 14px;
+  color: var(--text-body);
+  line-height: 1.4;
+}
+
+.cb-desc {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}

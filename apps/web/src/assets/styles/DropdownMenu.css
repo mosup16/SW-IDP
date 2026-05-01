@@ -1,0 +1,70 @@
+.dd-root {
+  position: relative;
+  display: inline-block;
+}
+
+.dd-trigger {
+  display: inline-flex;
+  cursor: pointer;
+}
+
+.dd-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 200;
+  min-width: 172px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 4px 24px rgba(25, 28, 30, 0.12), 0 1px 4px rgba(25, 28, 30, 0.06);
+  padding: 6px;
+  display: none;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.dd-menu.dd-open {
+  display: flex;
+}
+
+.dd-menu.dd-align-end {
+  left: auto;
+  right: 0;
+}
+
+.dd-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 12px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--text-body);
+  text-align: left;
+  transition: background 0.1s;
+}
+
+.dd-item:hover {
+  background: var(--table-row-hover);
+}
+
+.dd-item.dd-destructive {
+  color: var(--btn-danger);
+}
+
+.dd-item.dd-destructive:hover {
+  background: var(--status-error-bg);
+}
+
+.dd-item-icon {
+  display: flex;
+  align-items: center;
+  opacity: 0.75;
+  flex-shrink: 0;
+}
