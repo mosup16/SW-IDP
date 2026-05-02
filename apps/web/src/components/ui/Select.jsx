@@ -1,3 +1,4 @@
+import "../../assets/styles/Select.css";
 import { useState } from "react";
 
 export default function Select({ label, error, options = [], ...props }) {
