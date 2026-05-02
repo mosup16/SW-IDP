@@ -1,16 +1,135 @@
+/* ─────────────────────────────────────────
+   GhostSelect — Sovereign IdP Design System
+   Matches GhostInput visual language
+   ───────────────────────────────────────── */
+
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
+
+/* Wrapper */
+.ghost-select-wrapper {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 6px;
+  position: relative;
+  font-family: 'IBM Plex Sans', sans-serif;
+}
+
+/* Label */
+.ghost-select-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-label);
+  transition: color 0.2s ease;
+}
+
+.ghost-select-wrapper.focused .ghost-select-label {
+  color: var(--focus-outline);
+}
+
+.ghost-select-wrapper.has-error .ghost-select-label {
+  color: var(--status-error);
+}
+
+/* Control shell */
+.ghost-select-control {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* Native select */
 .ghost-select {
+  appearance: none;
+  -webkit-appearance: none;
+
   background: var(--input-bg);
   border: none;
   border-bottom: 2px solid var(--border);
   border-radius: 4px 4px 0 0;
-  padding: 10px 36px 10px 12px;
+
+  padding: 10px 40px 10px 14px;
+
   font-size: 13px;
   font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 400;
   color: var(--text-body);
-  width: 10%;
+
+  width: 100%;
+  min-width: 200px;
   cursor: pointer;
-  margin: 20px auto;
+
+  transition:
+    background 0.18s ease,
+    border-color 0.18s ease,
+    box-shadow 0.18s ease;
 }
+
+/* Placeholder / empty state */
+.ghost-select option[value=""] {
+  color: var(--text-placeholder);
+}
+
+/* Hover */
+.ghost-select:hover {
+  background: var(--page-bg-subtle);
+  border-color: var(--border-strong);
+}
+
+/* Focus */
 .ghost-select:focus {
   outline: none;
+  background: var(--card-bg);
+  border-color: var(--focus-outline);
+  box-shadow: 0 2px 0 0 var(--focus-outline);
+}
+
+/* Error state */
+.ghost-select-wrapper.has-error .ghost-select {
+  border-color: var(--status-error);
+  background: color-mix(in srgb, var(--status-error-bg) 40%, var(--input-bg));
+}
+
+.ghost-select-wrapper.has-error .ghost-select:focus {
+  box-shadow: 0 2px 0 0 var(--status-error);
+}
+
+/* Chevron icon */
+.ghost-select-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  transition: transform 0.2s ease, color 0.18s ease;
+}
+
+.ghost-select-wrapper.focused .ghost-select-icon {
+  color: var(--focus-outline);
+  transform: translateY(-50%) rotate(180deg);
+}
+
+.ghost-select-wrapper.has-error .ghost-select-icon {
+  color: var(--status-error);
+}
+
+/* Error message */
+.ghost-select-error {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--status-error-text);
+  letter-spacing: 0.01em;
+  animation: slideDown 0.18s ease;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
