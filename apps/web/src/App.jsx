@@ -20,6 +20,7 @@ import './index.css';
 export default function App() {
   return (
     <BrowserRouter>
+<<<<<<< HEAD
       <Routes>
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<Login />} />
@@ -37,6 +38,11 @@ export default function App() {
         <Route path="/admin/audit-logs" element={<AuditLogs />} />
         <Route path="/admin/settings" element={<SystemSettingd />} />
       </Routes>
+=======
+       <Routes>
+        
+       </Routes>
+>>>>>>> 5b97f1c150a225d629e7d7fb1633c75e404e5443
     </BrowserRouter>
   );
 }
