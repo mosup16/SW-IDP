@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route,Navigate, Outlet  } from 'react-router-dom';
 import CreateIdentityModal from './pages/admin/modals/CreateIdentityModal';
 import DeleteClientPopup from './pages/admin/modals/DeleteClientPopup';
 import DeleteRoleModal from './pages/admin/modals/DeleteRoleModal';
@@ -16,33 +16,15 @@ import Register from './pages/auth/Register';
 import UserProfile from './pages/profile/UserProfile';
 import UserSessionTab from './pages/profile/UserSessionTab';
 import './index.css';
-
 export default function App() {
   return (
+    <>
     <BrowserRouter>
-<<<<<<< HEAD
-      <Routes>
-        <Route path="/" element={<Navigate to="/login" replace />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/profile" element={<UserProfile />} />
-        <Route path="/profile/sessions" element={<UserSessionTab />} />
-        <Route path="/admin/clients" element={<ClientManagement />} />
-        <Route path="/admin/clients/new" element={<ClientForm />} />
-        <Route path="/admin/clients/:id/edit" element={<ClientForm />} />
-        <Route path="/admin/identities" element={<IdentityManagement />} />
-        <Route path="/admin/roles" element={<RoleManagement />} />
-        <Route path="/admin/roles/new" element={<RoleForm />} />
-        <Route path="/admin/roles/:id/edit" element={<RoleForm />} />
-        <Route path="/admin/access-policies" element={<AccessPolicies />} />
-        <Route path="/admin/audit-logs" element={<AuditLogs />} />
-        <Route path="/admin/settings" element={<SystemSettingd />} />
-      </Routes>
-=======
        <Routes>
         
        </Routes>
->>>>>>> 5b97f1c150a225d629e7d7fb1633c75e404e5443
     </BrowserRouter>
+    </>
+     
   );
 }
