@@ -1,0 +1,35 @@
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.page-header__text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.page-header__title {
+  font-size: 1.875rem;
+  font-weight: 800;
+  color: var(--text-heading);
+  line-height: 1.2;
+  margin: 0;
+}
+
+.page-header__description {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.page-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}

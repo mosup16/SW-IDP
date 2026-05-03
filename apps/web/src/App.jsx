@@ -28,6 +28,8 @@ export default function App() {
         <Route path="auditLogs" element={<AuditLogs />} />
         <Route path="systemSettings" element={<SystemSettingd />} />
 
+
+      
        </Routes>
     </BrowserRouter>
     </>
