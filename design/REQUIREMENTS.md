@@ -35,27 +35,26 @@ There is **no** framework code, no `package.json`, no JSX — pure HTML + Tailwi
 
 ## 3. Screen inventory
 
-| # | Folder | Title (from `<title>`) | Purpose | Lines |
-|---|---|---|---|---|
-| 1 | `user_login` | Login \| Sovereign IdP | End-user login form | 181 |
-| 2 | `user_registration` | Register \| Sovereign IdP | End-user registration form | 191 |
-| 3 | `user_profile_sessions_1` | Sovereign IdP - User Profile | Profile view (variant 1) | 320 |
-| 4 | `user_profile_sessions_2` | Sovereign IdP - User Profile | Profile view (variant 2) | ? |
-| 5 | `admin_client_management` | Sovereign IdP - Client Overview | OAuth client list | 395 |
-| 6 | `admin_create_edit_client` | Sovereign IdP - Client Configuration | OAuth client form | 305 |
-| 7 | `admin_identity_management` | Sovereign IdP - Identities | User list | 388 |
-| 8 | `admin_role_management` | Aegis Core - Role Management | Role list | 371 |
-| 9 | `admin_create_edit_role` | Edit Role - Aegis Core | Role form | ? |
-| 10 | `admin_access_policies_1` | Sovereign IdP - Role Management | Shows "Role Management" content — **looks like a duplicate** of #8 (see open question Q1) | 302 |
-| 11 | `admin_access_policies_2` | Sovereign IdP - Access Policies | Policies + OAuth scopes | ? |
-| 12 | `admin_audit_logs` | Sovereign IdP - Audit Logs | Log viewer | 316 |
-| 13 | `admin_system_settings` | Admin Settings - Sovereign IdP | System settings | 268 |
-| 14 | `modal_create_identity` | Sovereign IDP - Create New Identity | Modal — create user | 240 |
-| 15 | `modal_delete_role_confirmation` | Delete Role Confirmation - Aegis Core | Modal — confirm delete | 182 |
-| 16 | `modal_secret_rotation_success` | Sovereign IDP - Client Secret Rotated | Modal — success/secret-reveal | ? |
-| 17 | `popup_delete_confirmation` | Sovereign IDP - Delete Client Application | Popup — confirm delete client | 133 |
+The design has been **consolidated into one file**: `design/stitch-export/app.html`. Every screen and modal is rendered there, with stable HTML ids you can search for. Open `design/stitch-export/README.md` for the full id table; the in-scope screens are:
 
-> The SRS only explicitly lists client management, identity management, login/register, and profile. Roles, access policies, audit logs, and system settings appear in the design but **not** in the SRS (see Q3).
+| # | id in `app.html` | Title | Purpose |
+|---|---|---|---|
+| 1 | `screen-login` | Login | End-user login form |
+| 2 | `screen-register` | Register | End-user registration form |
+| 3 | `screen-profile` | User Profile | Profile card + Security Credentials + Active Sessions (with Revoke All) |
+| 4 | `screen-clients` | Client Overview | OAuth client list with Create CTA in header |
+| 5 | `screen-client-config` | Client Configuration | OAuth client create/edit form |
+| 6 | `screen-identities` | Identities | User list with Total Users + Active Now stat cards |
+| 7 | `screen-roles` | Role Management | Role list |
+| 8 | `screen-audit` | Audit Logs | Log viewer with Date / Filter dropdowns + Export |
+| 9 | `screen-settings` | System Settings | Two-panel Security & Tokens + Branding |
+| 10 | `modal-create-identity` | Create New Identity | Modal — email + temp password + invite |
+| 11 | `modal-edit-role` | Edit Role | Modal — role name + permissions matrix |
+| 12 | `modal-delete-role` | Delete Role Confirmation | Modal — destructive confirm with impact list |
+| 13 | `modal-delete-client` | Delete Client Application | Popup-sized confirm — shows active token count |
+| 14 | `modal-secret-rotated` | Client Secret Rotated | Reveal + copy modal |
+
+**Out of scope** (dropped from the project): `admin_access_policies_1`, `admin_access_policies_2`. Policy-shaped requirements are absorbed by role management.
 
 ## 4. Reusable component inventory
 

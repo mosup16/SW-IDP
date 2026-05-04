@@ -144,8 +144,8 @@ These are open and will be pinned during `epic:foundation`. Issues should NOT pr
 | Kind of question | Doc |
 |---|---|
 | Which library / framework / topology | **this file** |
-| What does the screen look like | `design/stitch-export/stitch_system_user_interface/<screen>/index.html` |
+| What does the screen look like | `design/stitch-export/app.html` (search for the screen / modal id — see `design/stitch-export/README.md` for the id table) |
 | What entities / fields / relationships | `design/ERD.md` |
 | What service owns this endpoint | `design/ARCHITECTURE.md` §1 |
-| What design tokens / typography | `design/REQUIREMENTS.md` §5 + `stitch-export/aegis_core/DESIGN.md` |
-| What the original product asks for | `design/REQUIREMENTS.md` §1 + the SRS in `stitch-export/.../srs_poc_identity_provider_idp.txt` |
+| What design tokens / typography | `design/REQUIREMENTS.md` §5 + `design/stitch-export/DESIGN.md` |
+| What the original product asks for | `design/REQUIREMENTS.md` §1 + the SRS in `design/stitch-export/srs_poc_identity_provider_idp.txt` |
