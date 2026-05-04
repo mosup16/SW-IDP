@@ -1,0 +1,1833 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sovereign IDP</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" />
+<script>
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "on-background": "#191c1e",
+          "primary-fixed": "#d6e3ff",
+          "secondary-fixed": "#d5e3fc",
+          "on-tertiary": "#ffffff",
+          "on-error": "#ffffff",
+          "on-tertiary-container": "#008cc7",
+          "surface-container-highest": "#e0e3e5",
+          "on-primary": "#ffffff",
+          "surface": "#f7f9fb",
+          "on-secondary-fixed-variant": "#3a485b",
+          "primary-container": "#001b3d",
+          "primary-fixed-dim": "#a8c8ff",
+          "on-secondary-fixed": "#0d1c2e",
+          "background": "#f7f9fb",
+          "error": "#ba1a1a",
+          "surface-container": "#eceef0",
+          "on-primary-container": "#4184df",
+          "surface-variant": "#e0e3e5",
+          "surface-tint": "#005db5",
+          "secondary": "#515f74",
+          "on-secondary-container": "#57657a",
+          "inverse-on-surface": "#eff1f3",
+          "on-error-container": "#93000a",
+          "tertiary-container": "#001e2f",
+          "on-primary-fixed-variant": "#00468b",
+          "tertiary": "#000000",
+          "inverse-primary": "#a8c8ff",
+          "tertiary-fixed": "#c9e6ff",
+          "on-tertiary-fixed": "#001e2f",
+          "on-surface": "#191c1e",
+          "on-tertiary-fixed-variant": "#004c6e",
+          "secondary-fixed-dim": "#b9c7df",
+          "on-primary-fixed": "#001b3d",
+          "secondary-container": "#d5e3fc",
+          "tertiary-fixed-dim": "#89ceff",
+          "inverse-surface": "#2d3133",
+          "surface-container-high": "#e6e8ea",
+          "on-surface-variant": "#45464d",
+          "error-container": "#ffdad6",
+          "outline-variant": "#c6c6cd",
+          "on-secondary": "#ffffff",
+          "surface-dim": "#d8dadc",
+          "surface-container-lowest": "#ffffff",
+          "surface-bright": "#f7f9fb",
+          "primary": "#000000",
+          "outline": "#76777d",
+          "surface-container-low": "#f2f4f6"
+        },
+        borderRadius: {
+          DEFAULT: "0.125rem",
+          lg: "0.25rem",
+          xl: "0.5rem",
+          "2xl": "0.75rem",
+          full: "9999px"
+        },
+        fontFamily: {
+          headline: ["Manrope", "sans-serif"],
+          body: ["Inter", "sans-serif"],
+          label: ["Inter", "sans-serif"],
+          mono: ["JetBrains Mono", "monospace"]
+        }
+      }
+    }
+  };
+</script>
+<style>
+  body { font-family: 'Inter', sans-serif; }
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    vertical-align: middle;
+  }
+  .glass-card {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(24px);
+  }
+  .glass-panel {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(24px);
+  }
+  .ambient-shadow { box-shadow: 0 12px 32px rgba(25, 28, 30, 0.08); }
+  .ambient-shadow-soft { box-shadow: 0 12px 32px -4px rgba(25, 28, 30, 0.05); }
+  .monolith-gradient { background: linear-gradient(135deg, #000000 0%, #001b3d 100%); }
+  .monolith-gradient:hover { background: linear-gradient(135deg, #0a0a14 0%, #002554 100%); }
+  .ghost-input {
+    border: none;
+    border-bottom: 2px solid #c6c6cd;
+    background-color: #e6e8ea;
+    transition: border-color 0.2s ease;
+    border-radius: 0.125rem 0.125rem 0 0;
+  }
+  .ghost-input:focus {
+    outline: none;
+    border-bottom-color: #005db5;
+    box-shadow: none;
+  }
+  /* Screen routing */
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  /* Screen switcher */
+  .switcher {
+    position: fixed; right: 16px; bottom: 16px; z-index: 100;
+    background: rgba(255,255,255,0.92); backdrop-filter: blur(16px);
+    border-radius: 12px; padding: 6px;
+    box-shadow: 0 12px 32px rgba(25, 28, 30, 0.18);
+    display: flex; align-items: center; gap: 4px;
+    font-family: Inter, sans-serif;
+  }
+  .switcher select {
+    border: 0; background: transparent; font-size: 12px; font-weight: 600;
+    padding: 6px 10px; outline: none; cursor: pointer; color: #191c1e;
+  }
+  .switcher .pill {
+    background: #000; color: #fff; padding: 4px 8px; border-radius: 6px;
+    font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  }
+
+  /* Modal overlay */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(15, 23, 42, 0.35);
+    backdrop-filter: blur(6px); z-index: 90;
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px;
+  }
+  .hidden-modal { display: none; }
+
+  /* Toggle */
+  .toggle { position: relative; display: inline-block; width: 44px; height: 24px; }
+  .toggle input { opacity: 0; width: 0; height: 0; }
+  .toggle-slider {
+    position: absolute; cursor: pointer; inset: 0; background: #e0e3e5;
+    transition: .25s; border-radius: 999px;
+  }
+  .toggle-slider:before {
+    content: ""; position: absolute; height: 20px; width: 20px; left: 2px; top: 2px;
+    background: #fff; transition: .25s; border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  }
+  .toggle input:checked + .toggle-slider { background: #008cc7; }
+  .toggle input:checked + .toggle-slider:before { transform: translateX(20px); }
+
+  /* Custom checkbox */
+  .check-box {
+    width: 18px; height: 18px; border-radius: 4px;
+    border: 1.5px solid #c6c6cd; background: #fff;
+    display: inline-flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: all 0.15s; flex-shrink: 0;
+  }
+  .check-box.checked { background: #001b3d; border-color: #001b3d; }
+  .check-box.checked::after {
+    content: 'check'; font-family: 'Material Symbols Outlined'; color: white;
+    font-size: 14px; font-variation-settings: 'wght' 700;
+  }
+
+  .danger-card-top {
+    background: linear-gradient(to bottom, #ba1a1a 0px, #ba1a1a 4px, transparent 4px);
+  }
+
+  /* page-fade */
+  .screen.active { animation: fade .25s ease-out; }
+  @keyframes fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+  /* Subtle texture in auth pages */
+  .auth-bg::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image: linear-gradient(rgba(0,0,0,0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.015) 1px, transparent 1px);
+    background-size: 32px 32px;
+    pointer-events: none;
+  }
+
+  /* ============================================================
+     UNIFIED COMPONENTS
+  ============================================================ */
+
+  /* --- Buttons --- */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    gap: 0.5rem; padding: 0.5rem 1.25rem; border-radius: 0.5rem;
+    font-family: 'Inter', sans-serif; font-size: 0.875rem; font-weight: 600;
+    line-height: 1.25rem; white-space: nowrap; cursor: pointer;
+    transition: background-color .15s ease, color .15s ease, transform .1s ease;
+    border: 0;
+  }
+  .btn:active:not(:disabled) { transform: scale(0.97); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn .material-symbols-outlined { font-size: 18px; }
+
+  .btn-primary { background: #000000; color: #ffffff; }
+  .btn-primary:hover { background: #001b3d; }
+  .btn-secondary { background: #d5e3fc; color: #3a485b; }
+  .btn-secondary:hover { background: #c4d4ee; }
+  .btn-ghost { background: transparent; color: #191c1e; }
+  .btn-ghost:hover { background: #eceef0; }
+  .btn-danger { background: #ba1a1a; color: #ffffff; }
+  .btn-danger:hover { background: #9b1414; }
+  .btn-outline-danger { background: transparent; color: #ba1a1a; border: 1px solid #ba1a1a; }
+  .btn-outline-danger:hover { background: rgba(255,218,214,.4); }
+
+  .btn-sm { padding: 0.375rem 0.875rem; font-size: 0.8125rem; }
+  .btn-lg { padding: 0.875rem 1.5rem; font-size: 0.9375rem; }
+  .btn-block { width: 100%; }
+
+  /* Icon-only square button (header bell, filter, more) */
+  .btn-icon {
+    width: 36px; height: 36px; padding: 0;
+    border-radius: 0.5rem; color: #76777d; background: transparent;
+    display: inline-flex; align-items: center; justify-content: center;
+    cursor: pointer; border: 0; transition: background-color .15s, color .15s;
+  }
+  .btn-icon:hover { background: #eceef0; color: #191c1e; }
+  .btn-icon .material-symbols-outlined { font-size: 20px; }
+
+  /* --- Form / Toolbar inputs --- */
+  .input-search { position: relative; display: inline-flex; align-items: center; }
+  .input-search > input {
+    background: #f2f4f6; border: 0; border-radius: 0.5rem;
+    padding: 0.5rem 0.875rem 0.5rem 2.375rem; font-size: 0.875rem;
+    outline: none; color: #191c1e; width: 100%;
+    transition: box-shadow .15s ease;
+  }
+  .input-search > input::placeholder { color: #76777d; }
+  .input-search > input:focus { box-shadow: 0 0 0 2px rgba(0,27,61,0.18); }
+  .input-search > .material-symbols-outlined {
+    position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%);
+    color: #76777d; font-size: 18px; pointer-events: none;
+  }
+
+  .select-pill {
+    background: #f2f4f6; border: 0; border-radius: 0.5rem;
+    padding: 0.5rem 2rem 0.5rem 2.25rem; font-size: 0.875rem;
+    color: #191c1e; outline: none; appearance: none; cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2376777d' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 0.625rem center;
+  }
+  .select-pill:focus { box-shadow: 0 0 0 2px rgba(0,27,61,0.18); }
+  .select-wrap { position: relative; display: inline-flex; align-items: center; }
+  .select-wrap > .material-symbols-outlined {
+    position: absolute; left: 0.625rem; top: 50%; transform: translateY(-50%);
+    color: #76777d; font-size: 16px; pointer-events: none;
+  }
+
+  /* --- Badges (status pills) --- */
+  .badge {
+    display: inline-flex; align-items: center; gap: 0.375rem;
+    padding: 0.25rem 0.625rem; border-radius: 999px;
+    font-size: 11px; font-weight: 700; white-space: nowrap; line-height: 1;
+    width: fit-content;
+  }
+  .badge.with-dot::before {
+    content: ''; width: 6px; height: 6px; border-radius: 999px;
+    background: currentColor; flex-shrink: 0;
+  }
+  .badge-success { background: rgba(201,230,255,0.5); color: #008cc7; }
+  .badge-error   { background: rgba(255,218,214,0.6); color: #ba1a1a; }
+  .badge-neutral { background: #e6e8ea; color: #76777d; }
+  .badge-info    { background: rgba(213,227,252,0.7); color: #3a485b; }
+  .badge-count   { background: rgba(201,230,255,0.5); color: #008cc7; padding: 0.25rem 0.75rem; font-size: 11px; }
+
+  /* --- Modal scaffold --- */
+  .modal-card {
+    background: #ffffff; border-radius: 1rem; width: 100%;
+    box-shadow: 0 24px 64px rgba(25,28,30,0.22); overflow: hidden;
+  }
+  .modal-card.danger {
+    background: linear-gradient(to bottom, #ba1a1a 0px, #ba1a1a 4px, #ffffff 4px);
+  }
+  .modal-header {
+    padding: 1.25rem 1.5rem;
+    display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem;
+  }
+  .modal-header.tinted { background: #eceef0; }
+  .modal-body { padding: 1.5rem; }
+  .modal-footer {
+    background: #f2f4f6; padding: 0.875rem 1.5rem;
+    display: flex; justify-content: flex-end; gap: 0.5rem;
+  }
+  .modal-close {
+    color: #76777d; cursor: pointer; background: transparent; border: 0;
+    padding: 0; line-height: 0;
+  }
+  .modal-close:hover { color: #191c1e; }
+
+  /* --- Card / Toolbar --- */
+  .card { background: #ffffff; border-radius: 1rem; box-shadow: 0 12px 32px -4px rgba(25,28,30,0.05); overflow: hidden; }
+  .toolbar { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; padding: 0.875rem 1.5rem; }
+
+  /* --- Dropdown menu --- */
+  .dropdown { position: relative; display: inline-block; }
+  .dropdown-menu {
+    position: absolute; top: calc(100% + 6px); right: 0;
+    background: #ffffff; border-radius: 0.75rem;
+    box-shadow: 0 16px 40px rgba(25,28,30,0.18); padding: 0.375rem;
+    min-width: 200px; z-index: 80; display: none;
+    border: 1px solid rgba(198,198,205,0.4);
+  }
+  .dropdown.open > .dropdown-menu { display: block; animation: dd-in .12s ease-out; }
+  @keyframes dd-in { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+  .dropdown-item {
+    display: flex; align-items: center; gap: 0.625rem;
+    padding: 0.5rem 0.75rem; border-radius: 0.5rem;
+    font-size: 0.8125rem; color: #191c1e; cursor: pointer; white-space: nowrap;
+    background: transparent; border: 0; width: 100%; text-align: left;
+  }
+  .dropdown-item:hover { background: #f2f4f6; }
+  .dropdown-item.danger { color: #ba1a1a; }
+  .dropdown-item.danger:hover { background: rgba(255,218,214,0.5); }
+  .dropdown-item .material-symbols-outlined { font-size: 18px; color: #76777d; }
+  .dropdown-item.danger .material-symbols-outlined { color: #ba1a1a; }
+  .dropdown-divider { height: 1px; background: rgba(198,198,205,0.4); margin: 0.25rem 0.25rem; }
+  .dropdown-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #76777d; padding: 0.5rem 0.75rem 0.25rem; }
+
+  /* --- Toast --- */
+  .toast-stack {
+    position: fixed; top: 80px; right: 24px; z-index: 200;
+    display: flex; flex-direction: column; gap: 8px;
+    pointer-events: none;
+  }
+  .toast {
+    background: #191c1e; color: #ffffff;
+    padding: 12px 16px; border-radius: 12px;
+    font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 500;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.22);
+    display: flex; align-items: center; gap: 10px;
+    min-width: 260px; max-width: 360px;
+    pointer-events: auto;
+    animation: toast-in .25s ease-out;
+  }
+  .toast.success { background: #024d6a; }
+  .toast.error { background: #ba1a1a; }
+  .toast.leaving { animation: toast-out .2s ease-in forwards; }
+  .toast .material-symbols-outlined { font-size: 18px; flex-shrink: 0; }
+  .toast .toast-close {
+    margin-left: auto; cursor: pointer; opacity: 0.7;
+    background: transparent; border: 0; color: inherit; line-height: 0;
+  }
+  .toast .toast-close:hover { opacity: 1; }
+  @keyframes toast-in { from { opacity: 0; transform: translateX(16px); } to { opacity: 1; transform: none; } }
+  @keyframes toast-out { to { opacity: 0; transform: translateX(16px); } }
+
+  /* --- Sidebar nav-link --- */
+  .nav-link {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 14px; border-radius: 10px;
+    color: #45464d; font-size: 13px; font-weight: 500;
+    transition: background .15s, color .15s;
+    position: relative;
+  }
+  .nav-link:hover { background: rgba(255,255,255,0.5); color: #191c1e; }
+  .nav-link.active {
+    background: #ffffff; color: #191c1e; font-weight: 700;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .nav-link.active::before {
+    content: ''; position: absolute; left: 0; top: 25%; bottom: 25%;
+    width: 3px; background: #005db5; border-radius: 0 3px 3px 0;
+  }
+</style>
+</head>
+<body class="bg-surface text-on-surface">
+
+<!-- ============================================================
+     SCREEN: LOGIN
+============================================================ -->
+<section id="screen-login" class="screen">
+  <main class="min-h-screen flex items-center justify-center p-6 relative overflow-hidden auth-bg">
+    <div class="absolute inset-0 pointer-events-none z-0">
+      <div class="absolute -top-[10%] -left-[5%] w-[40%] h-[60%] bg-surface-container rounded-full opacity-40 blur-3xl"></div>
+      <div class="absolute -bottom-[20%] -right-[10%] w-[50%] h-[70%] bg-secondary-container opacity-30 blur-3xl rounded-full"></div>
+    </div>
+    <div class="w-full max-w-[440px] z-10">
+      <div class="text-center mb-10">
+        <div class="inline-flex items-center justify-center w-14 h-14 bg-primary rounded-xl mb-6 ambient-shadow">
+          <span class="material-symbols-outlined text-on-primary text-3xl" style="font-variation-settings: 'FILL' 1;">shield_person</span>
+        </div>
+        <h1 class="font-headline font-black text-3xl tracking-tighter text-primary uppercase mb-2">Sovereign IdP</h1>
+        <p class="text-on-surface-variant font-medium text-sm tracking-tight">Identity Provisioning &amp; Governance</p>
+      </div>
+      <div class="bg-surface-container-lowest rounded-xl p-10 ambient-shadow border border-white/20">
+        <div class="mb-8">
+          <h2 class="font-headline font-bold text-2xl text-primary tracking-tight mb-2">Secure Access</h2>
+          <p class="text-on-surface-variant text-sm">Enter your credentials to manage your enterprise identity.</p>
+        </div>
+        <form class="space-y-6" onsubmit="event.preventDefault(); navigate('identities');">
+          <div class="space-y-2">
+            <label class="block font-label text-[10px] uppercase font-bold tracking-[0.1em] text-on-surface-variant px-1" for="login-email">Email Address</label>
+            <input id="login-email" type="email" placeholder="name@organization.com"
+              class="ghost-input w-full py-4 px-4 text-sm placeholder:text-outline" />
+          </div>
+          <div class="space-y-2">
+            <div class="flex justify-between items-center px-1">
+              <label class="block font-label text-[10px] uppercase font-bold tracking-[0.1em] text-on-surface-variant" for="login-pw">Password</label>
+              <a href="#" class="text-[10px] font-bold uppercase tracking-wider text-surface-tint hover:opacity-80 transition-opacity">Forgot?</a>
+            </div>
+            <div class="relative">
+              <input id="login-pw" type="password" placeholder="••••••••"
+                class="ghost-input w-full py-4 px-4 pr-12 text-sm placeholder:text-outline" />
+              <button type="button" onclick="togglePw('login-pw', this)"
+                class="absolute right-3 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface-variant p-1">
+                <span class="material-symbols-outlined text-[18px]">visibility</span>
+              </button>
+            </div>
+          </div>
+          <div class="pt-4">
+            <button type="submit"
+              class="monolith-gradient w-full py-4 rounded-lg text-on-primary font-headline font-bold text-sm tracking-wide flex items-center justify-center gap-2 active:scale-[0.98] transition-transform shadow-lg shadow-primary/20">
+              Log In
+              <span class="material-symbols-outlined text-lg">arrow_forward</span>
+            </button>
+          </div>
+        </form>
+        <div class="mt-10 pt-8 border-t border-surface-container flex flex-col items-center gap-4">
+          <p class="text-on-surface-variant text-xs">
+            Don't have an account?
+            <a href="#" onclick="navigate('register'); return false;" class="text-primary font-bold hover:underline underline-offset-4 ml-1">Register</a>
+          </p>
+        </div>
+      </div>
+      <div class="mt-12 flex justify-center items-center gap-6">
+        <a href="#" class="text-[11px] font-medium text-outline hover:text-on-surface transition-colors flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[14px]">menu_book</span> Documentation
+        </a>
+        <span class="w-1 h-1 bg-outline-variant rounded-full"></span>
+        <a href="#" class="text-[11px] font-medium text-outline hover:text-on-surface transition-colors flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[14px] text-on-tertiary-container" style="font-variation-settings: 'FILL' 1;">check_circle</span> System Status
+        </a>
+      </div>
+    </div>
+    <div class="absolute bottom-12 right-12 hidden lg:block opacity-20">
+      <div class="flex flex-col gap-2">
+        <div class="h-12 w-1.5 bg-primary"></div>
+        <div class="h-6 w-1.5 bg-outline"></div>
+        <div class="h-3 w-1.5 bg-outline-variant"></div>
+      </div>
+    </div>
+  </main>
+</section>
+
+<!-- ============================================================
+     SCREEN: REGISTER
+============================================================ -->
+<section id="screen-register" class="screen">
+  <div class="min-h-screen flex flex-col items-center justify-center p-6 relative overflow-hidden auth-bg">
+    <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-primary-fixed/20 blur-[120px]"></div>
+    <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-secondary-fixed/20 blur-[120px]"></div>
+    <div class="mb-12 z-10 flex flex-col items-center">
+      <h1 class="text-3xl font-headline font-black tracking-tighter text-primary uppercase">Sovereign IdP</h1>
+      <div class="h-1 w-8 bg-primary mt-2"></div>
+    </div>
+    <main class="glass-panel w-full max-w-[440px] rounded-2xl p-10 ambient-shadow z-10">
+      <header class="mb-8">
+        <h2 class="text-2xl font-headline font-extrabold tracking-tight text-on-surface mb-2">Create Identity</h2>
+        <p class="text-sm text-on-surface-variant">Initialize your secure sovereign credentials.</p>
+      </header>
+      <form class="space-y-6" onsubmit="event.preventDefault(); navigate('login');">
+        <div class="space-y-2">
+          <label class="block font-label text-[10px] font-bold uppercase tracking-[0.15em] text-on-surface-variant" for="reg-email">Email Address</label>
+          <input id="reg-email" type="email" placeholder="name@organization.com"
+            class="ghost-input w-full px-4 py-3 text-sm font-medium placeholder:text-outline placeholder:font-normal" />
+        </div>
+        <div class="space-y-2">
+          <label class="block font-label text-[10px] font-bold uppercase tracking-[0.15em] text-on-surface-variant" for="reg-pw">Password</label>
+          <div class="relative">
+            <input id="reg-pw" type="password" placeholder="••••••••"
+              class="ghost-input w-full px-4 py-3 pr-12 text-sm font-medium placeholder:text-outline placeholder:font-normal" />
+            <button type="button" onclick="togglePw('reg-pw', this)" class="absolute right-3 top-1/2 -translate-y-1/2 text-outline hover:text-primary transition-colors">
+              <span class="material-symbols-outlined text-[20px]">visibility</span>
+            </button>
+          </div>
+        </div>
+        <div class="space-y-2">
+          <label class="block font-label text-[10px] font-bold uppercase tracking-[0.15em] text-on-surface-variant" for="reg-cpw">Confirm Password</label>
+          <input id="reg-cpw" type="password" placeholder="••••••••"
+            class="ghost-input w-full px-4 py-3 text-sm font-medium placeholder:text-outline placeholder:font-normal" />
+        </div>
+        <div class="pt-4">
+          <button type="submit"
+            class="w-full bg-primary hover:bg-primary-container text-on-primary font-headline font-bold py-4 rounded-lg transition-all active:scale-[0.98] shadow-lg shadow-primary/10">
+            Register
+          </button>
+        </div>
+      </form>
+      <footer class="mt-8 pt-8 border-t border-outline-variant/15 text-center">
+        <p class="text-sm text-on-surface-variant">
+          Already have an account?
+          <a href="#" onclick="navigate('login'); return false;" class="font-bold text-primary hover:text-surface-tint transition-colors ml-1">Log In</a>
+        </p>
+      </footer>
+    </main>
+    <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl w-full px-4 z-10">
+      <div class="flex flex-col items-center text-center space-y-3">
+        <div class="w-10 h-10 rounded-xl bg-surface-container-high flex items-center justify-center">
+          <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">shield_lock</span>
+        </div>
+        <h3 class="font-headline font-bold text-sm">Zero Knowledge</h3>
+        <p class="text-xs text-on-surface-variant leading-relaxed">Your credentials are encrypted end-to-end and never stored in plain text.</p>
+      </div>
+      <div class="flex flex-col items-center text-center space-y-3">
+        <div class="w-10 h-10 rounded-xl bg-surface-container-high flex items-center justify-center">
+          <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+        </div>
+        <h3 class="font-headline font-bold text-sm">Hardware Secured</h3>
+        <p class="text-xs text-on-surface-variant leading-relaxed">Compatible with FIDO2 and physical security keys for maximum protection.</p>
+      </div>
+      <div class="flex flex-col items-center text-center space-y-3">
+        <div class="w-10 h-10 rounded-xl bg-surface-container-high flex items-center justify-center">
+          <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">terminal</span>
+        </div>
+        <h3 class="font-headline font-bold text-sm">Audit Trail</h3>
+        <p class="text-xs text-on-surface-variant leading-relaxed">Full transparency into access logs and identity verification history.</p>
+      </div>
+    </div>
+    <div class="mt-16 text-[10px] font-label font-bold uppercase tracking-[0.2em] text-outline opacity-60 z-10">
+      © 2024 Sovereign IdP • Protocol Version 4.2.1-SECURE
+    </div>
+  </div>
+</section>
+
+<!-- Common admin chrome reused across multiple admin screens -->
+<template id="tpl-admin-chrome"></template>
+
+<!-- ============================================================
+     SCREEN: IDENTITIES (Admin)
+============================================================ -->
+<section id="screen-identities" class="screen">
+  <div class="min-h-screen flex bg-surface">
+    <!-- Sidebar -->
+    <div data-shell="identities"></div>
+    <div class="flex-1 flex flex-col min-w-0">
+      <div data-topbar></div>
+      <!-- Content -->
+      <main class="p-10 max-w-7xl mx-auto w-full">
+        <header class="flex justify-between items-end mb-10">
+          <div>
+            <nav class="flex items-center gap-2 text-[10px] text-outline mb-2 uppercase tracking-[0.15em] font-bold">
+              <span>Directory</span>
+              <span class="material-symbols-outlined text-[12px]">chevron_right</span>
+              <span class="text-on-surface">Identities</span>
+            </nav>
+            <h1 class="font-headline text-4xl font-extrabold tracking-tighter text-on-background">Identities</h1>
+            <p class="text-on-surface-variant mt-2 max-w-lg text-sm">Manage and provision digital sovereign identities across your enterprise ecosystem with high-integrity access controls.</p>
+          </div>
+          <button onclick="openModal('modal-create-identity')" class="btn btn-primary"><span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">person_add</span>Create Identity</button>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          <div class="bg-surface-container-lowest p-6 rounded-2xl ambient-shadow-soft flex items-center justify-between">
+            <div>
+              <p class="text-[10px] font-bold text-outline uppercase tracking-[0.15em] mb-1">Total Users</p>
+              <p class="font-headline text-3xl font-black text-on-surface" id="tweak-total-users">1,284</p>
+            </div>
+            <div class="w-12 h-12 bg-primary-fixed rounded-xl flex items-center justify-center">
+              <span class="material-symbols-outlined text-on-primary-fixed">group</span>
+            </div>
+          </div>
+          <div class="bg-surface-container-lowest p-6 rounded-2xl ambient-shadow-soft flex items-center justify-between">
+            <div>
+              <p class="text-[10px] font-bold text-outline uppercase tracking-[0.15em] mb-1">Active Now</p>
+              <p class="font-headline text-3xl font-black text-on-surface" id="tweak-active-now">942</p>
+            </div>
+            <div class="w-12 h-12 bg-tertiary-fixed rounded-xl flex items-center justify-center">
+              <span class="material-symbols-outlined text-on-tertiary-fixed-variant" style="font-variation-settings: 'FILL' 1;">bolt</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-surface-container-lowest rounded-2xl ambient-shadow-soft overflow-hidden mb-8">
+          <div class="px-6 py-4 flex justify-between items-center gap-4">
+            <label class="input-search flex-1 max-w-md"><span class="material-symbols-outlined">search</span><input type="search" placeholder="Filter by email or ID..." /></label>
+            <div class="flex gap-2 items-center">
+              <div class="dropdown">
+                <button class="btn btn-secondary btn-sm" onclick="toggleDropdown(this, event)"><span class="material-symbols-outlined">filter_list</span>Filters</button>
+                <div class="dropdown-menu">
+                  <div class="dropdown-label">Filter by status</div>
+                  <button class="dropdown-item" onclick="toast('Filter: All', 'info')"><span class="material-symbols-outlined">all_inclusive</span>All identities</button>
+                  <button class="dropdown-item" onclick="toast('Filter: Active', 'info')"><span class="material-symbols-outlined">check_circle</span>Active</button>
+                  <button class="dropdown-item" onclick="toast('Filter: Disabled', 'info')"><span class="material-symbols-outlined">do_not_disturb_on</span>Disabled</button>
+                </div>
+              </div>
+              <button class="btn btn-ghost btn-sm" onclick="toast('Export started', 'success')"><span class="material-symbols-outlined">download</span>Export CSV</button>
+              <div class="dropdown">
+                <button class="btn-icon" onclick="toggleDropdown(this, event)" title="More"><span class="material-symbols-outlined">more_vert</span></button>
+                <div class="dropdown-menu">
+                  <button class="dropdown-item" onclick="toast('Bulk import opened', 'info')"><span class="material-symbols-outlined">upload</span>Bulk import</button>
+                  <button class="dropdown-item" onclick="toast('Sync triggered', 'info')"><span class="material-symbols-outlined">sync</span>Sync directory</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left">
+              <thead>
+                <tr>
+                  <th class="px-8 py-3 text-[10px] font-black uppercase tracking-[0.1em] text-outline">User Entity</th>
+                  <th class="px-8 py-3 text-[10px] font-black uppercase tracking-[0.1em] text-outline">Status</th>
+                  <th class="px-8 py-3 text-[10px] font-black uppercase tracking-[0.1em] text-outline">Registration Date</th>
+                  <th class="px-8 py-3 text-[10px] font-black uppercase tracking-[0.1em] text-outline text-right">Access Control</th>
+                </tr>
+              </thead>
+              <tbody id="identities-tbody"></tbody>
+            </table>
+          </div>
+          <div class="px-8 py-4 flex justify-between items-center text-xs font-semibold text-outline">
+            <span>Showing 4 of 1,284 identities</span>
+            <div class="flex gap-4">
+              <button class="hover:text-on-surface">Previous</button>
+              <button class="hover:text-on-surface">Next</button>
+            </div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SCREEN: AUDIT LOGS
+============================================================ -->
+<section id="screen-audit" class="screen">
+  <div class="min-h-screen flex bg-surface">
+    <div data-shell="audit"></div>
+    <div class="flex-1 flex flex-col min-w-0">
+      <div data-topbar></div>
+      <main class="p-10 max-w-[1400px] mx-auto w-full">
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+          <div>
+            <h2 class="font-headline text-3xl font-bold tracking-tight text-on-surface">Audit Logs</h2>
+            <p class="text-sm text-on-surface-variant mt-1">Immutable record of system events and access modifications.</p>
+          </div>
+          <div class="glass-card p-2 rounded-xl flex items-center gap-3 ambient-shadow-soft">
+            <div class="select-wrap">
+              <span class="material-symbols-outlined">calendar_today</span>
+              <input class="select-pill w-40" value="Last 7 Days" />
+            </div>
+            <div class="select-wrap">
+              <span class="material-symbols-outlined">filter_list</span>
+              <select class="select-pill w-44">
+                <option>All Event Types</option><option>Authentication</option><option>Policy Change</option>
+              </select>
+            </div>
+            <button class="btn btn-primary" onclick="toast('Export started', 'success')"><span class="material-symbols-outlined">download</span>Export</button>
+          </div>
+        </div>
+
+        <div class="bg-surface-container-lowest rounded-2xl ambient-shadow-soft overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left">
+              <thead>
+                <tr class="bg-surface-container">
+                  <th class="px-6 py-4 text-[10px] font-bold uppercase tracking-[0.05em] text-on-surface-variant w-48">Timestamp (UTC)</th>
+                  <th class="px-6 py-4 text-[10px] font-bold uppercase tracking-[0.05em] text-on-surface-variant">Actor</th>
+                  <th class="px-6 py-4 text-[10px] font-bold uppercase tracking-[0.05em] text-on-surface-variant">Action / Event</th>
+                  <th class="px-6 py-4 text-[10px] font-bold uppercase tracking-[0.05em] text-on-surface-variant w-32">Status</th>
+                  <th class="px-6 py-4 text-[10px] font-bold uppercase tracking-[0.05em] text-on-surface-variant w-40 text-right">IP Address</th>
+                </tr>
+              </thead>
+              <tbody id="audit-tbody" class="text-sm divide-y divide-outline-variant/15"></tbody>
+            </table>
+          </div>
+          <div class="px-6 py-4 flex justify-between items-center text-xs text-outline border-t border-outline-variant/15">
+            <span>Showing <strong class="text-on-surface">1 to 5</strong> of <strong class="text-on-surface">12,042</strong> events</span>
+            <div class="flex gap-2">
+              <button class="px-3 py-1.5 bg-surface-container rounded-lg text-outline">Previous</button>
+              <button class="px-3 py-1.5 bg-surface-container-lowest border border-outline-variant/30 rounded-lg text-on-surface font-medium">Next</button>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SCREEN: ROLE MANAGEMENT
+============================================================ -->
+<section id="screen-roles" class="screen">
+  <div class="min-h-screen flex bg-surface">
+    <div data-shell="roles"></div>
+    <div class="flex-1 flex flex-col min-w-0">
+      <div data-topbar></div>
+      <main class="p-10 max-w-7xl mx-auto w-full">
+        <div class="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-8">
+          <div>
+            <h1 class="font-headline text-3xl font-bold text-on-surface tracking-tight mb-1">Role Management</h1>
+            <p class="text-on-surface-variant text-sm max-w-2xl">Manage Role-Based Access Control (RBAC) by defining roles, assigning permissions, and managing identity associations across the organization.</p>
+          </div>
+          <button onclick="openModal('modal-edit-role')" class="btn btn-primary"><span class="material-symbols-outlined">add</span>Create New Role</button>
+        </div>
+
+        <div class="bg-surface-container-lowest rounded-2xl ambient-shadow-soft overflow-hidden">
+          <div class="px-6 py-4 flex justify-between items-center gap-4">
+            <label class="input-search flex-1 max-w-md"><span class="material-symbols-outlined">search</span><input type="search" placeholder="Filter by role name..." /></label>
+            <div class="flex gap-2 items-center">
+              <div class="dropdown">
+                <button class="btn btn-secondary btn-sm" onclick="toggleDropdown(this, event)"><span class="material-symbols-outlined">filter_list</span>Filters</button>
+                <div class="dropdown-menu">
+                  <div class="dropdown-label">Filter by tier</div>
+                  <button class="dropdown-item" onclick="toast('Filter: All', 'info')"><span class="material-symbols-outlined">all_inclusive</span>All roles</button>
+                  <button class="dropdown-item" onclick="toast('Filter: System', 'info')"><span class="material-symbols-outlined">shield</span>System roles</button>
+                  <button class="dropdown-item" onclick="toast('Filter: Custom', 'info')"><span class="material-symbols-outlined">tune</span>Custom roles</button>
+                </div>
+              </div>
+              <button class="btn btn-ghost btn-sm" onclick="toast('Export started', 'success')"><span class="material-symbols-outlined">download</span>Export CSV</button>
+            </div>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left">
+              <thead>
+                <tr>
+                  <th class="px-6 py-3 text-[10px] font-bold uppercase tracking-[0.1em] text-outline">Role Name</th>
+                  <th class="px-6 py-3 text-[10px] font-bold uppercase tracking-[0.1em] text-outline">Description</th>
+                  <th class="px-6 py-3 text-[10px] font-bold uppercase tracking-[0.1em] text-outline">Assigned Identities</th>
+                  <th class="px-6 py-3 text-[10px] font-bold uppercase tracking-[0.1em] text-outline">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="roles-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SCREEN: CLIENTS LIST
+============================================================ -->
+<section id="screen-clients" class="screen">
+  <div class="min-h-screen flex bg-surface">
+    <div data-shell="clients"></div>
+    <div class="flex-1 flex flex-col min-w-0">
+      <div data-topbar></div>
+      <main class="p-10 max-w-7xl mx-auto w-full">
+        <div class="flex justify-between items-start mb-8">
+          <div>
+            <h1 class="font-headline text-4xl font-extrabold tracking-tighter text-on-background mb-1">Client Applications</h1>
+            <p class="text-on-surface-variant text-sm">Manage OAuth2 and OIDC application credentials and scopes.</p>
+          </div>
+          <div class="flex items-stretch gap-3">
+            <div class="bg-surface-container-lowest rounded-xl px-5 py-3 ambient-shadow-soft flex items-center gap-3">
+              <div class="w-9 h-9 rounded-lg bg-secondary-container flex items-center justify-center">
+                <span class="material-symbols-outlined text-on-secondary-container text-[20px]">apps</span>
+              </div>
+              <div class="leading-tight">
+                <p class="text-[10px] font-bold uppercase tracking-[0.15em] text-outline">Total Clients</p>
+                <p class="font-headline text-xl font-black text-on-surface" id="tweak-total-clients">24</p>
+              </div>
+            </div>
+            <button onclick="navigate('client-config')" class="btn btn-primary"><span class="material-symbols-outlined">add</span>Create New Client</button>
+          </div>
+        </div>
+
+        <div class="bg-surface-container-lowest rounded-2xl ambient-shadow-soft overflow-hidden mb-8">
+          <div class="px-6 py-4 flex justify-between items-center gap-4">
+            <label class="input-search flex-1 max-w-md"><span class="material-symbols-outlined">search</span><input type="search" placeholder="Filter by client name or ID..." /></label>
+            <div class="flex gap-2">
+              <button class="btn btn-secondary btn-sm"><span class="material-symbols-outlined">filter_list</span>Filters</button>
+              <button class="btn btn-ghost btn-sm" onclick="toast('Export started', 'success')"><span class="material-symbols-outlined">download</span>Export CSV</button>
+            </div>
+          </div>
+          <table class="w-full text-left">
+            <thead>
+              <tr class="bg-surface-container-low">
+                <th class="px-6 py-3 text-[10px] font-bold uppercase tracking-[0.1em] text-outline">Client Name</th>
+                <th class="px-6 py-3 text-[10px] font-bold uppercase tracking-[0.1em] text-outline">Client ID</th>
+                <th class="px-6 py-3 text-[10px] font-bold uppercase tracking-[0.1em] text-outline">Redirect URIs</th>
+                <th class="px-6 py-3 text-[10px] font-bold uppercase tracking-[0.1em] text-outline">Created Date</th>
+                <th class="px-6 py-3 text-[10px] font-bold uppercase tracking-[0.1em] text-outline text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="clients-tbody" class="divide-y divide-outline-variant/10"></tbody>
+          </table>
+          <div class="px-6 py-4 flex justify-between items-center text-xs text-outline">
+            <span>Showing 4 of 24 clients</span>
+            <div class="flex gap-1 items-center">
+              <button class="w-8 h-8 rounded-lg flex items-center justify-center text-outline hover:bg-surface-container"><span class="material-symbols-outlined text-base">chevron_left</span></button>
+              <button class="w-8 h-8 rounded-lg flex items-center justify-center bg-primary text-on-primary text-sm font-bold">1</button>
+              <button class="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-surface-container text-on-surface text-sm">2</button>
+              <button class="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-surface-container text-on-surface text-sm">3</button>
+              <button class="w-8 h-8 rounded-lg flex items-center justify-center text-outline hover:bg-surface-container"><span class="material-symbols-outlined text-base">chevron_right</span></button>
+            </div>
+          </div>
+        </div>
+
+
+      </main>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SCREEN: CLIENT CONFIGURATION (Create/Edit Client)
+============================================================ -->
+<section id="screen-client-config" class="screen">
+  <div class="min-h-screen flex bg-surface">
+    <div data-shell="clients"></div>
+    <div class="flex-1 flex flex-col min-w-0">
+      <div data-topbar></div>
+      <main class="p-10 max-w-6xl mx-auto w-full">
+        <nav class="flex items-center gap-2 text-[10px] text-outline mb-2 uppercase tracking-[0.15em] font-bold">
+          <a href="#" onclick="navigate('clients'); return false;" class="hover:text-on-surface">Clients</a>
+          <span class="material-symbols-outlined text-[12px]">chevron_right</span>
+          <span class="text-on-surface">Create New Client</span>
+        </nav>
+        <h1 class="font-headline text-4xl font-extrabold tracking-tighter text-on-background mb-8">Client Configuration</h1>
+
+        <div class="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
+          <div class="space-y-6">
+            <!-- General Settings -->
+            <div class="bg-surface-container-lowest rounded-2xl ambient-shadow-soft p-8">
+              <div class="flex items-center gap-2 mb-6">
+                <span class="material-symbols-outlined text-on-tertiary-container">info</span>
+                <h3 class="font-headline font-bold text-lg text-on-tertiary-container">General Settings</h3>
+              </div>
+              <div class="mb-6">
+                <label class="block text-[10px] font-bold uppercase tracking-[0.1em] text-on-surface-variant mb-2">Application Name</label>
+                <input class="ghost-input w-full px-4 py-3 text-sm" placeholder="e.g. Acme Marketing Portal" />
+                <p class="text-xs text-outline mt-2">The identifier displayed to end-users during authorization.</p>
+              </div>
+              <div>
+                <div class="flex justify-between items-center mb-2">
+                  <label class="text-[10px] font-bold uppercase tracking-[0.1em] text-on-surface-variant">Redirect URIs</label>
+                  <button class="text-on-tertiary-container text-xs font-semibold flex items-center gap-1"><span class="material-symbols-outlined text-sm">add</span>Add URI</button>
+                </div>
+                <div class="space-y-2">
+                  <div class="flex items-center gap-2">
+                    <input class="ghost-input flex-1 px-4 py-3 text-sm" value="https://app.acme.com/auth/callback" />
+                    <button class="p-2 text-error hover:bg-error-container/30 rounded-lg"><span class="material-symbols-outlined">delete</span></button>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <input class="ghost-input flex-1 px-4 py-3 text-sm" value="https://localhost:3000/callback" />
+                    <button class="p-2 text-error hover:bg-error-container/30 rounded-lg"><span class="material-symbols-outlined">delete</span></button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Credentials -->
+            <div class="bg-surface-container-lowest rounded-2xl ambient-shadow-soft p-8">
+              <div class="flex items-center gap-2 mb-2">
+                <span class="material-symbols-outlined text-on-tertiary-container">lock</span>
+                <h3 class="font-headline font-bold text-lg text-on-tertiary-container">Credentials</h3>
+              </div>
+              <p class="text-sm text-on-surface-variant mb-6">Generated credentials must be stored securely. The secret will not be visible again.</p>
+              <div class="bg-surface-container-low rounded-xl p-4">
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <label class="block text-[10px] font-bold uppercase tracking-[0.1em] text-on-surface-variant mb-2">Client ID</label>
+                    <div class="bg-surface-container-lowest rounded-lg flex items-center gap-2 px-3 py-2">
+                      <span class="font-mono text-sm flex-1">svc_782349012390</span>
+                      <button class="text-outline hover:text-on-surface"><span class="material-symbols-outlined text-base">content_copy</span></button>
+                    </div>
+                  </div>
+                  <div>
+                    <label class="block text-[10px] font-bold uppercase tracking-[0.1em] text-on-surface-variant mb-2">Client Secret</label>
+                    <div class="bg-surface-container-lowest rounded-lg flex items-center gap-2 px-3 py-2">
+                      <span class="font-mono text-sm flex-1 tracking-widest">••••••••••••••••••••••</span>
+                      <button onclick="openModal('modal-secret-rotated')" class="text-[10px] font-bold uppercase text-on-surface-variant bg-surface-container px-2 py-1 rounded">Reveal</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="bg-error-container/30 rounded-lg p-3 flex gap-2 items-start">
+                  <span class="material-symbols-outlined text-error text-[18px]">warning</span>
+                  <p class="text-xs text-error"><strong>Copy your secret now.</strong> Once you navigate away or save, it will be hashed and hidden forever.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Sidebar -->
+          <div class="space-y-6">
+            <div class="bg-primary-container text-white rounded-2xl p-6">
+              <div class="flex items-center gap-2 mb-4">
+                <span class="material-symbols-outlined" style="color:#a8c8ff; font-variation-settings: 'FILL' 1;">verified_user</span>
+                <h3 class="font-headline font-bold text-base">Security Standards</h3>
+              </div>
+              <ol class="space-y-3 text-xs text-on-primary-fixed/80">
+                <li class="flex gap-3"><span class="text-primary-fixed-dim font-bold font-mono">01</span><span>Redirect URIs must use <code class="font-mono text-primary-fixed-dim bg-white/5 px-1 rounded">https://</code> for production environments.</span></li>
+                <li class="flex gap-3"><span class="text-primary-fixed-dim font-bold font-mono">02</span><span>Client Secrets should only be used in "Confidential" clients (server-side apps).</span></li>
+                <li class="flex gap-3"><span class="text-primary-fixed-dim font-bold font-mono">03</span><span>Ensure <strong class="text-white">Sovereign IdP</strong> is listed as a trusted provider in your app's OIDC config.</span></li>
+              </ol>
+            </div>
+            <div class="bg-surface-container-lowest rounded-2xl ambient-shadow-soft p-6">
+              <h4 class="text-[10px] font-bold uppercase tracking-[0.15em] text-outline mb-3">Quick Help</h4>
+              <div class="space-y-2">
+                <button class="w-full flex justify-between items-center py-2 text-sm font-medium text-on-surface"><span>What is a Redirect URI?</span><span class="material-symbols-outlined text-outline text-base">expand_more</span></button>
+                <button class="w-full flex justify-between items-center py-2 text-sm font-medium text-on-surface"><span>Client Type?</span><span class="material-symbols-outlined text-outline text-base">expand_more</span></button>
+              </div>
+            </div>
+            <div class="bg-tertiary-fixed/30 rounded-2xl p-4 flex items-center gap-2">
+              <span class="material-symbols-outlined text-on-tertiary-container text-[18px]">info</span>
+              <p class="text-[11px] font-bold uppercase tracking-[0.1em] text-on-tertiary-container">Draft Mode: Unsaved Changes</p>
+            </div>
+          </div>
+        </div>
+        <div class="flex justify-end gap-3 mt-8">
+          <button onclick="navigate('clients')" class="btn btn-ghost">Cancel</button>
+          <button onclick="navigate('clients'); toast('Client saved', 'success')" class="btn btn-primary">Save Client</button>
+        </div>
+      </main>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SCREEN: SYSTEM SETTINGS
+============================================================ -->
+<section id="screen-settings" class="screen">
+  <div class="min-h-screen flex bg-surface">
+    <div data-shell="settings"></div>
+    <div class="flex-1 flex flex-col min-w-0">
+      <div data-topbar></div>
+      <main class="p-10 max-w-7xl mx-auto w-full">
+        <div class="flex justify-between items-start mb-8">
+          <div>
+            <h1 class="font-headline text-3xl font-bold text-on-surface tracking-tight mb-1">Global Configuration</h1>
+            <p class="text-on-surface-variant text-sm">Manage core security policies and branding for the Sovereign IdP.</p>
+          </div>
+          <button class="text-outline text-sm font-medium flex items-center gap-2 opacity-50">
+            <span class="material-symbols-outlined text-base">save</span> Save Configuration
+          </button>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
+          <div class="bg-surface-container-lowest rounded-2xl ambient-shadow-soft p-8">
+            <div class="flex items-center gap-2 mb-6">
+              <span class="material-symbols-outlined text-on-surface">shield</span>
+              <h3 class="font-headline font-bold text-lg text-on-surface">Security &amp; Tokens</h3>
+            </div>
+            <div class="grid grid-cols-2 gap-6 mb-8">
+              <div>
+                <label class="block text-[10px] font-bold uppercase tracking-[0.1em] text-on-surface-variant mb-2">Access Token Expiration (mins)</label>
+                <input class="ghost-input w-full px-4 py-3 text-sm" value="15" />
+              </div>
+              <div>
+                <label class="block text-[10px] font-bold uppercase tracking-[0.1em] text-on-surface-variant mb-2">Refresh Token Expiration (days)</label>
+                <input class="ghost-input w-full px-4 py-3 text-sm" value="7" />
+              </div>
+            </div>
+            <h4 class="text-[10px] font-bold uppercase tracking-[0.1em] text-on-surface-variant mb-3">Password Complexity</h4>
+            <div class="space-y-3 mb-6">
+              <label class="flex items-center gap-3 cursor-pointer"><span class="check-box checked"></span><span class="text-sm text-on-surface">Require Uppercase Letters</span></label>
+              <label class="flex items-center gap-3 cursor-pointer"><span class="check-box checked"></span><span class="text-sm text-on-surface">Require Numbers</span></label>
+              <label class="flex items-center gap-3 cursor-pointer"><span class="check-box checked"></span><span class="text-sm text-on-surface">Require Special Characters</span></label>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold uppercase tracking-[0.1em] text-on-surface-variant mb-2">Minimum Password Length</label>
+              <input class="ghost-input w-full max-w-xs px-4 py-3 text-sm" value="12" />
+            </div>
+          </div>
+          <div class="space-y-6">
+            <div class="bg-surface-container-lowest rounded-2xl ambient-shadow-soft p-6">
+              <div class="flex items-center gap-2 mb-4">
+                <span class="material-symbols-outlined text-on-surface">power_settings_new</span>
+                <h3 class="font-headline font-bold text-lg text-on-surface">System Status</h3>
+              </div>
+              <div class="bg-surface-container-low rounded-xl p-4 flex items-center justify-between">
+                <div>
+                  <p class="text-sm font-semibold text-on-surface">Maintenance Mode</p>
+                  <p class="text-xs text-on-surface-variant">Disables login for non-admins.</p>
+                </div>
+                <label class="toggle"><input type="checkbox" /><span class="toggle-slider"></span></label>
+              </div>
+            </div>
+            <div class="bg-surface-container-lowest rounded-2xl ambient-shadow-soft p-6">
+              <div class="flex items-center gap-2 mb-4">
+                <span class="material-symbols-outlined text-on-tertiary-container">palette</span>
+                <h3 class="font-headline font-bold text-lg text-on-surface">Branding</h3>
+              </div>
+              <div class="mb-4">
+                <label class="block text-[10px] font-bold uppercase tracking-[0.1em] text-on-surface-variant mb-2">Primary Color</label>
+                <div class="flex items-center bg-surface-container-low rounded-lg px-3 py-2 gap-2">
+                  <div class="w-1 h-5 bg-on-tertiary-container"></div>
+                  <span class="font-mono text-sm">#000000</span>
+                </div>
+              </div>
+              <div>
+                <label class="block text-[10px] font-bold uppercase tracking-[0.1em] text-on-surface-variant mb-2">Company Logo</label>
+                <div class="border-2 border-dashed border-outline-variant rounded-xl p-6 text-center">
+                  <span class="material-symbols-outlined text-2xl text-on-surface-variant">upload_file</span>
+                  <p class="text-xs text-on-surface mt-1">Drag &amp; drop logo or <a href="#" class="text-on-tertiary-container font-bold">browse</a></p>
+                  <p class="text-[10px] text-outline mt-1">PNG, SVG up to 2MB</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SCREEN: USER PROFILE
+============================================================ -->
+<section id="screen-profile" class="screen">
+  <div class="min-h-screen flex bg-surface">
+    <div data-shell="profile"></div>
+    <div class="flex-1 flex flex-col min-w-0">
+      <div data-topbar></div>
+      <main class="p-10 max-w-6xl mx-auto w-full">
+        <h1 class="font-headline text-3xl font-bold text-on-surface tracking-tight mb-1">User Profile</h1>
+        <p class="text-on-surface-variant text-sm mb-8">Manage your identity details, security credentials, and active sessions.</p>
+
+        <div class="grid grid-cols-1 lg:grid-cols-[340px_1fr] gap-6 mb-6">
+          <!-- Profile Card -->
+          <div class="bg-surface-container rounded-2xl p-6 flex flex-col items-center text-center">
+            <div class="relative mb-4 mt-4">
+              <div class="w-28 h-28 rounded-xl bg-gradient-to-br from-primary-container to-primary flex items-center justify-center">
+                <span class="material-symbols-outlined text-white text-6xl" style="font-variation-settings: 'FILL' 1;">person</span>
+              </div>
+              <button class="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-surface-container-lowest border border-outline-variant flex items-center justify-center">
+                <span class="material-symbols-outlined text-on-surface-variant text-sm">edit</span>
+              </button>
+            </div>
+            <h3 class="font-headline font-bold text-lg text-on-surface">Alexander Vance</h3>
+            <p class="text-sm text-on-surface-variant mb-3">alexander.vance@sovereign.idp</p>
+            <span class="badge badge-success with-dot mb-6" style="text-transform:uppercase; letter-spacing:0.1em;">Active Identity</span>
+            <div class="w-full pt-6 border-t border-outline-variant/20 space-y-3 text-sm">
+              <div class="flex justify-between"><span class="text-on-surface-variant">Role</span><span class="font-semibold text-on-surface">Super Administrator</span></div>
+              <div class="flex justify-between"><span class="text-on-surface-variant">Department</span><span class="font-semibold text-on-surface">Security Ops</span></div>
+              <div class="flex justify-between"><span class="text-on-surface-variant">Last Login</span><span class="font-semibold text-on-surface">Today, 08:42 AM</span></div>
+            </div>
+          </div>
+          <!-- Security Credentials -->
+          <div class="bg-surface-container-lowest rounded-2xl ambient-shadow-soft p-8">
+            <div class="flex items-center gap-2 mb-6">
+              <div class="w-9 h-9 rounded-xl bg-surface-container-high flex items-center justify-center">
+                <span class="material-symbols-outlined text-on-surface text-[20px]">key</span>
+              </div>
+              <h3 class="font-headline font-bold text-lg text-on-surface">Security Credentials</h3>
+            </div>
+            <div class="space-y-4 mb-6">
+              <div>
+                <label class="block text-[10px] font-bold uppercase tracking-[0.1em] text-on-surface-variant mb-2">Current Password</label>
+                <input type="password" class="ghost-input w-full px-4 py-3 text-sm" value="••••••••" />
+              </div>
+              <div>
+                <label class="block text-[10px] font-bold uppercase tracking-[0.1em] text-on-surface-variant mb-2">New Password</label>
+                <input type="password" class="ghost-input w-full px-4 py-3 text-sm" placeholder="Enter new password" />
+                <p class="text-xs text-on-surface-variant mt-2">Must be at least 12 characters, including a number and symbol.</p>
+              </div>
+              <div>
+                <label class="block text-[10px] font-bold uppercase tracking-[0.1em] text-on-surface-variant mb-2">Confirm New Password</label>
+                <input type="password" class="ghost-input w-full px-4 py-3 text-sm" placeholder="Confirm new password" />
+              </div>
+            </div>
+            <div class="pt-4 border-t border-outline-variant/15 flex justify-end items-center gap-3">
+              <button class="btn btn-ghost">Cancel</button>
+              <button class="btn btn-primary" onclick="toast('Password updated', 'success')">Update Password</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Active Sessions -->
+        <div class="bg-surface-container-lowest rounded-2xl ambient-shadow-soft p-6">
+          <div class="flex justify-between items-start mb-6">
+            <div class="flex items-center gap-2">
+              <div class="w-9 h-9 rounded-xl bg-surface-container-high flex items-center justify-center">
+                <span class="material-symbols-outlined text-on-surface text-[20px]">devices</span>
+              </div>
+              <div>
+                <h3 class="font-headline font-bold text-lg text-on-surface">Active Sessions</h3>
+                <p class="text-xs text-on-surface-variant">Manage devices currently authenticated to your account.</p>
+              </div>
+            </div>
+            <button class="btn btn-outline-danger btn-sm" onclick="toast('All sessions revoked', 'success')">Revoke All</button>
+          </div>
+          <table class="w-full text-left text-sm">
+            <thead>
+              <tr>
+                <th class="px-3 py-3 text-[10px] font-bold uppercase tracking-[0.1em] text-outline">Device / Application</th>
+                <th class="px-3 py-3 text-[10px] font-bold uppercase tracking-[0.1em] text-outline">Location (IP)</th>
+                <th class="px-3 py-3 text-[10px] font-bold uppercase tracking-[0.1em] text-outline">Last Active</th>
+                <th class="px-3 py-3 text-[10px] font-bold uppercase tracking-[0.1em] text-outline text-right">Action</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-outline-variant/15">
+              <tr>
+                <td class="px-3 py-4">
+                  <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-on-surface-variant">laptop_mac</span>
+                    <div>
+                      <p class="font-semibold text-on-surface flex items-center gap-2">MacBook Pro - Safari <span class="text-[10px] font-bold uppercase bg-surface-container px-2 py-0.5 rounded">Current</span></p>
+                      <p class="text-xs text-on-surface-variant">macOS 14.2</p>
+                    </div>
+                  </div>
+                </td>
+                <td class="px-3 py-4">
+                  <p class="text-on-surface">San Francisco, CA</p>
+                  <p class="text-xs text-on-surface-variant font-mono">192.168.1.104</p>
+                </td>
+                <td class="px-3 py-4 text-on-surface">Just now</td>
+                <td class="px-3 py-4 text-right text-on-surface-variant text-xs">Active</td>
+              </tr>
+              <tr>
+                <td class="px-3 py-4">
+                  <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-on-surface-variant">smartphone</span>
+                    <div>
+                      <p class="font-semibold text-on-surface">iPhone 14 Pro - Native App</p>
+                      <p class="text-xs text-on-surface-variant">iOS 17.1</p>
+                    </div>
+                  </div>
+                </td>
+                <td class="px-3 py-4">
+                  <p class="text-on-surface">San Jose, CA</p>
+                  <p class="text-xs text-on-surface-variant font-mono">172.20.10.4</p>
+                </td>
+                <td class="px-3 py-4 text-on-surface">2 hours ago</td>
+                <td class="px-3 py-4 text-right"><button class="text-error font-medium hover:underline">Revoke</button></td>
+              </tr>
+              <tr>
+                <td class="px-3 py-4">
+                  <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-on-surface-variant">desktop_windows</span>
+                    <div>
+                      <p class="font-semibold text-on-surface">Windows Workstation - Chrome</p>
+                      <p class="text-xs text-on-surface-variant">Windows 11</p>
+                    </div>
+                  </div>
+                </td>
+                <td class="px-3 py-4">
+                  <p class="text-on-surface">New York, NY</p>
+                  <p class="text-xs text-on-surface-variant font-mono">10.0.0.45</p>
+                </td>
+                <td class="px-3 py-4 text-on-surface">3 days ago</td>
+                <td class="px-3 py-4 text-right"><button class="text-error font-medium hover:underline">Revoke</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </main>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     MODALS
+============================================================ -->
+<div id="modal-create-identity" class="modal-overlay hidden-modal">
+  <div class="bg-surface-container-lowest rounded-2xl ambient-shadow w-full max-w-md overflow-hidden">
+    <div class="p-6">
+      <div class="flex justify-between items-start mb-3">
+        <h3 class="font-headline font-bold text-xl text-on-surface">Create New Identity</h3>
+        <button onclick="closeModals()" class="modal-close" aria-label="Close"><span class="material-symbols-outlined">close</span></button>
+      </div>
+      <p class="text-sm text-on-surface-variant mb-6">Provision a new identity within the Sovereign IDP. An invitation will be dispatched securely.</p>
+      <div class="space-y-5">
+        <div>
+          <label class="block text-sm font-semibold text-on-surface mb-2">Email Address</label>
+          <div class="ghost-input flex items-center px-3 py-3 gap-2">
+            <span class="material-symbols-outlined text-outline text-[18px]">mail</span>
+            <input type="email" placeholder="user@domain.com" class="bg-transparent flex-1 border-0 focus:ring-0 text-sm outline-none" />
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-on-surface mb-2">Temporary Password</label>
+          <div class="ghost-input flex items-center px-3 py-3 gap-2">
+            <span class="material-symbols-outlined text-outline text-[18px]">lock</span>
+            <input type="password" value="••••••••" class="bg-transparent flex-1 border-0 focus:ring-0 text-sm outline-none" />
+            <button class="text-outline"><span class="material-symbols-outlined text-[18px]">visibility_off</span></button>
+          </div>
+          <p class="text-xs text-on-surface-variant mt-2">Must be at least 12 characters and include a symbol.</p>
+        </div>
+        <label class="flex items-start gap-3 cursor-pointer">
+          <span class="check-box checked mt-0.5"></span>
+          <span>
+            <span class="block text-sm font-medium text-on-surface">Send invite email</span>
+            <span class="block text-xs text-on-surface-variant">Dispatches onboarding instructions to the user's inbox.</span>
+          </span>
+        </label>
+      </div>
+    </div>
+    <div class="bg-surface-container-low px-6 py-4 flex justify-end gap-2">
+      <button onclick="closeModals()" class="btn btn-ghost">Cancel</button>
+      <button onclick="closeModals(); toast('Create Identity saved', 'success')" class="btn btn-primary opacity-60">Create Identity</button>
+    </div>
+  </div>
+</div>
+
+<div id="modal-edit-role" class="modal-overlay hidden-modal">
+  <div class="bg-surface-container-lowest rounded-2xl ambient-shadow w-full max-w-xl overflow-hidden">
+    <div class="bg-surface-container px-6 py-5">
+      <div class="flex justify-between items-start">
+        <div>
+          <h3 class="font-headline font-bold text-xl text-on-surface">Edit Role</h3>
+          <p class="text-sm text-on-surface-variant mt-1">Configure permissions for this access level.</p>
+        </div>
+        <button onclick="closeModals()" class="modal-close" aria-label="Close"><span class="material-symbols-outlined">close</span></button>
+      </div>
+    </div>
+    <div class="p-6">
+      <h4 class="text-[10px] font-bold uppercase tracking-[0.1em] text-on-surface-variant mb-4">Basic Information</h4>
+      <div class="space-y-4 mb-6">
+        <div>
+          <label class="block text-sm font-medium text-on-surface mb-2">Role Name</label>
+          <input class="ghost-input w-full px-4 py-2.5 text-sm" value="Financial Analyst" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-on-surface mb-2">Description</label>
+          <textarea class="ghost-input w-full px-4 py-2.5 text-sm h-20 resize-none">Read-only access to financial reporting and audit logs.</textarea>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 mb-4">
+        <span class="material-symbols-outlined text-on-tertiary-container text-[18px]" style="font-variation-settings: 'FILL' 1;">shield</span>
+        <h4 class="text-[10px] font-bold uppercase tracking-[0.1em] text-on-surface-variant">Permissions Matrix</h4>
+      </div>
+      <div class="grid grid-cols-2 gap-3 mb-3">
+        <div class="bg-surface-container-low rounded-xl p-4">
+          <p class="font-semibold text-sm text-on-surface flex items-center gap-1.5 mb-3"><span class="material-symbols-outlined text-base">group</span>Users</p>
+          <div class="space-y-2">
+            <label class="flex items-center gap-2 cursor-pointer"><span class="check-box checked"></span><span class="text-sm font-mono text-on-surface-variant">users.read</span></label>
+            <label class="flex items-center gap-2 cursor-pointer"><span class="check-box"></span><span class="text-sm font-mono text-on-surface-variant">users.write</span></label>
+          </div>
+        </div>
+        <div class="bg-surface-container-low rounded-xl p-4">
+          <p class="font-semibold text-sm text-on-surface flex items-center gap-1.5 mb-3"><span class="material-symbols-outlined text-base">apps</span>Clients</p>
+          <div class="space-y-2">
+            <label class="flex items-center gap-2 cursor-pointer"><span class="check-box checked"></span><span class="text-sm font-mono text-on-surface-variant">clients.read</span></label>
+            <label class="flex items-center gap-2 cursor-pointer"><span class="check-box"></span><span class="text-sm font-mono text-on-surface-variant">clients.manage</span></label>
+          </div>
+        </div>
+      </div>
+      <div class="bg-surface-container-low rounded-xl p-4">
+        <p class="font-semibold text-sm text-on-surface flex items-center gap-1.5 mb-3"><span class="material-symbols-outlined text-base">list_alt</span>System Logs</p>
+        <div class="grid grid-cols-2 gap-2">
+          <label class="flex items-center gap-2 cursor-pointer"><span class="check-box checked"></span><span class="text-sm font-mono text-on-surface-variant">logs.view</span></label>
+          <label class="flex items-center gap-2 cursor-pointer"><span class="check-box"></span><span class="text-sm font-mono text-on-surface-variant">logs.export</span></label>
+        </div>
+      </div>
+    </div>
+    <div class="bg-surface-container-low px-6 py-4 flex justify-end gap-2">
+      <button onclick="closeModals()" class="btn btn-ghost">Cancel</button>
+      <button onclick="closeModals(); toast('Save Role saved', 'success')" class="btn btn-primary">Save Role</button>
+    </div>
+  </div>
+</div>
+
+<div id="modal-delete-role" class="modal-overlay hidden-modal">
+  <div class="bg-surface-container-lowest rounded-2xl ambient-shadow w-full max-w-md overflow-hidden danger-card-top">
+    <div class="p-6 pt-5">
+      <div class="flex items-start gap-3 mb-4">
+        <div class="w-10 h-10 rounded-lg bg-error-container/50 flex items-center justify-center flex-shrink-0">
+          <span class="material-symbols-outlined text-error">warning</span>
+        </div>
+        <div>
+          <h3 class="font-headline font-bold text-xl text-on-surface">Delete Role</h3>
+          <p class="text-sm text-on-surface-variant mt-1">You are about to permanently delete the <strong class="text-on-surface">Data Analyst</strong> role.</p>
+        </div>
+      </div>
+      <div class="bg-surface-container-low rounded-xl p-4 mb-6">
+        <p class="text-[11px] font-bold uppercase tracking-[0.1em] text-error mb-2 flex items-center gap-1.5"><span class="material-symbols-outlined text-base">groups</span>Impact Assessment</p>
+        <ul class="space-y-2 text-sm text-on-surface-variant">
+          <li class="flex gap-2"><span class="text-outline">›</span><span><strong class="text-on-surface">14 Users</strong> will lose access permissions associated with this role.</span></li>
+          <li class="flex gap-2"><span class="text-outline">›</span><span><strong class="text-on-surface">3 Access Policies</strong> will be orphaned and require manual reassignment.</span></li>
+          <li class="flex gap-2"><span class="text-outline">›</span><span>This action is logged in the Audit trail.</span></li>
+        </ul>
+      </div>
+      <div class="flex justify-end gap-2">
+        <button onclick="closeModals()" class="btn btn-ghost">Keep Role</button>
+        <button onclick="closeModals(); toast('Delete Role', 'error')" class="btn btn-danger"><span class="material-symbols-outlined">delete</span>Delete Role</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modal-delete-client" class="modal-overlay hidden-modal">
+  <div class="bg-surface-container-lowest rounded-2xl ambient-shadow w-full max-w-md overflow-hidden danger-card-top">
+    <div class="p-6 pt-5">
+      <div class="flex items-start gap-3 mb-4">
+        <div class="w-10 h-10 rounded-lg bg-error-container/50 flex items-center justify-center flex-shrink-0">
+          <span class="material-symbols-outlined text-error">warning</span>
+        </div>
+        <div>
+          <h3 class="font-headline font-bold text-xl text-on-surface">Delete Client Application</h3>
+          <p class="text-sm text-on-surface-variant mt-1">Are you sure you want to delete <strong class="text-on-surface">Marketing Automation</strong>? This action is permanent and will revoke all active tokens for this client.</p>
+        </div>
+      </div>
+      <div class="bg-surface-container-low rounded-xl p-4 mb-6 space-y-2 text-sm">
+        <div class="flex justify-between"><span class="text-on-surface-variant">Client ID</span><span class="font-mono text-on-surface">client_4k9x2m</span></div>
+        <div class="flex justify-between"><span class="text-on-surface-variant">Active Tokens</span><span class="font-bold text-error">14,203</span></div>
+      </div>
+      <div class="flex justify-end gap-2">
+        <button onclick="closeModals()" class="btn btn-ghost">Keep Application</button>
+        <button onclick="closeModals(); toast('Delete Permanently', 'error')" class="btn btn-danger"><span class="material-symbols-outlined">delete</span>Delete Permanently</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modal-secret-rotated" class="modal-overlay hidden-modal">
+  <div class="bg-surface-container-lowest rounded-2xl ambient-shadow w-full max-w-md overflow-hidden">
+    <div class="p-8 text-center">
+      <div class="w-14 h-14 rounded-xl bg-tertiary-fixed/40 flex items-center justify-center mx-auto mb-4">
+        <div class="w-9 h-9 rounded-full bg-on-tertiary-container flex items-center justify-center">
+          <span class="material-symbols-outlined text-white text-[22px]" style="font-variation-settings: 'FILL' 1;">check</span>
+        </div>
+      </div>
+      <h3 class="font-headline font-bold text-xl text-on-surface mb-2">Client Secret Rotated</h3>
+      <p class="text-sm text-on-surface-variant mb-6">The secret for <strong class="font-mono text-on-surface">Monolith_Production_App</strong> has been successfully updated.</p>
+      <div class="bg-surface-container-low rounded-xl p-4 mb-4 text-left">
+        <p class="text-[10px] font-bold uppercase tracking-[0.1em] text-on-surface-variant mb-2">New Client Secret</p>
+        <div class="bg-surface-container-lowest rounded-lg flex items-center gap-2 px-3 py-2">
+          <span class="font-mono text-sm flex-1 truncate">sec_v2_98fHk2mPqL5vXyNw8R…</span>
+          <button class="text-outline hover:text-on-surface"><span class="material-symbols-outlined text-base">content_copy</span></button>
+        </div>
+      </div>
+      <div class="flex gap-2 items-start text-xs text-error mb-6">
+        <span class="material-symbols-outlined text-error text-base flex-shrink-0">warning</span>
+        <p class="text-left"><strong>Copy this secret now.</strong> It will not be shown again. If you lose it, you will need to generate a new one.</p>
+      </div>
+      <button onclick="closeModals()" class="btn btn-primary btn-block btn-lg">I have saved it</button>
+    </div>
+  </div>
+</div>
+
+<!-- Screen switcher -->
+<div class="switcher">
+  <span class="pill">Sovereign IDP</span>
+  <select id="screen-selector" onchange="navigate(this.value)">
+    <option value="login">Login</option>
+    <option value="register">Register</option>
+    <option value="identities">Identities</option>
+    <option value="audit">Audit Logs</option>
+    <option value="roles">Role Management</option>
+    <option value="clients">Clients</option>
+    <option value="client-config">Client Configuration</option>
+    <option value="settings">System Settings</option>
+    <option value="profile">User Profile</option>
+  </select>
+  <span class="text-outline">|</span>
+  <select onchange="if(this.value){openModal(this.value); this.value='';}">
+    <option value="">Modals…</option>
+    <option value="modal-create-identity">Create Identity</option>
+    <option value="modal-edit-role">Edit Role</option>
+    <option value="modal-delete-role">Delete Role</option>
+    <option value="modal-delete-client">Delete Client</option>
+    <option value="modal-secret-rotated">Secret Rotated</option>
+  </select>
+</div>
+
+<script>
+  // -------- SHELL (Sidebar + Topbar) --------
+  // Single source of truth for the admin shell. Each admin screen drops in
+  // <div data-shell="<active>"></div> and <div data-topbar></div> placeholders.
+  const NAV_ITEMS = [
+    { id: 'profile',     label: 'User Profile',  icon: 'person' },
+    { id: 'clients',     label: 'Clients',       icon: 'apps' },
+    { id: 'identities',  label: 'Identities',    icon: 'group' },
+    { id: 'roles',       label: 'Roles',         icon: 'manage_accounts' },
+    { id: 'audit',       label: 'Audit Logs',    icon: 'list_alt' }
+  ];
+  const NAV_FOOTER = [
+    { id: 'settings', label: 'System Settings', icon: 'settings' },
+    { id: 'login',    label: 'Sign Out',        icon: 'logout' }
+  ];
+
+  function renderSidebar(active) {
+    const item = (n) => {
+      const is = n.id === active;
+      const fill = is ? `style="font-variation-settings: 'FILL' 1;"` : '';
+      return `<a href="#" onclick="navigate('${n.id}'); return false;" class="nav-link${is ? ' active' : ''}">
+        <span class="material-symbols-outlined text-[20px]" ${fill}>${n.icon}</span>
+        <span>${n.label}</span>
+      </a>`;
+    };
+    return `<aside class="w-64 bg-surface-container-low flex flex-col py-8 px-4 sticky top-0 h-screen">
+      <div class="px-2 mb-8">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center flex-shrink-0">
+            <span class="material-symbols-outlined text-on-primary text-[22px]" style="font-variation-settings: 'FILL' 1;">shield_person</span>
+          </div>
+          <div>
+            <h2 class="font-headline font-black tracking-tighter text-on-surface text-base uppercase leading-none">Sovereign</h2>
+            <p class="text-[10px] uppercase tracking-[0.15em] text-outline font-bold mt-1">Identity Provider</p>
+          </div>
+        </div>
+      </div>
+      <nav class="flex-1 flex flex-col gap-1">${NAV_ITEMS.map(item).join('')}</nav>
+      <div class="mt-auto flex flex-col gap-1">${NAV_FOOTER.map(item).join('')}</div>
+    </aside>`;
+  }
+
+  function renderTopbar() {
+    return `<header class="h-16 px-8 flex justify-end items-center bg-surface gap-1">
+      <button class="btn-icon" onclick="toast('No new notifications', 'info')" title="Notifications"><span class="material-symbols-outlined">notifications</span></button>
+      <button class="btn-icon" onclick="toast('Help center coming soon', 'info')" title="Help"><span class="material-symbols-outlined">help</span></button>
+      <div class="dropdown ml-1">
+        <button class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white" onclick="toggleDropdown(this)">
+          <span class="material-symbols-outlined text-base" style="font-variation-settings: 'FILL' 1;">person</span>
+        </button>
+        <div class="dropdown-menu">
+          <div class="dropdown-label">Alexander Vance</div>
+          <button class="dropdown-item" onclick="navigate('profile')"><span class="material-symbols-outlined">account_circle</span>My Profile</button>
+          <button class="dropdown-item" onclick="navigate('settings')"><span class="material-symbols-outlined">settings</span>Settings</button>
+          <div class="dropdown-divider"></div>
+          <button class="dropdown-item danger" onclick="navigate('login')"><span class="material-symbols-outlined">logout</span>Sign Out</button>
+        </div>
+      </div>
+    </header>`;
+  }
+
+  function mountShell() {
+    document.querySelectorAll('[data-shell]').forEach(el => {
+      el.outerHTML = renderSidebar(el.dataset.shell);
+    });
+    document.querySelectorAll('[data-topbar]').forEach(el => {
+      el.outerHTML = renderTopbar();
+    });
+  }
+
+  // -------- DATA --------
+  const IDENTITIES = [
+    { initials: 'JS', email: 'james.summers@nova.tech', id: '9x-7721-a4', status: 'Active', date: 'Oct 24, 2023', enabled: true },
+    { initials: 'MK', email: 'm.khalid@global-corp.net', id: '2p-9910-c1', status: 'Active', date: 'Dec 02, 2023', enabled: true },
+    { initials: 'LA', email: 'l.anderson@external.io', id: '5j-1284-e9', status: 'Disabled', date: 'Jan 15, 2024', enabled: false, dangerous: true },
+    { initials: 'RW', email: 'robert.wild@nova.tech', id: '7u-3342-f2', status: 'Active', date: 'Feb 28, 2024', enabled: true }
+  ];
+
+  const AUDIT_ROWS = [
+    { time: '2023-10-27 14:32:01', actor: { initials: 'SA', name: 'System Admin', sub: 'admin@sovereign.local', tone: 'primary' }, event: 'Policy Update', detail: 'ID: pol_8x9f2a', status: 'Success', ip: '192.168.1.45' },
+    { time: '2023-10-27 14:28:15', actor: { initials: 'API', name: 'Billing Service', sub: 'Client Credentials', tone: 'secondary', icon: 'api' }, event: 'Token Issued', detail: 'Scope: read:billing', status: 'Success', ip: '10.0.4.22' },
+    { time: '2023-10-27 14:15:02', actor: { initials: '?', name: 'Unknown User', sub: 'jdoe@external.com', tone: 'unknown', icon: 'help' }, event: 'Login Attempt', detail: 'Invalid Credentials', detailTone: 'error', status: 'Failed', ip: '203.0.113.42', rowTone: 'error' },
+    { time: '2023-10-27 13:55:44', actor: { initials: 'MK', name: 'Mike Kumar', sub: 'mkumar@sovereign.local', tone: 'neutral' }, event: 'Interactive Login', detail: 'MFA Verified', status: 'Success', ip: '192.168.1.105' },
+    { time: '2023-10-27 13:40:12', actor: { initials: 'SA', name: 'System Admin', sub: 'admin@sovereign.local', tone: 'primary' }, event: 'Client Created', detail: 'App: Analytics_Dash', status: 'Success', ip: '192.168.1.45' }
+  ];
+
+  const ROLES = [
+    { name: 'Global Administrator', desc: 'Full system access and configuration rights.', users: 3, icon: 'shield', tint: 'primary' },
+    { name: 'Policy Editor', desc: 'Can create and modify access policies but cannot assign roles.', users: 12, icon: 'shield_lock', tint: 'neutral' },
+    { name: 'Auditor', desc: 'Read-only access to all system logs and configurations.', users: 8, icon: 'visibility', tint: 'neutral' },
+    { name: 'Support Desk', desc: 'Can view user profiles and reset MFA tokens.', users: 45, icon: 'support_agent', tint: 'neutral' }
+  ];
+
+  const CLIENTS = [
+    { initials: 'MA', name: 'Marketing Automation', tag: 'Production', id: 'client_77a28e91', uri: 'https://marketing.sovereign.id/callback', extra: '+2 more', date: 'Oct 12, 2023' },
+    { initials: 'AS', name: 'Analytics Suite', tag: 'Internal', id: 'client_bb219f02', uri: 'https://analytics.internal/auth/callback', date: 'Nov 04, 2023' },
+    { initials: 'DP', name: 'Developer Portal', tag: 'Sandbox', id: 'client_ee561c22', uri: 'http://localhost:3000/api/auth', date: 'Dec 19, 2023' },
+    { initials: 'CS', name: 'Customer Support', tag: 'Production', id: 'client_ff110d21', uri: 'https://support.internal/login/callback', date: 'Jan 05, 2024' }
+  ];
+
+
+
+  // -------- RENDERERS --------
+  function actorAvatar(a) {
+    const tones = {
+      primary: 'bg-primary-container text-on-primary-container',
+      secondary: 'bg-secondary-container text-on-secondary-container',
+      neutral: 'bg-surface-container-highest text-on-surface',
+      unknown: 'bg-surface-container-high text-on-surface-variant'
+    };
+    const cls = tones[a.tone] || tones.neutral;
+    const content = a.icon
+      ? `<span class="material-symbols-outlined text-base">${a.icon}</span>`
+      : a.initials;
+    return `<div class="w-8 h-8 rounded-full ${cls} flex items-center justify-center font-bold text-xs">${content}</div>`;
+  }
+
+  function renderIdentities() {
+    const tbody = document.getElementById('identities-tbody');
+    tbody.innerHTML = IDENTITIES.map(u => {
+      const avatarTone = u.dangerous ? 'bg-error-container/30 text-error' : 'bg-surface-container-high text-on-surface-variant';
+      const statusBadge = u.status === 'Active'
+        ? `<span class="badge badge-success with-dot">Active</span>`
+        : `<span class="badge badge-neutral with-dot">Disabled</span>`;
+      return `
+        <tr class="hover:bg-surface-container-low transition-colors cursor-pointer">
+          <td class="px-8 py-4">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full ${avatarTone} flex items-center justify-center font-bold text-sm">${u.initials}</div>
+              <div>
+                <p class="font-semibold text-on-surface text-sm">${u.email}</p>
+                <p class="text-xs text-outline">ID: ${u.id}</p>
+              </div>
+            </div>
+          </td>
+          <td class="px-8 py-4">${statusBadge}</td>
+          <td class="px-8 py-4 text-sm text-on-surface-variant">${u.date}</td>
+          <td class="px-8 py-4">
+            <div class="flex justify-end items-center">
+              <label class="toggle"><input type="checkbox" ${u.enabled ? 'checked' : ''} /><span class="toggle-slider"></span></label>
+            </div>
+          </td>
+        </tr>`;
+    }).join('');
+  }
+
+  function renderAudit() {
+    const tbody = document.getElementById('audit-tbody');
+    tbody.innerHTML = AUDIT_ROWS.map(r => {
+      const statusEl = r.status === 'Success'
+        ? `<span class="badge badge-success with-dot">Success</span>`
+        : `<span class="badge badge-error with-dot">Failed</span>`;
+      const detailCls = r.detailTone === 'error' ? 'text-error' : 'text-on-surface-variant';
+      const rowBg = r.rowTone === 'error' ? 'bg-error-container/10' : '';
+      return `
+        <tr class="hover:bg-surface-container-low transition-colors cursor-pointer ${rowBg}">
+          <td class="px-6 py-4 whitespace-nowrap text-on-surface-variant font-medium font-mono text-xs">${r.time}</td>
+          <td class="px-6 py-4">
+            <div class="flex items-center gap-3">
+              ${actorAvatar(r.actor)}
+              <div>
+                <div class="font-semibold text-on-surface">${r.actor.name}</div>
+                <div class="text-xs text-on-surface-variant">${r.actor.sub}</div>
+              </div>
+            </div>
+          </td>
+          <td class="px-6 py-4">
+            <div class="font-medium text-on-surface">${r.event}</div>
+            <div class="text-xs ${detailCls} mt-0.5 font-mono">${r.detail}</div>
+          </td>
+          <td class="px-6 py-4">${statusEl}</td>
+          <td class="px-6 py-4 text-right font-mono text-on-surface-variant text-xs">${r.ip}</td>
+        </tr>`;
+    }).join('');
+  }
+
+  function renderRoles() {
+    const tbody = document.getElementById('roles-tbody');
+    tbody.innerHTML = ROLES.map(r => {
+      const tintCls = r.tint === 'primary'
+        ? 'bg-tertiary-fixed/40 text-on-tertiary-container'
+        : 'bg-surface-container-high text-on-surface-variant';
+      return `
+        <tr class="hover:bg-surface-container-low transition-colors cursor-pointer">
+          <td class="px-6 py-4">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-lg ${tintCls} flex items-center justify-center"><span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">${r.icon}</span></div>
+              <span class="font-headline font-bold text-on-surface">${r.name}</span>
+            </div>
+          </td>
+          <td class="px-6 py-4 text-sm text-on-surface-variant max-w-md">${r.desc}</td>
+          <td class="px-6 py-4">
+            <span class="badge badge-count">${r.users} Users</span>
+          </td>
+          <td class="px-6 py-4">
+            <button onclick="openModal('modal-edit-role')" class="p-1.5 text-outline hover:text-on-surface rounded"><span class="material-symbols-outlined text-base">edit</span></button>
+            <button onclick="openModal('modal-delete-role')" class="p-1.5 text-outline hover:text-error rounded"><span class="material-symbols-outlined text-base">delete</span></button>
+          </td>
+        </tr>`;
+    }).join('');
+  }
+
+  function renderClients() {
+    const tbody = document.getElementById('clients-tbody');
+    tbody.innerHTML = CLIENTS.map(c => `
+      <tr class="hover:bg-surface-container-low transition-colors">
+        <td class="px-6 py-4">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-secondary-container text-on-secondary-container flex items-center justify-center font-bold text-xs">${c.initials}</div>
+            <div>
+              <p class="font-headline font-bold text-on-surface text-sm">${c.name}</p>
+              <p class="text-xs text-on-surface-variant">${c.tag}</p>
+            </div>
+          </div>
+        </td>
+        <td class="px-6 py-4">
+          <code class="font-mono text-xs bg-surface-container-low px-2 py-1 rounded text-on-surface-variant">${c.id}</code>
+        </td>
+        <td class="px-6 py-4">
+          <p class="text-sm text-on-surface-variant truncate max-w-xs">${c.uri}</p>
+          ${c.extra ? `<p class="text-[11px] text-on-tertiary-container font-semibold mt-0.5">${c.extra}</p>` : ''}
+        </td>
+        <td class="px-6 py-4 text-sm text-on-surface-variant">${c.date}</td>
+        <td class="px-6 py-4">
+          <div class="flex items-center justify-end gap-1">
+            <button onclick="openModal('modal-secret-rotated')" class="p-1.5 text-outline hover:text-on-surface" title="Rotate secret"><span class="material-symbols-outlined text-base">key</span></button>
+            <button onclick="navigate('client-config')" class="p-1.5 text-outline hover:text-on-surface" title="Edit"><span class="material-symbols-outlined text-base">edit</span></button>
+            <button onclick="openModal('modal-delete-client')" class="p-1.5 text-error/70 hover:text-error" title="Delete"><span class="material-symbols-outlined text-base">delete</span></button>
+          </div>
+        </td>
+      </tr>`).join('');
+  }
+
+
+
+  // -------- NAVIGATION + MODALS --------
+  function navigate(name) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    const el = document.getElementById('screen-' + name);
+    if (el) el.classList.add('active');
+    const sel = document.getElementById('screen-selector');
+    if (sel && sel.value !== name) sel.value = name;
+    closeModals();
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    history.replaceState(null, '', '#' + name);
+  }
+  function openModal(id) {
+    const m = document.getElementById(id);
+    if (m) m.classList.remove('hidden-modal');
+  }
+  function closeModals() {
+    document.querySelectorAll('.modal-overlay').forEach(m => m.classList.add('hidden-modal'));
+  }
+  function togglePw(id, btn) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const span = btn.querySelector('span');
+    if (el.type === 'password') { el.type = 'text'; span.textContent = 'visibility_off'; }
+    else { el.type = 'password'; span.textContent = 'visibility'; }
+  }
+
+  // -------- DROPDOWN --------
+  function toggleDropdown(triggerEl, ev) {
+    if (ev) ev.stopPropagation();
+    const dd = triggerEl.closest('.dropdown');
+    if (!dd) return;
+    const wasOpen = dd.classList.contains('open');
+    document.querySelectorAll('.dropdown.open').forEach(d => d.classList.remove('open'));
+    if (!wasOpen) dd.classList.add('open');
+  }
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.dropdown')) {
+      document.querySelectorAll('.dropdown.open').forEach(d => d.classList.remove('open'));
+    }
+  });
+
+  // -------- TOAST --------
+  function toast(message, kind) {
+    let stack = document.querySelector('.toast-stack');
+    if (!stack) {
+      stack = document.createElement('div');
+      stack.className = 'toast-stack';
+      document.body.appendChild(stack);
+    }
+    const el = document.createElement('div');
+    el.className = 'toast' + (kind ? ' ' + kind : '');
+    const icon = kind === 'success' ? 'check_circle' : kind === 'error' ? 'error' : 'info';
+    el.innerHTML = `<span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;">${icon}</span><span>${message}</span><button class="toast-close" aria-label="Close"><span class="material-symbols-outlined">close</span></button>`;
+    el.querySelector('.toast-close').addEventListener('click', () => dismissToast(el));
+    stack.appendChild(el);
+    setTimeout(() => dismissToast(el), 4000);
+  }
+  function dismissToast(el) {
+    if (!el || el.classList.contains('leaving')) return;
+    el.classList.add('leaving');
+    setTimeout(() => el.remove(), 220);
+  }
+
+  // Close modals on backdrop click
+  document.querySelectorAll('.modal-overlay').forEach(m => {
+    m.addEventListener('click', (e) => { if (e.target === m) closeModals(); });
+  });
+  // Click checkboxes
+  document.addEventListener('click', (e) => {
+    const cb = e.target.closest('.check-box');
+    if (cb) cb.classList.toggle('checked');
+  });
+
+  // -------- BOOT --------
+  mountShell();
+  renderIdentities();
+  renderAudit();
+  renderRoles();
+  renderClients();
+
+  const startScreen = (location.hash || '#login').slice(1);
+  navigate(['login','register','identities','audit','roles','clients','client-config','settings','profile'].includes(startScreen) ? startScreen : 'login');
+
+  // -------- TWEAKS PANEL --------
+  const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+    "totalClients": 61,
+    "totalUsers": 1284,
+    "activeNow": 942,
+    "primaryColor": "#000000",
+    "accentColor": "#005db5",
+    "showSwitcher": true,
+    "density": "comfy"
+  }/*EDITMODE-END*/;
+
+  let tweakState = { ...TWEAK_DEFAULTS };
+
+  function applyTweaks() {
+    const t = tweakState;
+    const tc = document.getElementById('tweak-total-clients');
+    if (tc) tc.textContent = Number(t.totalClients).toLocaleString();
+    const tu = document.getElementById('tweak-total-users');
+    if (tu) tu.textContent = Number(t.totalUsers).toLocaleString();
+    const an = document.getElementById('tweak-active-now');
+    if (an) an.textContent = Number(t.activeNow).toLocaleString();
+
+    document.documentElement.style.setProperty('--tweak-primary', t.primaryColor);
+    document.documentElement.style.setProperty('--tweak-accent', t.accentColor);
+
+    const sw = document.querySelector('.switcher');
+    if (sw) sw.style.display = t.showSwitcher ? '' : 'none';
+
+    document.body.dataset.density = t.density;
+  }
+
+  function setTweak(key, val) {
+    tweakState = { ...tweakState, [key]: val };
+    applyTweaks();
+    try { window.parent.postMessage({ type: '__edit_mode_set_keys', edits: { [key]: val } }, '*'); } catch(e) {}
+  }
+
+  applyTweaks();
+
+  // Build panel
+  const panel = document.createElement('div');
+  panel.id = 'tweaks-panel';
+  panel.style.cssText = `
+    position: fixed; right: 16px; top: 16px; z-index: 200;
+    width: 280px; background: rgba(255,255,255,0.95); backdrop-filter: blur(20px);
+    border-radius: 14px; box-shadow: 0 12px 40px rgba(0,0,0,0.18);
+    border: 0.5px solid rgba(0,0,0,0.08);
+    font-family: Inter, sans-serif; color: #191c1e;
+    display: none; overflow: hidden;
+  `;
+  panel.innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:0.5px solid rgba(0,0,0,0.06);">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span class="material-symbols-outlined" style="font-size:16px;">tune</span>
+        <b style="font-size:12px;font-weight:700;letter-spacing:0.02em;">Tweaks</b>
+      </div>
+      <button id="twk-close" style="border:0;background:transparent;cursor:pointer;color:rgba(0,0,0,0.4);width:22px;height:22px;border-radius:6px;display:flex;align-items:center;justify-content:center;">
+        <span class="material-symbols-outlined" style="font-size:16px;">close</span>
+      </button>
+    </div>
+    <div style="padding:12px 14px;display:flex;flex-direction:column;gap:14px;max-height:70vh;overflow-y:auto;">
+
+      <div style="font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(0,0,0,0.45);">Counters</div>
+
+      <label style="display:flex;flex-direction:column;gap:6px;">
+        <div style="display:flex;justify-content:space-between;font-size:11px;">
+          <span style="font-weight:500;color:rgba(0,0,0,0.7);">Total Clients</span>
+          <span id="twk-tc-val" style="color:rgba(0,0,0,0.5);font-variant-numeric:tabular-nums;">${tweakState.totalClients}</span>
+        </div>
+        <input id="twk-tc" type="range" min="0" max="500" step="1" value="${tweakState.totalClients}" style="width:100%;" />
+      </label>
+
+      <label style="display:flex;flex-direction:column;gap:6px;">
+        <div style="display:flex;justify-content:space-between;font-size:11px;">
+          <span style="font-weight:500;color:rgba(0,0,0,0.7);">Total Users</span>
+          <span id="twk-tu-val" style="color:rgba(0,0,0,0.5);font-variant-numeric:tabular-nums;">${tweakState.totalUsers.toLocaleString()}</span>
+        </div>
+        <input id="twk-tu" type="range" min="0" max="10000" step="10" value="${tweakState.totalUsers}" style="width:100%;" />
+      </label>
+
+      <label style="display:flex;flex-direction:column;gap:6px;">
+        <div style="display:flex;justify-content:space-between;font-size:11px;">
+          <span style="font-weight:500;color:rgba(0,0,0,0.7);">Active Now</span>
+          <span id="twk-an-val" style="color:rgba(0,0,0,0.5);font-variant-numeric:tabular-nums;">${tweakState.activeNow.toLocaleString()}</span>
+        </div>
+        <input id="twk-an" type="range" min="0" max="5000" step="1" value="${tweakState.activeNow}" style="width:100%;" />
+      </label>
+
+      <div style="font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(0,0,0,0.45);padding-top:6px;border-top:0.5px solid rgba(0,0,0,0.06);">Theme</div>
+
+      <label style="display:flex;align-items:center;justify-content:space-between;font-size:11px;">
+        <span style="font-weight:500;color:rgba(0,0,0,0.7);">Primary Color</span>
+        <input id="twk-primary" type="color" value="${tweakState.primaryColor}" style="width:36px;height:26px;border:0.5px solid rgba(0,0,0,0.1);border-radius:6px;cursor:pointer;background:none;padding:0;" />
+      </label>
+
+      <label style="display:flex;align-items:center;justify-content:space-between;font-size:11px;">
+        <span style="font-weight:500;color:rgba(0,0,0,0.7);">Accent Color</span>
+        <input id="twk-accent" type="color" value="${tweakState.accentColor}" style="width:36px;height:26px;border:0.5px solid rgba(0,0,0,0.1);border-radius:6px;cursor:pointer;background:none;padding:0;" />
+      </label>
+
+      <div style="font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(0,0,0,0.45);padding-top:6px;border-top:0.5px solid rgba(0,0,0,0.06);">Display</div>
+
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <span style="font-size:11px;font-weight:500;color:rgba(0,0,0,0.7);">Density</span>
+        <div id="twk-density" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;background:rgba(0,0,0,0.05);padding:3px;border-radius:8px;">
+          ${['compact','regular','comfy'].map(d => `<button data-density="${d}" style="border:0;background:${d===tweakState.density?'#fff':'transparent'};box-shadow:${d===tweakState.density?'0 1px 3px rgba(0,0,0,0.1)':'none'};font-size:10px;font-weight:600;padding:6px 0;border-radius:6px;cursor:pointer;color:#191c1e;text-transform:capitalize;">${d}</button>`).join('')}
+        </div>
+      </div>
+
+      <label style="display:flex;align-items:center;justify-content:space-between;font-size:11px;">
+        <span style="font-weight:500;color:rgba(0,0,0,0.7);">Show Screen Switcher</span>
+        <input id="twk-switcher" type="checkbox" ${tweakState.showSwitcher?'checked':''} style="cursor:pointer;" />
+      </label>
+    </div>
+  `;
+  document.body.appendChild(panel);
+
+  // Wire controls
+  const wireSlider = (inputId, valId, key, fmt) => {
+    const inp = document.getElementById(inputId);
+    const lbl = document.getElementById(valId);
+    inp.addEventListener('input', () => {
+      const v = Number(inp.value);
+      lbl.textContent = fmt ? fmt(v) : v;
+      setTweak(key, v);
+    });
+  };
+  wireSlider('twk-tc', 'twk-tc-val', 'totalClients');
+  wireSlider('twk-tu', 'twk-tu-val', 'totalUsers', v => v.toLocaleString());
+  wireSlider('twk-an', 'twk-an-val', 'activeNow', v => v.toLocaleString());
+
+  document.getElementById('twk-primary').addEventListener('input', e => setTweak('primaryColor', e.target.value));
+  document.getElementById('twk-accent').addEventListener('input', e => setTweak('accentColor', e.target.value));
+  document.getElementById('twk-switcher').addEventListener('change', e => setTweak('showSwitcher', e.target.checked));
+  document.getElementById('twk-density').addEventListener('click', e => {
+    const btn = e.target.closest('[data-density]');
+    if (!btn) return;
+    const d = btn.dataset.density;
+    setTweak('density', d);
+    document.querySelectorAll('#twk-density [data-density]').forEach(b => {
+      const active = b.dataset.density === d;
+      b.style.background = active ? '#fff' : 'transparent';
+      b.style.boxShadow = active ? '0 1px 3px rgba(0,0,0,0.1)' : 'none';
+    });
+  });
+
+  // Host protocol
+  window.addEventListener('message', (e) => {
+    const d = e.data || {};
+    if (d.type === '__activate_edit_mode') panel.style.display = 'block';
+    if (d.type === '__deactivate_edit_mode') panel.style.display = 'none';
+  });
+  document.getElementById('twk-close').addEventListener('click', () => {
+    panel.style.display = 'none';
+    try { window.parent.postMessage({ type: '__edit_mode_dismissed' }, '*'); } catch(e) {}
+  });
+  try { window.parent.postMessage({ type: '__edit_mode_available' }, '*'); } catch(e) {}
+</script>
+</body>
+</html>
