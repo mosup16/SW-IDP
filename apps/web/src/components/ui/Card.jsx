@@ -1,15 +1,15 @@
-export default function Card({ className = '', children, ...rest }) {
-  const base = [
-    'bg-[var(--card-bg)]',
-    'rounded-xl',
-    'border border-[var(--section-divider)]',
-    'p-6',
-  ].join(' ');
+import clsx from 'clsx';
+import './Card.css';
 
-  const classes = [base, className].filter(Boolean).join(' ');
-
+/**
+ * Card — flat surface container.
+ * bg-surface-container-lowest + rounded-xl + p-6
+ *
+ * All standard <div> HTML attributes pass through.
+ */
+export default function Card({ className, children, ...rest }) {
   return (
-    <div className={classes} {...rest}>
+    <div className={clsx('card-primitive', className)} {...rest}>
       {children}
     </div>
   );
