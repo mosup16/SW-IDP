@@ -1,0 +1,157 @@
+/* ============================================================
+   Navbar.css
+   Horizontal top bar — admin-only, rendered after login.
+   All values from design tokens in index.css.
+   No hardcoded hex values.
+============================================================ */
+
+/* ── Bar ────────────────────────────────────────────────────── */
+.navbar {
+  height: 4rem;             /* 64px */
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  background-color: var(--page-bg, #f7f9fb);
+  flex-shrink: 0;
+  gap: 0.25rem;
+}
+
+.navbar__spacer {
+  flex: 1;
+}
+
+/* ── Right-side action cluster ──────────────────────────────── */
+.navbar__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* ── Icon button (Bell / Help) ──────────────────────────────── */
+.navbar__icon-btn {
+  width: 2.25rem;           /* 36px */
+  height: 2.25rem;
+  border-radius: 0.5rem;
+  border: 0;
+  background: transparent;
+  color: var(--border-strong, #76777d);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.navbar__icon-btn:hover {
+  background-color: var(--table-row-hover, #eceef0);
+  color: var(--text-heading, #191c1e);
+}
+
+/* ── Avatar button ──────────────────────────────────────────── */
+.navbar__avatar-wrap {
+  position: relative;
+  margin-left: 0.25rem;
+}
+
+.navbar__avatar {
+  width: 2rem;              /* 32px */
+  height: 2rem;
+  border-radius: 9999px;
+  border: 0;
+  background-color: var(--btn-primary, #000000);
+  color: var(--btn-primary-text, #ffffff);
+  font-family: var(--font-label, 'Inter', sans-serif);
+  font-size: 0.6875rem;     /* 11px */
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.navbar__avatar:hover {
+  opacity: 0.88;
+}
+
+/* ── Dropdown menu ──────────────────────────────────────────── */
+.navbar__dropdown {
+  position: absolute;
+  top: calc(100% + 0.375rem);
+  right: 0;
+  background-color: var(--card-bg, #ffffff);
+  border-radius: 0.75rem;
+  box-shadow: 0 16px 40px rgba(25, 28, 30, 0.18);
+  border: 1px solid rgba(198, 198, 205, 0.4);
+  padding: 0.375rem;
+  min-width: 13rem;         /* 208px */
+  z-index: 80;
+  animation: navbar-dd-in 0.12s ease-out;
+}
+
+@keyframes navbar-dd-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* Screened username label at top */
+.navbar__dropdown-label {
+  font-family: var(--font-label, 'Inter', sans-serif);
+  font-size: 0.625rem;      /* 10px */
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--border-strong, #76777d);
+  padding: 0.5rem 0.75rem 0.25rem;
+}
+
+/* ── Dropdown item ──────────────────────────────────────────── */
+.navbar__dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;            /* 10px */
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 0;
+  border-radius: 0.5rem;
+  background: transparent;
+  font-family: var(--font-label, 'Inter', sans-serif);
+  font-size: 0.8125rem;     /* 13px */
+  font-weight: 500;
+  color: var(--text-heading, #191c1e);
+  text-align: left;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.12s;
+}
+
+.navbar__dropdown-item:hover {
+  background-color: var(--sidebar-bg, #f2f4f6);
+}
+
+.navbar__dropdown-icon {
+  flex-shrink: 0;
+  color: var(--border-strong, #76777d);
+}
+
+/* Danger item — Sign Out */
+.navbar__dropdown-item--danger {
+  color: var(--status-error, #ba1a1a);
+}
+
+.navbar__dropdown-item--danger:hover {
+  background-color: var(--status-error-bg, #ffdad6);
+}
+
+.navbar__dropdown-item--danger .navbar__dropdown-icon {
+  color: var(--status-error, #ba1a1a);
+}
+
+/* ── Divider ────────────────────────────────────────────────── */
+.navbar__dropdown-divider {
+  height: 1px;
+  background-color: rgba(198, 198, 205, 0.4);
+  margin: 0.25rem;
+}

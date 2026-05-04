@@ -1,93 +1,77 @@
-@import 'tailwindcss';
-@plugin '@tailwindcss/forms';
+:root {
+  --page-bg:                     #f7f9fb;
+  --page-bg-disabled:            #d8dadc;
+  --page-bg-subtle:              #e0e3e5;
 
-/*
- * Material-3 design tokens lifted from design/REQUIREMENTS.md §5
- * and design/stitch-export/aegis_core/DESIGN.md.
- *
- * Edit only in coordination with those documents — they are the source of truth.
- */
-@theme {
-  /* Brand / primary */
-  --color-primary: #000000;
-  --color-on-primary: #ffffff;
-  --color-primary-container: #001b3d;
-  --color-primary-fixed: #d6e3ff;
+  --card-bg:                     #ffffff;
+  --sidebar-bg:                  #f2f4f6;
+  --table-row-hover:             #eceef0;
+  --input-bg:                    #e6e8ea;
+  --section-divider:             #e0e3e5;
 
-  /* Secondary */
-  --color-secondary: #515f74;
-  --color-secondary-container: #d5e3fc;
+  --btn-primary:                 #000000;
+  --btn-primary-text:            #ffffff;
+  --btn-primary-hover:           #001b3d;
+  --btn-danger:                  #ba1a1a;
+  --btn-danger-text:             #ffffff;
 
-  /* Tertiary (trust-blue) */
-  --color-tertiary: #000000;
-  --color-tertiary-container: #001e2f;
-  --color-tertiary-fixed: #c9e6ff;
+  --link-color:                  #4184df;
+  --focus-outline:               #005db5;
 
-  /* Surfaces — tonal layering replaces borders */
-  --color-surface: #f7f9fb;
-  --color-surface-container-low: #f2f4f6;
-  --color-surface-container: #eceef0;
-  --color-surface-container-high: #e6e8ea;
-  --color-surface-container-highest: #e0e3e5;
-  --color-surface-container-lowest: #ffffff;
+  
+  --badge-default-bg:            #d5e3fc;
+  --badge-default-text:          #57657a;
+  --badge-disabled-bg:           #b9c7df;
+  --badge-active-bg:             #c9e6ff;
+  --badge-active-text:           #008cc7;
+  --badge-info-light-bg:         #d6e3ff;
+  --badge-info-bg:               #a8c8ff;
 
-  /* Foreground text */
-  --color-on-surface: #191c1e;
-  --color-on-surface-variant: #45464d;
+  --text-heading:                #191c1e;
+  --text-body:                   #191c1e;
+  --text-muted:                  #45464d;
+  --text-placeholder:            #76777d;
+  --text-label:                  #515f74;
+  --text-on-badge:               #ffffff;
+  --text-on-dark:                #eff1f3;
 
-  /* Lines / outlines */
-  --color-outline: #76777d;
-  --color-outline-variant: #c6c6cd;
+  --sidebar-text-color:          #0d1c2e;
 
-  /* Accents */
-  --color-surface-tint: #005db5;
-  --color-error: #ba1a1a;
-  --color-error-container: #ffdad6;
+  --dark-panel:                  #001b3d;   /* Security Standards card background */
+  --dark-panel-deep:             #001e2f;   /* Security Standards card deep background */
+  --dark-panel-text:             #004c6e;   /* Security Standards card text color */
 
-  /* Type families */
-  --font-headline: 'Manrope', system-ui, sans-serif;
-  --font-body: 'Inter', system-ui, sans-serif;
-  --font-label: 'Inter', system-ui, sans-serif;
+  --border:                      #c6c6cd;
+  --border-strong:               #76777d;
 
-  /* Radii (per REQUIREMENTS.md §5).
-     Note: design's `rounded-full` is 0.75rem, not a true circle.
-     For genuine circular shapes (avatars, dots), use `rounded-[100%]`. */
-  --radius-DEFAULT: 0.125rem;
-  --radius-lg: 0.25rem;
-  --radius-xl: 0.5rem;
-  --radius-full: 0.75rem;
-
-  /* Elevation — ambient only (no hard shadows) */
-  --shadow-ambient: 0 12px 32px rgba(25, 28, 30, 0.12);
+  --status-active:               #008cc7;
+  --status-active-bg:            #c9e6ff;
+  --status-error:                #ba1a1a;
+  --status-error-bg:             #ffdad6;
+  --status-error-text:           #93000a;
+}
+body, html {
+  margin: 0;
+  padding: 0;
+  background-color: var(--page-bg);
+  box-sizing: border-box;
+  height: 100%;
+  overflow-x: hidden;
 }
 
-/* Editorial rules from REQUIREMENTS.md §5 */
-@layer base {
-  html,
-  body {
-    background-color: var(--color-surface);
-    color: var(--color-on-surface);
-    font-family: var(--font-body);
-  }
-
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    font-family: var(--font-headline);
-  }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-/* Glassmorphism preset — used by login card / modals. */
-@utility glass-panel {
-  background-color: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
+#root {
+  background-color: var(--page-bg);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
-/* Monolith-gradient primary button (per REQUIREMENTS.md §4). */
-@utility monolith-gradient {
-  background-image: linear-gradient(135deg, #000000 0%, #001b3d 100%);
+footer {
+  flex-shrink: 0;
 }

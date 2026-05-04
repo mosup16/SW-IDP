@@ -1,46 +1,38 @@
-import { ShieldCheck } from 'lucide-react';
-
+import { BrowserRouter, Routes, Route,Navigate, Outlet  } from 'react-router-dom';
+import AuditLogs from './pages/admin/AuditLogs/AuditLogs';
+import ClientConfiguration from './pages/admin/ClientConfiguration/ClientConfiguration';
+import ClientManagement from './pages/admin/ClientManagement/ClientManagement';
+import IdentityManagement from './pages/admin/IdentityManagement/IdentityManagement';
+import RoleManagement from './pages/admin/RoleManagement/RoleManagement';
+import RoleForm from './pages/admin/RoleForm/RoleForm';
+import SystemSettingd from './pages/admin/SystemSettings/SystemSettings';
+import Login from './pages/auth/Login/Login';
+import Register from './pages/auth/Register/Register';
+import UserProfile from './pages/profile/UserProfile/UserProfile';
+import UserSessionTab from './pages/profile/UserSessionTab/UserSessionTab';
+import './index.css';
 export default function App() {
   return (
-    <main className="min-h-screen flex items-center justify-center p-8 bg-surface">
-      <div className="glass-panel max-w-xl w-full rounded-xl shadow-ambient p-10 space-y-6">
-        <div className="flex items-center gap-3">
-          <span
-            className="monolith-gradient text-on-primary inline-flex items-center justify-center w-10 h-10 rounded-lg"
-            aria-hidden
-          >
-            <ShieldCheck className="w-5 h-5" />
-          </span>
-          <span className="font-headline text-lg font-bold tracking-tight text-on-surface">
-            Sovereign IdP
-          </span>
-        </div>
+    <>
+    <BrowserRouter>
+       <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="register" element={<Register />} />
+        <Route path="userProfile" element={<UserProfile />} />
+        <Route path="userSessionTab" element={<UserSessionTab />} />
+        <Route path="clients" element={<ClientManagement />} />
+        <Route path="clientConfiguration" element={<ClientConfiguration />} />
+        <Route path="roles" element={<RoleManagement />} />
+        <Route path="roleForm" element={<RoleForm />} />
+        <Route path="identities" element={<IdentityManagement />} />    
+        <Route path="auditLogs" element={<AuditLogs />} />
+        <Route path="systemSettings" element={<SystemSettingd />} />
 
-        <h1 className="font-headline text-3xl font-extrabold leading-tight text-on-surface">
-          Frontend foundation is wired.
-        </h1>
 
-        <p className="text-on-surface-variant leading-relaxed">
-          This placeholder confirms Vite, React, Tailwind v4, the Material-3 design tokens, the
-          Manrope / Inter font pair, and Lucide icons are all loaded. Real screens are built in the
-          following issues.
-        </p>
-
-        <div className="flex flex-wrap gap-2 pt-2">
-          <span className="inline-flex items-center rounded-full bg-tertiary-fixed text-tertiary-container px-3 py-1 text-xs font-medium uppercase tracking-wider">
-            tokens loaded
-          </span>
-          <span className="inline-flex items-center rounded-full bg-secondary-container text-on-surface px-3 py-1 text-xs font-medium uppercase tracking-wider">
-            fonts ready
-          </span>
-          <span
-            className="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium uppercase tracking-wider text-on-primary"
-            style={{ backgroundColor: 'var(--color-surface-tint)' }}
-          >
-            surface-tint
-          </span>
-        </div>
-      </div>
-    </main>
+      
+       </Routes>
+    </BrowserRouter>
+    </>
+     
   );
 }

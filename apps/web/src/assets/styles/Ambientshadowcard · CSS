@@ -1,0 +1,19 @@
+/* ============================================================
+   AmbientShadowCard.css
+   Elevated surface with the project's ambient shadow token.
+   All values from design tokens in index.css.
+============================================================ */
+
+.ambient-shadow-card {
+  background-color: var(--card-bg, #ffffff);
+  border-radius: var(--radius-xl, 0.5rem);   /* rounded-xl */
+  /*
+    shadow-ambient: matches the app.html `.ambient-shadow-soft` definition.
+    Expressed as a CSS custom property so index.css can override it
+    globally without touching this file.
+  */
+  box-shadow: var(
+    --shadow-ambient,
+    0 12px 32px -4px rgba(25, 28, 30, 0.05)
+  );
+}
