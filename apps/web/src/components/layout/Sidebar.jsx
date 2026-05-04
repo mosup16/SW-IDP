@@ -1,18 +1,7 @@
 import BrandMark from '../ui/BrandMark';
 import './Sidebar.css';
 
-/**
- * Sidebar — fixed 256-px admin navigation shell.
- *
- * Props:
- *   items      — required  { href: string, label: string, icon: ReactNode }[]
- *   activeHref — required  string  (e.g. '/profile')
- *   onNavigate — required  (href: string) => void
- *
- * All items (including Settings & Sign Out) are passed in via props.
- * AdminLayout owns the item list and order; Sidebar just renders it.
- * The last item whose href is '/logout' receives the danger sign-out style.
- */
+
 export default function Sidebar({ items, activeHref, onNavigate }) {
   return (
     <aside className="sidebar">
