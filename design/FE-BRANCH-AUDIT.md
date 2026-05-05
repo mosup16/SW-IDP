@@ -2,21 +2,27 @@
 
 A walkthrough of `origin/Frontend-branch` at commit `82e7c44` (30 commits ahead of `main` at that time).
 
-This doc captures the deviations the team made vs. the locked spec. Per project policy:
+**Build status:** the SPA currently builds and runs (`npm run build` → 51 modules transformed, 0 errors; verified 2026-04-28). Page components are empty fragments, so the broken-looking imports inside the primitives (corrupted CSS filenames, missing files, typos) are dead code that Vite tree-shakes out. They will only matter once a page tries to import a primitive.
 
-- **Stopper deviations** (build-breaking or wiring-blocking) → new follow-up issues, fix promptly.
-- **Non-stopper deviations** (different conventions, accepted technical debt) → documented here, kept as-is. Issues are NOT updated retroactively. New code follows the team's adopted convention going forward; the locked spec is updated to match.
+This doc serves two purposes:
 
-The goal is to write down the actual conventions the team has adopted so that:
-1. Reviewers don't fight the team over already-merged decisions.
-2. The next round of issues references reality, not the original spec.
-3. Anyone joining mid-stream can read this doc and understand "why is it like that".
+1. **TDR (tech-debt record).** Section 1 lists known issues that don't break anything today but will bite someone when they reach them. They are intentionally not tracked as separate GitHub issues — the screen-implementing pair fixes them on first encounter.
+2. **Convention diff vs. the locked spec.** Section 2 documents the conventions the team picked instead of what the spec said. These are kept as-is; the spec is updated to match reality once the branch lands.
+
+The goal is to write down the world as it actually is so the project keeps moving.
 
 ---
 
-## Section 1 — Build-breaking stoppers
+## Section 1 — Latent issues (TDR)
 
-These prevent the SPA from building or running today. They need fixes in their own follow-up issues.
+These do **not** break the build today (verified — see header). They are recorded here as known issues. Each one becomes a real bug the moment the relevant code path is reached:
+
+- The CSS-related items (S1, S2, S3) become real when a page actually imports a primitive (Login importing Button, etc.).
+- S4 is a typo with no current effect (the component still imports + renders fine — `SystemSettingd` is just the local name binding).
+- S5 stops being inert when the team wires the first admin page that's supposed to show inside AdminLayout.
+- S6 / S7 stop being inert when auth gating is wired.
+
+**Fix-on-encounter rule:** whoever picks up the work that touches one of these — fix it inline in the same PR. No separate tracker.
 
 ### S1. CSS files with corrupted Unicode filenames
 
@@ -211,37 +217,38 @@ Don't do these until the FE branch is merged. Once it's merged, file a small PR.
 
 ---
 
-## Section 4 — Recommended follow-up issues
+## Section 4 — Future cleanup (not tracked as separate issues)
 
-Track each stopper from Section 1 as its own GitHub issue. Suggested titles:
+Per the fix-on-encounter rule above, none of the Section 1 items get their own GitHub issue. They live in this doc as a reference checklist. The screen and wiring issues already in the tracker absorb them naturally:
 
-| New issue | Maps to | Type |
-|---|---|---|
-| `[fix] Rename corrupted CSS filenames in apps/web/src/assets/styles/` | S1 | bug |
-| `[fix] Rename Botton.css → Button.css` | S2 | bug |
-| `[fix] CSS import paths in primitives don't resolve` | S3 | bug (covers most build failures) |
-| `[fix] Typo: SystemSettingd in App.jsx` | S4 | bug |
-| `[fix] Wrap admin routes in AdminLayout` | S5 | bug |
-| `[chore] Implement ProtectedRoute + AuthContext` | S6, S7 | task (replaces old #3) |
-| `[chore] Drop redundant root /package.json + /package-lock.json` | (S-pending below) | task |
+| Item | Naturally absorbed by |
+|---|---|
+| S1 (corrupted CSS filenames) | the first screen issue that imports a primitive (e.g. Login screen #9) |
+| S2 (Botton.css typo) | same — Login imports Button |
+| S3 (broken `./X.css` import paths) | same — every primitive consumed by a screen |
+| S4 (`SystemSettingd` typo) | the System Settings screen issue (#26 / #27) |
+| S5 (AdminLayout not wrapping admin routes) | first admin screen that needs the sidebar to render — pair fixes the App.jsx routing in the same PR |
+| S6 (empty `ProtectedRoute.jsx`) | the auth-wiring issue (formerly #3) |
+| S7 (empty hooks/services files) | same as S6 |
+| S-pending (root `/package.json` + `/package-lock.json`) | next time someone touches dependency files; or do it as a tiny standalone PR if it bothers anyone |
 
-S1–S4 should land in one PR ("FE branch build fix"). Tiny, mechanical changes.
-
-S5 + S6 are bigger and live with auth wiring.
+If any one of these starts blocking *multiple* issues at once, escalate to a real GH issue at that point.
 
 ### S-pending. Redundant root `/package.json` + `/package-lock.json`
 
-The team installed `react-router-dom` at the repo root by mistake (probably ran `npm install` from the wrong cwd). The dep was later moved into `apps/web/package.json` correctly, but the root files are still there:
+The team installed `react-router-dom` at the repo root by mistake. The dep is now also in `apps/web/package.json` (where Vite reads it from), so the root files are dead weight:
 
 ```
 /package.json       — has `react-router-dom: ^7.14.2`, nothing else
 /package-lock.json  — corresponding lockfile
 ```
 
-These should be deleted — the project's monorepo intent is "all FE deps live in `apps/web/`, no root npm context".
+Delete next time someone touches dependencies; not urgent.
 
 ---
 
 ## Closing note
 
 Every deviation in Section 2 is *understandable*. The spec called for Tailwind without explaining why; the team built fine working CSS. The spec called for kebab-case paths without explaining why; the team built working camelCase ones. The point of this document isn't to relitigate — it's to write down the world as it actually is so the rest of the project can keep moving.
+
+**The build is green today.** The latent issues in Section 1 will surface as real bugs when their code paths are reached, and the pair touching that area fixes them inline. No urgency, no separate trackers.
