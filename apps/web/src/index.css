@@ -1,0 +1,77 @@
+:root {
+  --page-bg:                     #f7f9fb;
+  --page-bg-disabled:            #d8dadc;
+  --page-bg-subtle:              #e0e3e5;
+
+  --card-bg:                     #ffffff;
+  --sidebar-bg:                  #f2f4f6;
+  --table-row-hover:             #eceef0;
+  --input-bg:                    #e6e8ea;
+  --section-divider:             #e0e3e5;
+
+  --btn-primary:                 #000000;
+  --btn-primary-text:            #ffffff;
+  --btn-primary-hover:           #001b3d;
+  --btn-danger:                  #ba1a1a;
+  --btn-danger-text:             #ffffff;
+
+  --link-color:                  #4184df;
+  --focus-outline:               #005db5;
+
+  
+  --badge-default-bg:            #d5e3fc;
+  --badge-default-text:          #57657a;
+  --badge-disabled-bg:           #b9c7df;
+  --badge-active-bg:             #c9e6ff;
+  --badge-active-text:           #008cc7;
+  --badge-info-light-bg:         #d6e3ff;
+  --badge-info-bg:               #a8c8ff;
+
+  --text-heading:                #191c1e;
+  --text-body:                   #191c1e;
+  --text-muted:                  #45464d;
+  --text-placeholder:            #76777d;
+  --text-label:                  #515f74;
+  --text-on-badge:               #ffffff;
+  --text-on-dark:                #eff1f3;
+
+  --sidebar-text-color:          #0d1c2e;
+
+  --dark-panel:                  #001b3d;   /* Security Standards card background */
+  --dark-panel-deep:             #001e2f;   /* Security Standards card deep background */
+  --dark-panel-text:             #004c6e;   /* Security Standards card text color */
+
+  --border:                      #c6c6cd;
+  --border-strong:               #76777d;
+
+  --status-active:               #008cc7;
+  --status-active-bg:            #c9e6ff;
+  --status-error:                #ba1a1a;
+  --status-error-bg:             #ffdad6;
+  --status-error-text:           #93000a;
+}
+body, html {
+  margin: 0;
+  padding: 0;
+  background-color: var(--page-bg);
+  box-sizing: border-box;
+  height: 100%;
+  overflow-x: hidden;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+#root {
+  background-color: var(--page-bg);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+footer {
+  flex-shrink: 0;
+}
