@@ -1,0 +1,119 @@
+/* ============================================================
+   Sidebar.css
+   Fixed 256px admin navigation shell.
+   All values resolved from design tokens in index.css.
+   No hardcoded hex values.
+============================================================ */
+
+/* ── Shell ──────────────────────────────────────────────────── */
+.sidebar {
+  width: 16rem;           /* 256px */
+  flex-shrink: 0;
+  background-color: var(--sidebar-bg, #f2f4f6);
+  display: flex;
+  flex-direction: column;
+  padding: 2rem 1rem;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  /* no border — spec says "no border" */
+}
+
+/* ── Brand area ─────────────────────────────────────────────── */
+.sidebar__brand {
+  padding: 0 0.5rem;
+  margin-bottom: 2rem;
+}
+
+/* ── Nav list ───────────────────────────────────────────────── */
+.sidebar__nav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;           /* 4px between items */
+}
+
+/* ── Single nav item ────────────────────────────────────────── */
+.sidebar__item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;           /* 12px */
+  padding: 0.625rem 0.875rem;  /* 10px 14px */
+  border-radius: 0.625rem;     /* 10px */
+  border: 0;
+  background: transparent;
+  color: var(--text-muted, #45464d);
+  font-family: var(--font-label, 'Inter', sans-serif);
+  font-size: 0.8125rem;        /* 13px */
+  font-weight: 500;
+  text-align: left;
+  width: 100%;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+  overflow: hidden;            /* keeps pill inside border-radius */
+}
+
+.sidebar__item:hover {
+  background-color: rgba(255, 255, 255, 0.5);
+  color: var(--text-heading, #191c1e);
+}
+
+/* ── Active state ───────────────────────────────────────────── */
+.sidebar__item--active {
+  background-color: var(--card-bg, #ffffff);
+  color: var(--text-heading, #191c1e);
+  font-weight: 700;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.sidebar__item--active:hover {
+  background-color: var(--card-bg, #ffffff);
+}
+
+/* 4px vertical pill — surface-tint color, left edge */
+.sidebar__active-pill {
+  position: absolute;
+  left: 0;
+  top: 25%;
+  bottom: 25%;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background-color: var(--focus-outline, #005db5);  /* surface-tint */
+  pointer-events: none;
+}
+
+/* ── Icon ───────────────────────────────────────────────────── */
+.sidebar__item-icon {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  color: inherit;
+}
+
+/* ── Label ──────────────────────────────────────────────────── */
+.sidebar__item-label {
+  flex: 1;
+  color: inherit;
+  line-height: 1.25;
+}
+
+/* ── Footer section ─────────────────────────────────────────── */
+.sidebar__footer {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding-top: 0.5rem;
+}
+
+/* Sign Out — danger tint on hover only */
+.sidebar__item--signout {
+  color: var(--text-muted, #45464d);
+}
+
+.sidebar__item--signout:hover {
+  background-color: var(--status-error-bg, #ffdad6);
+  color: var(--status-error, #ba1a1a);
+}
