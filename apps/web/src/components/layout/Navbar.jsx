@@ -1,15 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Bell, HelpCircle, UserCircle, Settings, LogOut } from 'lucide-react';
-import './Navbar.css';
+import '../../assets/styles/Navbar.css';
 
-/**
- * Navbar — horizontal top bar rendered only for authenticated admin users.
- *
- * Props:
- *  userName   — display name shown in the avatar dropdown. Default: 'Admin'
- *  onNavigate — (href: string) => void  — same router bridge as Sidebar
- *  onSignOut  — () => void
- */
 export default function Navbar({ userName = 'Admin', onNavigate, onSignOut }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -86,7 +78,7 @@ export default function Navbar({ userName = 'Admin', onNavigate, onSignOut }) {
               <button
                 className="navbar__dropdown-item"
                 role="menuitem"
-                onClick={() => navigate('userProfile')}
+                onClick={() => navigate('/userProfile')}
               >
                 <UserCircle size={18} className="navbar__dropdown-icon" />
                 My Profile
@@ -95,7 +87,7 @@ export default function Navbar({ userName = 'Admin', onNavigate, onSignOut }) {
               <button
                 className="navbar__dropdown-item"
                 role="menuitem"
-                onClick={() => navigate('systemSettings')}
+                onClick={() => navigate('/systemSettings')}
               >
                 <Settings size={18} className="navbar__dropdown-icon" />
                 Settings

@@ -17,13 +17,26 @@ export function AuthProvider({ children }) {
     return u;
   }
 
+  // New: signUp function (mirroring signIn)
+  async function signUp(creds) {
+    const u = await authService.register(creds);
+    setCurrentUser(u);        // Auto-login after successful registration
+    return u;
+  }
+
   async function signOut() {
     await authService.signOut();
     setCurrentUser(null);
   }
 
   return (
-    <AuthCtx.Provider value={{ currentUser, loading, signIn, signOut }}>
+    <AuthCtx.Provider value={{ 
+      currentUser, 
+      loading, 
+      signIn, 
+      signUp,     // ← Added
+      signOut 
+    }}>
       {children}
     </AuthCtx.Provider>
   );

@@ -1,13 +1,6 @@
 import clsx from 'clsx';
-import './Button.css';
+import '../../assets/styles/Button.css';
 
-/**
- * Button — primary UI action primitive.
- *
- * @param {'primary'|'secondary'} variant  – visual style. Default: 'primary'
- * @param {'sm'|'md'}             size     – padding / font scale. Default: 'md'
- * All standard <button> HTML attributes (onClick, disabled, type, …) pass through.
- */
 export default function Button({
   variant = 'primary',
   size = 'md',

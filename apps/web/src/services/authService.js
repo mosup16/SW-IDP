@@ -1,16 +1,25 @@
 import { apiClient } from './apiClient';
 
-const MOCK = true; // flip when identity-service is reachable
+const MOCK = true;
 
 const fakeUser = {
   id: 'u1',
-  email: 'demo@sovereign.idp',
-  displayName: 'Alex Vance',
+  email: 'admin@sovereign.idp',
+  displayName: 'Admin User',
   role: 'Super Administrator',
 };
 
 export const authService = {
-  signIn:  async (creds) => MOCK ? fakeUser : apiClient.post('/identity/login', creds),
-  signOut: async ()      => MOCK ? null     : apiClient.post('/identity/logout'),
-  me:      async ()      => MOCK ? fakeUser : apiClient.get('/identity/me'),
+  me: async () => 
+    MOCK ? fakeUser : apiClient.get('/identity/me'),
+
+  signIn: async (creds) => 
+    MOCK ? fakeUser : apiClient.post('/identity/login', creds),
+
+  // New register method as requested
+  register: async (creds) => 
+    MOCK ? fakeUser : apiClient.post('/identity/register', creds),
+
+  signOut: async () => 
+    MOCK ? Promise.resolve() : apiClient.post('/identity/logout'),
 };

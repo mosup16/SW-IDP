@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import GlassCard from './GlassCard';
-import './Modal.css';
+import '../../assets/styles/Modal.css';
 
 export default function Modal({ open, onOpenChange, title, children, size = 'md' }) {
   const modalRef = useRef(null);

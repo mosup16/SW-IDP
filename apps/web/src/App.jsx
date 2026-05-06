@@ -19,17 +19,18 @@ export default function App() {
         <Route path="/" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
-        <Route element={<ProtectedRoute />}>
-          <Route element={<AdminLayout />}>
-            <Route path="/userProfile"         element={<UserProfile />} />
-            <Route path="/clients"             element={<ClientManagement />} />
-            <Route path="/clientConfiguration" element={<ClientConfiguration />} />
-            <Route path="/identities"          element={<IdentityManagement />} />
-            <Route path="/roles"               element={<RoleManagement />} />
-            <Route path="/auditLogs"           element={<AuditLogs />} />
-            <Route path="/systemSettings"      element={<SystemSettings />} />
+          <Route element={<ProtectedRoute />}>
+            <Route element={<AdminLayout />}>
+              <Route path="/userProfile"         element={<UserProfile />} />
+              <Route path="/clients"             element={<ClientManagement />} />
+              <Route path="/clientConfiguration" element={<ClientConfiguration />} />
+              <Route path="/identities"          element={<IdentityManagement />} />
+              <Route path="/roles"               element={<RoleManagement />} />
+              <Route path="/auditLogs"           element={<AuditLogs />} />
+              <Route path="/systemSettings"      element={<SystemSettings />} />
+            </Route>
           </Route>
-        </Route>
+          
       </Routes>
     </BrowserRouter>
   );

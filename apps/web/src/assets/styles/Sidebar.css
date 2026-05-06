@@ -1,11 +1,3 @@
-/* ============================================================
-   Sidebar.css
-   Fixed 256px admin navigation shell.
-   All values resolved from design tokens in index.css.
-   No hardcoded hex values.
-============================================================ */
-
-/* ── Shell ──────────────────────────────────────────────────── */
 .sidebar {
   width: 16rem;           /* 256px */
   flex-shrink: 0;
@@ -17,16 +9,13 @@
   top: 0;
   height: 100vh;
   overflow-y: auto;
-  /* no border — spec says "no border" */
 }
 
-/* ── Brand area ─────────────────────────────────────────────── */
 .sidebar__brand {
   padding: 0 0.5rem;
   margin-bottom: 2rem;
 }
 
-/* ── Nav list ───────────────────────────────────────────────── */
 .sidebar__nav {
   flex: 1;
   display: flex;
@@ -34,7 +23,6 @@
   gap: 0.25rem;           /* 4px between items */
 }
 
-/* ── Single nav item ────────────────────────────────────────── */
 .sidebar__item {
   position: relative;
   display: flex;
@@ -60,7 +48,6 @@
   color: var(--text-heading, #191c1e);
 }
 
-/* ── Active state ───────────────────────────────────────────── */
 .sidebar__item--active {
   background-color: var(--card-bg, #ffffff);
   color: var(--text-heading, #191c1e);
@@ -71,8 +58,6 @@
 .sidebar__item--active:hover {
   background-color: var(--card-bg, #ffffff);
 }
-
-/* 4px vertical pill — surface-tint color, left edge */
 .sidebar__active-pill {
   position: absolute;
   left: 0;
@@ -84,7 +69,6 @@
   pointer-events: none;
 }
 
-/* ── Icon ───────────────────────────────────────────────────── */
 .sidebar__item-icon {
   display: flex;
   align-items: center;
@@ -92,14 +76,12 @@
   color: inherit;
 }
 
-/* ── Label ──────────────────────────────────────────────────── */
 .sidebar__item-label {
   flex: 1;
   color: inherit;
   line-height: 1.25;
 }
 
-/* ── Footer section ─────────────────────────────────────────── */
 .sidebar__footer {
   margin-top: auto;
   display: flex;
@@ -108,7 +90,6 @@
   padding-top: 0.5rem;
 }
 
-/* Sign Out — danger tint on hover only */
 .sidebar__item--signout {
   color: var(--text-muted, #45464d);
 }

@@ -1,4 +1,4 @@
-import "./Checkbox.css";
+import "../../assets/styles/Checkbox.css";
 
 const Checkbox = ({ label, description, className = "", ...props }) => {
   return (

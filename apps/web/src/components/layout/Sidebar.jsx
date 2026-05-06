@@ -1,8 +1,11 @@
+import { useLocation, useNavigate } from 'react-router-dom';
 import BrandMark from '../ui/BrandMark';
-import './Sidebar.css';
+import '../../assets/styles/Sidebar.css';
 
+export default function Sidebar({ items }) {
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
 
-export default function Sidebar({ items, activeHref, onNavigate }) {
   return (
     <aside className="sidebar">
       {/* Brand */}
@@ -10,10 +13,10 @@ export default function Sidebar({ items, activeHref, onNavigate }) {
         <BrandMark size="sm" />
       </div>
 
-      {/* Nav — all items including Settings & Sign Out */}
+      {/* Nav */}
       <nav className="sidebar__nav" aria-label="Main navigation">
         {items.map(({ href, label, icon }) => {
-          const active = href === activeHref;
+          const active = href === pathname;
           const isSignOut = href === '/logout';
 
           return (
@@ -24,7 +27,7 @@ export default function Sidebar({ items, activeHref, onNavigate }) {
                 active     ? 'sidebar__item--active'  : '',
                 isSignOut  ? 'sidebar__item--signout' : '',
               ].filter(Boolean).join(' ')}
-              onClick={() => onNavigate(href)}
+              onClick={() => navigate(href)}
               aria-current={active ? 'page' : undefined}
             >
               <span className="sidebar__item-icon" aria-hidden="true">

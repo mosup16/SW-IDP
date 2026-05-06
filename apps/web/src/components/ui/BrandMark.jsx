@@ -1,14 +1,7 @@
 import { ShieldCheck } from 'lucide-react';
 import clsx from 'clsx';
-import './BrandMark.css';
+import '../../assets/styles/BrandMark.css';
 
-/**
- * BrandMark — gradient tile (monolith-gradient, text-on-primary, ShieldCheck)
- * alongside the "Sovereign IdP" wordmark in font-headline.
- *
- * @param {'sm'|'md'|'lg'} size  – scales both tile and wordmark. Default: 'md'
- * All standard <div> HTML attributes pass through.
- */
 export default function BrandMark({ size = 'md', className, ...rest }) {
   return (
     <div

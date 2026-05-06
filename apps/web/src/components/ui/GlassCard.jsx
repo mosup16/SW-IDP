@@ -1,4 +1,4 @@
-import './GlassCard.css';
+import '../../assets/styles/GlassCard.css';
 
 export default function GlassCard({ className = '', children, ...props }) {
   return (
