@@ -1,0 +1,40 @@
+.icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: none;
+  border-radius: var(--border-radius-md, 8px);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.icon-button:hover {
+  background: var(--input-bg);
+  color: var(--text-body);
+}
+
+.icon-button:active {
+  transform: scale(0.98);
+}
+
+.icon-button:focus-visible {
+  outline: 2px solid var(--focus-outline);
+  outline-offset: 2px;
+}
+
+.icon-button:disabled {
+  color: var(--page-bg-disabled);
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.icon-button svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}

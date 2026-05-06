@@ -1,0 +1,11 @@
+/* ============================================================
+   Card.css
+   Flat surface container — no shadow, pure background + radius.
+   All values from design tokens in index.css.
+============================================================ */
+
+.card-primitive {
+  background-color: var(--card-bg, #ffffff);
+  border-radius: var(--radius-xl, 0.5rem);   /* rounded-xl */
+  padding: 1.5rem;                             /* p-6 */
+}
