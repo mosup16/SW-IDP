@@ -1,18 +1,15 @@
-package com.iam.identity.Repository.AuthenticationRepository;
+package com.iam.identity.Repository.IdentityRepository;
 
 import com.iam.identity.Entity.Identity;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.Optional;
 import java.util.UUID;
 
-@Repository
 public interface IdentityRepository extends JpaRepository<Identity, UUID> {
-
-    boolean existsByEmail(String email);
-
     Optional<Identity> findByEmail(String email);
-
-
+    boolean existsByEmail(String email);
+    @Query("SELECT COUNT(i) FROM Identity i WHERE i.status = Status.ENABLED ")
+    long countEnabledIdentities();
 }

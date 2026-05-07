@@ -5,8 +5,12 @@ import com.iam.identity.DTO.AuthenticationDTO.Logindto;
 import com.iam.identity.DTO.AuthenticationDTO.Registerdto;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 public interface AuthenticationService {
     void register(Registerdto dto);
     boolean login(Logindto request);
+    boolean existsById(UUID id);
+
 }

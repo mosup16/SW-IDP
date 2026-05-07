@@ -3,6 +3,8 @@ package com.iam.admin.Entity;
 import com.iam.admin.Enum.Type;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
