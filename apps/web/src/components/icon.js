@@ -42,8 +42,8 @@ import {
   ShieldCheck,
 } from 'lucide-react';
 
-// Centralised Icon mapping (Material Symbols → Lucide)
-export const Icon = {
+// Centralised Icon mapping
+const Icon = {
   Search,
   Filter,
   MoreVertical,
@@ -84,7 +84,7 @@ export const Icon = {
   LayoutGrid,
   ShieldCheck,
 
-  // Aliases for easier use (common alternatives)
+  // Aliases for easier use
   Close: X,
   Edit: Pencil,
   Delete: Trash2,

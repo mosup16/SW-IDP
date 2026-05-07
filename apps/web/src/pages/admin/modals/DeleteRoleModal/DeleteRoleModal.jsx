@@ -1,4 +1,4 @@
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence } from  "framer-motion";
 import '../../../../assets/styles/DeleteRoleModal.css';
 import Icon from '../../../../components/icon';
 
