@@ -1,0 +1,141 @@
+/* ===== MODAL OVERLAY ===== */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
+}
+
+/* ===== MODAL CARD ===== */
+.delete-modal {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.18);
+  width: 100%;
+  max-width: 480px;
+  padding: 32px;
+}
+
+/* ===== HEADER ===== */
+.delete-modal__header {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.delete-modal__icon {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  background: #fff1f0;
+  border: 1.5px solid #ffa39e;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #cf1322;
+}
+
+.delete-modal__title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #141414;
+  margin: 0 0 6px 0;
+}
+
+.delete-modal__subtitle {
+  font-size: 14px;
+  color: #595959;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ===== INFO BOX ===== */
+.delete-modal__info {
+  background: #fafafa;
+  border: 1px solid #f0f0f0;
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 24px;
+}
+
+.delete-modal__info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.delete-modal__info-row + .delete-modal__info-row {
+  margin-top: 10px;
+}
+
+.delete-modal__info-label {
+  font-size: 14px;
+  color: #8c8c8c;
+}
+
+.delete-modal__info-value {
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+  background: #ffffff;
+  border: 1px solid #e8e8e8;
+  border-radius: 6px;
+  padding: 3px 10px;
+  color: #262626;
+}
+
+.delete-modal__info-tokens {
+  font-size: 18px;
+  font-weight: 700;
+  color: #cf1322;
+}
+
+/* ===== FOOTER BUTTONS ===== */
+.delete-modal__footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+}
+
+.delete-modal__btn-cancel {
+  background: transparent;
+  border: none;
+  color: #595959;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.delete-modal__btn-cancel:hover {
+  background: #f5f5f5;
+}
+
+.delete-modal__btn-delete {
+  background: #a61d24;
+  border: none;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background 0.15s;
+}
+
+.delete-modal__btn-delete:hover {
+  background: #820014;
+}
