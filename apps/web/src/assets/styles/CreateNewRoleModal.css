@@ -1,0 +1,84 @@
+.modal-overlay {
+  background-color: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(3px);
+  z-index: 1050;
+}
+
+.modal-content-custom {
+  border-radius: 1rem;
+}
+
+.modal-title-custom {
+  font-size: 1.2rem;
+  color: var(--text-heading);
+}
+
+.modal-subtitle {
+  font-size: 0.875rem;
+}
+
+.modal-close-btn {
+  line-height: 1;
+}
+
+.section-label {
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+}
+
+.form-label-custom {
+  font-size: 0.9rem;
+  color: var(--text-body);
+}
+
+.input-underline {
+   background: var(--input-bg);
+  border: none !important;
+  border-bottom: 2px solid var(--border) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  font-size: 0.9rem;
+  color: var(--text-body);
+  padding: 0.65rem 0.25rem;
+  transition: border-color 0.2s ease;
+}
+
+.input-underline:focus {
+  border-bottom-color: #2563eb !important;
+  box-shadow: none !important;
+  outline: none;
+}
+
+.permission-card {
+  background: var(--sidebar-bg);
+}
+
+.permission-icon {
+  color: var(--text-muted);
+}
+
+.permission-label-text {
+  font-size: 0.9rem;
+  color: var(--text-body);
+}
+
+.permission-checkbox {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: var(--btn-primary);
+}
+
+.permission-perm-label {
+  font-size: 0.82rem;
+  color: var(--text-body);
+  cursor: pointer;
+  font-family: monospace;
+}
+
+.btn-create-role {
+  background: var(--btn-primary);
+  color: var(--btn-primary-text);
+  font-size: 0.9rem;
+}

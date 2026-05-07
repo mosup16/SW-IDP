@@ -1,0 +1,51 @@
+.role-management {
+  padding: 2.5rem;
+  max-width: 1270px;
+  margin: 0 auto;
+}
+
+.role-management__card {
+  background: var(--card-bg);
+  border-radius: 1rem;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+}
+
+.role-management__floating-badge {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  background: var(--card-bg);
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
+  font-size: 0.75rem;
+  font-weight: 600;
+  z-index: 9;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.role-management__floating-badge-label {
+  background: var(--btn-primary);
+  color: var(--btn-primary-text);
+  padding: 0.5rem 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.65rem;
+  letter-spacing: 0.05em;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.role-management__floating-badge-module {
+  padding: 0.5rem 1rem;
+  border-right: 1px solid var(--section-divider);
+  color: var(--text-body);
+}
+
+.role-management__floating-badge-sub {
+  padding: 0.5rem 1rem;
+  color: var(--text-placeholder);
+}
