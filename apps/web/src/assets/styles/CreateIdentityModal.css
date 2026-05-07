@@ -1,11 +1,12 @@
 /* CreateIdentityModal.css */
+
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.65);
+  background-color: rgba(0, 0, 0, 0.55);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -13,13 +14,15 @@
   padding: 20px;
 }
 
+/* المودال الداخلي - أبيض ناصع */
 .modal-content {
-  background-color: var(--card-bg);
-  border-radius: 12px;
+  background-color: #ffffff;           /* أبيض ناصع */
+  border-radius: 14px;
   width: 100%;
   max-width: 440px;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.25);
   overflow: hidden;
+  border: 1px solid #e5e5e5;
 }
 
 /* Header */
@@ -47,7 +50,6 @@
   color: var(--text-muted);
   padding: 4px 8px;
   border-radius: 50%;
-  margin-top: -4px;
 }
 
 .close-btn:hover {
@@ -76,7 +78,7 @@
   font-size: 14px;
 }
 
-/* Input with Icons */
+/* Input Fields */
 .input-wrapper {
   position: relative;
 }
@@ -86,7 +88,7 @@
   padding: 11px 14px 11px 42px;
   border: 1px solid var(--border);
   border-radius: 8px;
-  background-color: var(--input-bg);
+  background-color: #f8f9fa;
   font-size: 15px;
 }
 
@@ -104,7 +106,6 @@
   transform: translateY(-50%);
   color: var(--text-muted);
   font-size: 18px;
-  pointer-events: none;
 }
 
 .eye-icon {
@@ -114,16 +115,9 @@
   transform: translateY(-50%);
   cursor: pointer;
   color: var(--text-muted);
-  background: none;
-  border: none;
-  padding: 4px;
 }
 
-.eye-icon:hover {
-  color: var(--text-heading);
-}
-
-/* Small text under password */
+/* Small Text */
 .form-group small {
   display: block;
   margin-top: 6px;
