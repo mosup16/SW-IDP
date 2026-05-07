@@ -40,7 +40,7 @@ const mockData = [
 
 export default function IdentityManagement() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [identities, setIdentities] = useState(mockData);   // ← مهم: غيرناه عشان نقدر نعدل
+  const [identities, setIdentities] = useState(mockData);
 
   const toggleAccess = (id) => {
     setIdentities(prev => 
@@ -92,7 +92,7 @@ export default function IdentityManagement() {
           style={{
             width: "20px",
             height: "20px",
-            accentColor: "#000000",   // أسود زي التصميم
+            accentColor: "#000000",
             cursor: "pointer"
           }}
         />
@@ -110,9 +110,13 @@ export default function IdentityManagement() {
             Manage and provision digital sovereign identities across your enterprise ecosystem.
           </p>
         </div>
-        <Button onClick={() => setIsModalOpen(true)}>
+        
+      <Button 
+          variant="primary"
+          onClick={() => setIsModalOpen(true)}
+        >
           + Create Identity
-        </Button>
+      </Button>
       </div>
 
       {/* Stats */}
