@@ -108,7 +108,7 @@ export default function CreateNewRoleModal({ isOpen, onClose, role }) {
                 >
                   <div className="permission-card p-3 rounded-3 border">
                     <div className="d-flex align-items-center gap-2 mb-3">
-                      <group.icon size={16} className="permission-icon" />
+                    <group.icon size={16} className="permission-icon" />
                       <span className="permission-label-text fw-semibold">
                         {group.label}
                       </span>
