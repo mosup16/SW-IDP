@@ -8,9 +8,6 @@
   margin-bottom: 0;
 }
 
-.role-table thead tr {
-  border-bottom: 1px solid var(--section-divider);
-}
 
 .role-table th {
   padding: 12px 16px;
@@ -34,10 +31,6 @@
 
 .role-table tbody tr {
   transition: background 0.15s ease;
-}
-
-.role-table tbody tr:not(:last-child) {
-  border-bottom: 1px solid var(--section-divider);
 }
 
 .role-table tbody tr:hover {

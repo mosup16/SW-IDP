@@ -1,85 +1,27 @@
 import Icon from '../../../components/icon';
+import '../../../assets/styles/RoleTable.css';
 
 export default function RoleTable({ roles, onEdit, onDelete }) {
   return (
-    <div className="table-responsive">
-      <table className="table table-hover align-middle mb-0 w-[1550px]">
+    <div className="role-table-wrapper">
+      <table className="role-table">
         <thead>
           <tr>
-            <th
-              className="px-4 py-3 border-0"
-              style={{
-                fontSize: '0.68rem',
-                letterSpacing: '0.1em',
-                fontWeight: 700,
-                textTransform: 'uppercase',
-                color: 'var(--text-muted)',
-                background: 'transparent',
-              }}
-            >
-              Role Name
-            </th>
-            <th
-              className="px-4 py-3 border-0"
-              style={{
-                fontSize: '0.68rem',
-                letterSpacing: '0.1em',
-                fontWeight: 700,
-                textTransform: 'uppercase',
-                color: 'var(--text-muted)',
-                background: 'transparent',
-              }}
-            >
-              Description
-            </th>
-            <th
-              className="px-4 py-3 border-0 text-center"
-              style={{
-                fontSize: '0.68rem',
-                letterSpacing: '0.1em',
-                fontWeight: 700,
-                textTransform: 'uppercase',
-                color: 'var(--text-muted)',
-                background: 'transparent',
-              }}
-            >
-              Assigned Identities
-            </th>
-            <th
-              className="px-4 py-3 border-0 text-end"
-              style={{
-                fontSize: '0.68rem',
-                letterSpacing: '0.1em',
-                fontWeight: 700,
-                textTransform: 'uppercase',
-                color: 'var(--text-muted)',
-                background: 'transparent',
-              }}
-            >
-              Actions
-            </th>
+            <th>Role Name</th>
+            <th>Description</th>
+            <th className="col-identities">Assigned Identities</th>
+            <th className="col-actions">Actions</th>
           </tr>
         </thead>
 
         <tbody>
-          {roles.map((role, index) => (
-            <tr
-              key={role.id}
-            
-              onMouseEnter={e =>
-                (e.currentTarget.style.background = 'var(--table-row-hover)')
-              }
-              onMouseLeave={e =>
-                (e.currentTarget.style.background = 'transparent')
-              }
-            >
-              <td className="px-4 py-3 border-0">
-                <div className="d-flex align-items-center gap-3">
+          {roles.map((role) => (
+            <tr key={role.id}>
+              <td>
+                <div className="role-name-cell">
                   <div
-                    className="d-flex align-items-center justify-content-center rounded-3 border flex-shrink-0"
+                    className="role-icon-box"
                     style={{
-                      width: '40px',
-                      height: '40px',
                       background: role.iconBgColor,
                       borderColor: role.iconBorderColor,
                       color: role.iconColor,
@@ -87,52 +29,30 @@ export default function RoleTable({ roles, onEdit, onDelete }) {
                   >
                     <role.icon size={18} />
                   </div>
-                  <span
-                    className="fw-bold"
-                    style={{ color: 'var(--text-heading)', fontSize: '0.9rem' }}
-                  >
-                    {role.name}
-                  </span>
+                  <span className="role-name-text">{role.name}</span>
                 </div>
               </td>
 
-              <td className="px-4 py-3 border-0">
-                <span
-                  style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}
-                >
-                  {role.description}
-                </span>
+              <td>
+                <span className="role-description">{role.description}</span>
               </td>
 
-              <td className="px-4 py-3 border-0 text-center">
-                <span
-                  className="badge rounded-pill fw-semibold"
-                  style={{
-                    background: 'var( --badge-active-bg)',
-                    color: 'var(--badge-active-text)',
-                    padding: '0.4em 0.9em',
-                    fontSize: '0.8rem',
-                    letterSpacing: '0.01em',
-                  }}
-                >
-                  {role.assignedUsers} Users
-                </span>
+              <td className="col-identities">
+                <span className="badge-users">{role.assignedUsers} Users</span>
               </td>
 
-              <td className="px-4 py-3 border-0 text-end">
-                <div className="d-flex justify-content-end align-items-center gap-1">
+              <td className="col-actions">
+                <div className="actions-group">
                   <button
                     onClick={() => onEdit(role)}
-                    className="btn btn-link p-2 shadow-none"
-                    style={{ color: 'var(--text-muted)', lineHeight: 1 }}
+                    className="btn-action"
                     title="Edit"
                   >
                     <Icon.Edit size={16} />
                   </button>
                   <button
                     onClick={() => onDelete(role)}
-                    className="btn btn-link p-2 shadow-none hover-danger"
-                    style={{ color: 'var(--text-muted)', lineHeight: 1 }}
+                    className="btn-action btn-delete"
                     title="Delete"
                   >
                     <Icon.Delete size={16} />
