@@ -82,17 +82,7 @@ export default function RoleManagement() {
         />
       </div>
 
-      <div className="role-management__floating-badge">
-        <div className="role-management__floating-badge-label">
-          SOVEREIGN IDP
-        </div>
-        <div className="role-management__floating-badge-module">
-          Role Management
-        </div>
-        <div className="role-management__floating-badge-sub">
-          Modals...
-        </div>
-      </div>
+    
 
       {isCreateModalOpen && (
         <CreateNewRoleModal

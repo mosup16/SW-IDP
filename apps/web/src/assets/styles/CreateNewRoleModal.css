@@ -33,10 +33,10 @@
 }
 
 .input-underline {
-   background: var(--input-bg);
+  background: var(--input-bg) !important;
   border: none !important;
   border-bottom: 2px solid var(--border) !important;
-  border-radius: 0 !important;
+  border-radius: 4px 4px 0 0 !important;
   box-shadow: none !important;
   font-size: 0.9rem;
   color: var(--text-body);

@@ -120,6 +120,5 @@
 }
 
 .btn-action.btn-delete:hover {
-  background: rgba(220, 53, 69, 0.1);
   color: #dc3545;
 }
