@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import Button from '../../../components/ui/Button';
-import { useToast } from '../../../hooks/useToast';
-import '../../../assets/styles/CreateIdentityModal.css';
+import Button from '../../../../components/ui/Button';
+import { useToast } from '../../../../hooks/useToast';
+import '../../../../assets/styles/CreateIdentityModal.css';
 
 export default function CreateIdentityModal({ isOpen, onClose }) {
   const toast = useToast();

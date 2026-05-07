@@ -2,7 +2,7 @@ import { useState } from 'react';
 import Button from '../../../components/ui/Button';
 import Card from '../../../components/ui/Card';
 import DataTable from '../../../components/ui/DataTable';
-import CreateIdentityModal from '../../../components/modals/CreateIdentityModal/CreateIdentityModal';
+import CreateIdentityModal from '../modals/CreateIdentityModal/CreateIdentityModal';
 import '../../../assets/styles/IdentityManagement.css';
 
 const mockData = [
