@@ -30,7 +30,7 @@ export default function AdminLayout() {
       <div className="admin-layout__main">
         <Navbar />
         <main className="admin-layout__content">
-          <Outlet />          {/* ← This renders the child routes */}
+          <Outlet />          {}
         </main>
       </div>
     </div>
