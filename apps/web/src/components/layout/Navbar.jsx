@@ -6,7 +6,7 @@ export default function Navbar({ userName = 'Admin', onNavigate, onSignOut }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
-  /* Close on outside click */
+  
   useEffect(() => {
     function handleOutside(e) {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -35,10 +35,10 @@ export default function Navbar({ userName = 'Admin', onNavigate, onSignOut }) {
 
   return (
     <header className="navbar">
-      {/* Spacer — brand lives in sidebar */}
+      {}
       <div className="navbar__spacer" />
 
-      {/* Icon actions */}
+      {}
       <div className="navbar__actions">
         <button
           className="navbar__icon-btn"
