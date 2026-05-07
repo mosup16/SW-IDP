@@ -250,6 +250,8 @@
   align-items: center;
   gap: 10px;
   cursor: pointer;
+  -webkit-user-select: none; 
+  -ms-user-select: none;
   user-select: none;
 }
 
@@ -296,7 +298,7 @@
   gap: 16px;
 }
 
-.gc-toggle-info {}
+
 .gc-toggle-name {
   font-size: 15px;
   font-weight: 600;

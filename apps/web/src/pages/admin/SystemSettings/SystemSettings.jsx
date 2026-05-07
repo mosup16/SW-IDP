@@ -225,12 +225,6 @@ export default function SystemSettings() {
 
   return (
     <div className="gc-page">
-      {/* Top Nav */}
-      <nav className="gc-topnav">
-        <button className="gc-topnav-icon"><Icon.Bell size={17} /></button>
-        <button className="gc-topnav-icon"><Icon.HelpCircle size={17} /></button>
-        <div className="gc-topnav-avatar">AU</div>
-      </nav>
 
       <main className="gc-main">
         {/* Header */}
