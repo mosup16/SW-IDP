@@ -1,31 +1,29 @@
-import React from 'react';
-import Icon from '../../../components/icon';
-import '../../../assets/styles/ClientConfiguration.css';
+import { ShieldCheck } from "lucide-react";
 
-const SecurityStandards = () => {
+const rows = [
+  { num: "01", badge: "https://", isBadge: true },
+  { num: "02", label: "OAuth 2.1" },
+  { num: "03", label: "Sovereign IdP" },
+];
+
+export default function SecurityStandards() {
   return (
-    <div className="security-card">
-      <div className="security-card__header">
-        <Icon.ShieldCheck size={22} />
-        <h3 className="security-card__title">Security Standards</h3>
+    <div className="cc-security-card rounded-4 p-4 mb-3 text-white">
+      <div className="d-flex align-items-center gap-2 mb-4">
+        <ShieldCheck size={22} color="white" />
+        <h3 className="fs-6 fw-bold mb-0">Security Standards</h3>
       </div>
-
-      <div className="security-card__row">
-        <span className="security-card__num">01</span>
-        <span className="security-card__badge">https://</span>
-      </div>
-
-      <div className="security-card__row">
-        <span className="security-card__num">02</span>
-        <span className="security-card__label">OAuth 2.1</span>
-      </div>
-
-      <div className="security-card__row">
-        <span className="security-card__num">03</span>
-        <span className="security-card__label">Sovereign IdP</span>
-      </div>
+      {rows.map((row, i) => (
+        <div
+          key={i}
+          className={`d-flex justify-content-between align-items-center py-3 ${i > 0 ? "cc-security-row--bordered" : ""}`}
+        >
+          <span className="fw-bold text-primary">{row.num}</span>
+          {row.isBadge
+            ? <span className="cc-https-badge">{row.badge}</span>
+            : <span className="small fw-semibold opacity-75">{row.label}</span>}
+        </div>
+      ))}
     </div>
   );
-};
-
-export default SecurityStandards;
+}

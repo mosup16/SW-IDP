@@ -2,13 +2,18 @@ import React from 'react';
 import Icon from '../../../components/icon';
 import RoleFilters from '../RoleManagement/RoleFilters';
 
-const ClientTable = ({ clients, onEditClick, onDeleteClick, onSecretRotateClick }) => {
+const ClientTable = ({ clients, totalClients, currentPage, totalPages, onPageChange, onEditClick, onDeleteClick, onSecretRotateClick }) => {
   return (
     <div>
-      {/* Search & Filter — reusing RoleFilters */}
-      <RoleFilters />
+      <div style={{ position: 'relative' }}>
+        <RoleFilters />
+        <style>{`
+          .role-filters-dropdown {
+            display: none !important;
+          }
+        `}</style>
+      </div>
 
-      {/* Table card */}
       <div className="card-container p-0 overflow-hidden">
         <table className="table client-table mb-0">
           <thead>
@@ -77,15 +82,36 @@ const ClientTable = ({ clients, onEditClick, onDeleteClick, onSecretRotateClick 
 
         {/* Pagination */}
         <div className="px-4 py-3 d-flex justify-content-between align-items-center text-secondary small border-top">
-          <span>Showing {clients.length} of 24 clients</span>
+          <span>Showing {clients.length} of {totalClients} clients</span>
           <div className="d-flex align-items-center gap-1">
-            <button className="btn btn-sm btn-light border-0 px-2">
+            <button
+              className="btn btn-sm btn-light border-0 px-2"
+              onClick={() => onPageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+            >
               <Icon.ChevronRight size={14} style={{ transform: 'rotate(180deg)' }} />
             </button>
-            <button className="btn btn-sm px-3 text-white fw-bold" style={{ background: 'black', borderRadius: '6px' }}>1</button>
-            <button className="btn btn-sm btn-light border-0 px-3">2</button>
-            <button className="btn btn-sm btn-light border-0 px-3">3</button>
-            <button className="btn btn-sm btn-light border-0 px-2">
+
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+              <button
+                key={page}
+                onClick={() => onPageChange(page)}
+                className="btn btn-sm border-0 px-3"
+                style={
+                  currentPage === page
+                    ? { background: 'black', color: 'white', borderRadius: '6px', fontWeight: 'bold' }
+                    : {}
+                }
+              >
+                {page}
+              </button>
+            ))}
+
+            <button
+              className="btn btn-sm btn-light border-0 px-2"
+              onClick={() => onPageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+            >
               <Icon.ChevronRight size={14} />
             </button>
           </div>

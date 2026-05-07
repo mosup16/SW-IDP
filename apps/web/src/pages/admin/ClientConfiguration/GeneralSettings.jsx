@@ -1,65 +1,54 @@
-import React from 'react';
-import Icon from '../../../components/icon';
-import '../../../assets/styles/ClientConfiguration.css';
+import { Info, Plus, Trash2 } from "lucide-react";
 
-const CredentialsSettings = ({ onReveal }) => {
+export default function GeneralSettings({ uris, onAddUri, onRemoveUri, onUpdateUri }) {
   return (
-    <div className="config-card">
-      {/* Header */}
-      <div className="config-card__header">
-        <div className="config-card__icon">
-          <Icon.Shield size={20} />
+    <div className="card border-0 shadow-sm rounded-4 p-4 mb-4">
+      <div className="d-flex align-items-center gap-3 mb-4">
+        <div className="cc-card-icon d-flex align-items-center justify-content-center rounded-circle border text-primary flex-shrink-0">
+          <Info size={20} />
         </div>
-        <h2 className="config-card__title">Credentials</h2>
-      </div>
-      <p className="config-card__subtitle">
-        Generated credentials must be stored securely. The secret will not be visible again.
-      </p>
-
-      {/* Client ID & Secret grid */}
-      <div className="config-credentials-grid">
-        {/* Client ID */}
-        <div>
-          <label className="config-label">Client ID</label>
-          <div className="config-credentials-input-wrap">
-            <input
-              type="text"
-              className="config-input config-input--readonly"
-              defaultValue="svc_782349012390"
-              readOnly
-            />
-            <button className="config-credentials-action">
-              <Icon.Copy size={18} />
-            </button>
-          </div>
-        </div>
-
-        {/* Client Secret */}
-        <div>
-          <label className="config-label">Client Secret</label>
-          <div className="config-credentials-input-wrap">
-            <input
-              type="text"
-              className="config-input config-input--readonly"
-              defaultValue="••••••••••••••••••••••••"
-              readOnly
-            />
-            <button className="config-credentials-action" onClick={onReveal}>
-              REVEAL
-            </button>
-          </div>
-        </div>
+        <h2 className="fs-5 fw-bold text-primary mb-0">General Settings</h2>
       </div>
 
-      {/* Warning banner */}
-      <div className="config-warning">
-        <Icon.Warning size={18} />
-        <span>
-          <strong>Copy your secret now.</strong> Once you navigate away or save, it will be hashed and hidden forever.
-        </span>
+      <div className="mb-4">
+        <label className="cc-sublabel d-block mb-2">Application Name</label>
+        <input
+          type="text"
+          placeholder="e.g. Acme Marketing Portal"
+          className="cc-input form-control"
+        />
+        <p className="text-secondary small mt-2 mb-0">
+          The identifier displayed to end-users during authorization.
+        </p>
+      </div>
+
+      <div>
+        <div className="d-flex justify-content-between align-items-center mb-2">
+          <label className="cc-sublabel mb-0">Redirect URIs</label>
+          <button
+            onClick={onAddUri}
+            className="btn btn-link p-0 text-primary fw-bold small d-flex align-items-center gap-1 text-decoration-none"
+          >
+            <Plus size={14} strokeWidth={2.5} /> Add URI
+          </button>
+        </div>
+        {uris.map((uri, i) => (
+          <div key={i} className="position-relative mb-2">
+            <input
+              type="text"
+              value={uri}
+              onChange={e => onUpdateUri(i, e.target.value)}
+              className="cc-input form-control pe-5"
+            />
+            <button
+              onClick={() => onRemoveUri(i)}
+              className="btn btn-link p-0 text-danger d-flex position-absolute top-50 end-0 translate-middle-y me-2"
+            >
+              <Trash2 size={18} />
+            </button>
+          </div>
+        ))}
       </div>
     </div>
   );
-};
-
-export default CredentialsSettings;
+}

@@ -1,60 +1,116 @@
-import React, { useState } from 'react';
-import Icon from '../../../components/icon';
-import GeneralSettings from './GeneralSettings';
-import CredentialsSettings from './CredentialsSettings';
-import SecurityStandards from './SecurityStandards';
-import QuickHelp from './QuickHelp';
-import SecretRotationModal from '../modals/SecretRotationModal/SecretRotationModal';
-import '../../../assets/styles/ClientConfiguration.css';
+import { useState } from "react";
+import { CheckCircle2, Copy, AlertTriangle } from "lucide-react";
+import GeneralSettings    from "./GeneralSettings";
+import CredentialsSettings from "./CredentialsSettings";
+import SecurityStandards  from "./SecurityStandards";
+import QuickHelp          from "./QuickHelp";
+import "../../../assets/styles/ClientConfiguration.css";
 
-const ClientConfiguration = ({ client, onBack }) => {
-  const [isSecretOpen, setIsSecretOpen] = useState(false);
-
+// ── Secret Rotation Modal ────────────────────────────────────────────────────
+const SecretModal = ({ isOpen, onClose, appName, newSecret }) => {
+  if (!isOpen) return null;
   return (
-    <div className="p-5">
-      {/* Breadcrumb */}
-      <div className="config-breadcrumb">
-        <span className="config-breadcrumb__link" onClick={onBack}>Clients</span>
-        <Icon.ChevronRight size={12} />
-        <span className="config-breadcrumb__current">
-          {client?.name ? 'Edit Client' : 'Create New Client'}
-        </span>
-      </div>
-
-      <h1 className="config-title">Client Configuration</h1>
-
-      <div className="row g-4">
-        {/* Left column */}
-        <div className="col-lg-8">
-          <CredentialsSettings onReveal={() => setIsSecretOpen(true)} />
-          <GeneralSettings client={client} />
-          
-          
-          
+    <div
+      className="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
+      style={{ background: "rgba(0,0,0,0.45)", zIndex: 1050 }}
+    >
+      <div className="cc-modal bg-white rounded-4 p-5 text-center shadow-lg">
+        <div className="cc-modal__icon rounded-circle bg-primary d-flex align-items-center justify-content-center mx-auto mb-4">
+          <CheckCircle2 size={36} color="white" strokeWidth={2.5} />
         </div>
 
-        {/* Right column */}
-        <div className="col-lg-4">
-          <SecurityStandards />
-          <QuickHelp />
-      
+        <h2 className="fs-4 fw-bold text-dark mb-2">Client Secret Rotated</h2>
+        <p className="text-secondary mb-4">
+          The secret for <strong>{appName}</strong> has been successfully updated.
+        </p>
+
+        <div className="bg-light rounded-3 p-3 mb-3 text-start">
+          <div className="cc-sublabel mb-2">New Client Secret</div>
+          <div className="d-flex align-items-center gap-2 bg-white border rounded-2 px-3 py-2">
+            <span className="flex-grow-1 font-monospace small text-dark">{newSecret}</span>
+            <button className="btn btn-link p-0 text-secondary d-flex">
+              <Copy size={18} />
+            </button>
+          </div>
         </div>
-      </div>
 
-      {/* Footer */}
-      <div className="config-footer">
-        <button className="config-footer__save" onClick={onBack}>Save Changes</button>
-        <button className="config-footer__cancel" onClick={onBack}>Cancel</button>
-      </div>
+        <div className="d-flex align-items-start gap-2 cc-alert-danger rounded-2 p-3 mb-4 text-start">
+          <span className="text-danger flex-shrink-0 d-flex mt-1">
+            <AlertTriangle size={18} />
+          </span>
+          <span className="small text-danger">
+            <strong>Copy this secret now.</strong> It will not be shown again. If you lose it, you will need to generate a new one.
+          </span>
+        </div>
 
-      <SecretRotationModal
-        isOpen={isSecretOpen}
-        onClose={() => setIsSecretOpen(false)}
-        appName={client?.name || 'Monolith_Production_App'}
-        newSecret="sec_v2_98fHk2mPqL5vXyNw8R..."
-      />
+        <button onClick={onClose} className="btn btn-dark w-100 py-3 fw-semibold rounded-3">
+          I have saved it
+        </button>
+      </div>
     </div>
   );
 };
 
-export default ClientConfiguration;
+// ── Main Component ───────────────────────────────────────────────────────────
+export default function ClientConfiguration() {
+  const [modalOpen, setModalOpen] = useState(false);
+  const [uris, setUris] = useState([
+    "https://app.acme.com/auth/callback",
+    "https://localhost:3000/callback",
+  ]);
+
+  const addUri    = ()          => setUris(prev => [...prev, ""]);
+  const removeUri = (i)         => setUris(prev => prev.filter((_, idx) => idx !== i));
+  const updateUri = (i, val)    => setUris(prev => prev.map((u, idx) => idx === i ? val : u));
+
+  return (
+    <div className="min-vh-100 bg-light">
+      <div className="container-xl py-4 px-4">
+
+        {/* Breadcrumb */}
+        <nav className="cc-breadcrumb d-flex align-items-center gap-1 mb-2 text-uppercase fw-semibold">
+          <span className="text-secondary" style={{ cursor: "pointer" }}>Clients</span>
+          <span className="cc-breadcrumb__sep text-secondary">›</span>
+          <span className="text-dark">Create New Client</span>
+        </nav>
+
+        <h1 className="fw-bold text-dark mb-4 fs-2">Client Configuration</h1>
+
+        <div className="row g-4 align-items-start">
+
+          {/* Left Column */}
+          <div className="col">
+            <GeneralSettings
+              uris={uris}
+              onAddUri={addUri}
+              onRemoveUri={removeUri}
+              onUpdateUri={updateUri}
+            />
+            <CredentialsSettings onReveal={() => setModalOpen(true)} />
+          </div>
+
+          {/* Right Column */}
+          <div className="col-auto" style={{ width: 340 }}>
+            <SecurityStandards />
+            <QuickHelp />
+          </div>
+
+        </div>
+
+        {/* Footer */}
+        <div className="d-flex justify-content-end gap-3 mt-5">
+          <button className="btn btn-outline-secondary px-5 py-3 fw-semibold rounded-3">Cancel</button>
+          <button className="btn btn-dark px-5 py-3 fw-semibold rounded-3">Save Changes</button>
+        </div>
+
+      </div>
+
+      <SecretModal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        appName="Monolith_Production_App"
+        newSecret="sec_v2_98fHk2mPqL5vXyNw8R..."
+      />
+    </div>
+  );
+}

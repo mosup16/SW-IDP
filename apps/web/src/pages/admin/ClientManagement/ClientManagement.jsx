@@ -11,6 +11,14 @@ const ClientManagement = () => {
   const [isSecretOpen, setIsSecretOpen] = useState(false);
   const [selectedClient, setSelectedClient] = useState(null);
   const [editingClient, setEditingClient] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const itemsPerPage = 4;
+  const totalPages = Math.ceil(clients.length / itemsPerPage);
+  const paginatedClients = clients.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   const handleDeleteClick = (client) => {
     setSelectedClient(client);
@@ -46,11 +54,15 @@ const ClientManagement = () => {
   return (
     <div className="p-5">
       <ClientHeader
-        totalClients={61}
+        totalClients={clients.length}
         onCreateClick={handleCreateClick}
       />
       <ClientTable
-        clients={clients}
+        clients={paginatedClients}
+        totalClients={clients.length}
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
         onDeleteClick={handleDeleteClick}
         onSecretRotateClick={handleSecretClick}
         onEditClick={handleEditClick}
