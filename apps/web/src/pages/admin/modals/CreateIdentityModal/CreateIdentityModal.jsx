@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { createPortal } from 'react-dom';
 import Button from '../../../../components/ui/Button';
 import { useToast } from '../../../../hooks/useToast';
 import '../../../../assets/styles/CreateIdentityModal.css';
@@ -20,17 +21,15 @@ export default function CreateIdentityModal({ isOpen, onClose }) {
     e.preventDefault();
     setLoading(true);
 
-    // Simulate API call
     setTimeout(() => {
       toast.success("Identity created successfully!");
-      
       onClose();
       setFormData({ email: '', password: '', sendEmail: true });
       setLoading(false);
     }, 700);
   };
 
-  return (
+  const modalContent = (
     <div className="modal-overlay">
       <div className="modal-content">
         <div className="modal-header">
@@ -93,4 +92,6 @@ export default function CreateIdentityModal({ isOpen, onClose }) {
       </div>
     </div>
   );
+
+  return createPortal(modalContent, document.body);
 }

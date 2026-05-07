@@ -1,0 +1,500 @@
+/* ── GlobalConfiguration.css ─────────────────────────────────── */
+
+.gc-page {
+  min-height: 100vh;
+  background: var(--page-bg);
+  font-family: 'DM Sans', sans-serif;
+}
+
+/* ── Top nav ──────────────────────────────────────────────────── */
+.gc-topnav {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 32px;
+  background: var(--card-bg);
+  border-bottom: 1px solid var(--section-divider);
+}
+
+.gc-topnav-icon {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  transition: background 0.13s;
+}
+.gc-topnav-icon:hover { background: var(--page-bg-subtle); }
+
+.gc-topnav-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--btn-primary);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* ── Main ─────────────────────────────────────────────────────── */
+.gc-main {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 36px 36px 60px;
+}
+
+/* ── Page header ──────────────────────────────────────────────── */
+.gc-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.gc-header-left h1 {
+  font-size: 30px;
+  font-weight: 800;
+  color: var(--text-heading);
+  letter-spacing: -0.6px;
+  margin-bottom: 4px;
+}
+.gc-header-left p {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.gc-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.gc-save-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 20px;
+  background: var(--btn-primary);
+  color: var(--btn-primary-text);
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, opacity 0.15s;
+  font-family: inherit;
+}
+.gc-save-btn:hover { background: var(--btn-primary-hover); }
+.gc-save-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.gc-save-btn.ghost {
+  background: none;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+}
+.gc-save-btn.ghost:hover { background: var(--table-row-hover); color: var(--text-body); }
+
+/* Dirty indicator */
+.gc-dirty-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--link-color);
+  animation: pulse 1.4s ease infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+
+/* Success toast */
+.gc-toast {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--status-active);
+  animation: fadeToast 0.2s ease;
+}
+@keyframes fadeToast {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ── Content grid ─────────────────────────────────────────────── */
+.gc-grid {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 20px;
+  align-items: start;
+}
+
+@media (max-width: 960px) {
+  .gc-grid { grid-template-columns: 1fr; }
+}
+
+/* ── Card base ────────────────────────────────────────────────── */
+.gc-card {
+  background: var(--card-bg);
+  border: 1px solid var(--section-divider);
+  border-radius: 14px;
+  padding: 28px 32px;
+}
+
+/* ── Card header ──────────────────────────────────────────────── */
+.gc-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.gc-card-icon {
+  color: var(--text-heading);
+}
+
+.gc-card-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-heading);
+}
+
+/* ── Field label ──────────────────────────────────────────────── */
+.gc-field-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--text-label);
+  margin-bottom: 8px;
+}
+
+/* ── Input ────────────────────────────────────────────────────── */
+.gc-input {
+  width: 100%;
+  padding: 10px 14px;
+  background: var(--input-bg);
+  border: 1.5px solid transparent;
+  border-radius: 8px;
+  font-size: 15px;
+  font-family: inherit;
+  color: var(--text-body);
+  outline: none;
+  transition: border-color 0.15s, background 0.15s;
+}
+.gc-input::-webkit-outer-spin-button,
+.gc-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.gc-input:focus {
+  border-color: var(--focus-outline);
+  background: var(--card-bg);
+}
+.gc-input.error { border-color: var(--status-error); }
+
+.gc-input-hint {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 5px;
+}
+.gc-input-error {
+  font-size: 12px;
+  color: var(--status-error);
+  margin-top: 5px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Two-column row */
+.gc-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 640px) {
+  .gc-row-2 { grid-template-columns: 1fr; }
+}
+
+/* ── Divider ──────────────────────────────────────────────────── */
+.gc-divider {
+  border: none;
+  border-top: 1px solid var(--section-divider);
+  margin: 24px 0;
+}
+
+/* ── Checkbox group ───────────────────────────────────────────── */
+.gc-checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.gc-checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.gc-checkbox-item input[type="checkbox"] {
+  display: none;
+}
+
+.gc-checkbox-box {
+  width: 20px;
+  height: 20px;
+  border-radius: 5px;
+  border: 2px solid var(--border);
+  background: var(--card-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.13s, border-color 0.13s;
+}
+
+.gc-checkbox-item input[type="checkbox"]:checked + .gc-checkbox-box {
+  background: var(--btn-primary);
+  border-color: var(--btn-primary);
+  color: #fff;
+}
+
+.gc-checkbox-label {
+  font-size: 15px;
+  color: var(--text-body);
+}
+
+/* ── Right column ─────────────────────────────────────────────── */
+.gc-right-col {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ── Toggle switch ────────────────────────────────────────────── */
+.gc-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.gc-toggle-info {}
+.gc-toggle-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-heading);
+  margin-bottom: 2px;
+}
+.gc-toggle-desc {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* Track */
+.gc-toggle-track {
+  position: relative;
+  width: 44px;
+  height: 26px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.gc-toggle-track input {
+  display: none;
+}
+
+.gc-toggle-slider {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: var(--page-bg-subtle);
+  border: 1.5px solid var(--border);
+  transition: background 0.2s, border-color 0.2s;
+}
+.gc-toggle-slider::after {
+  content: '';
+  position: absolute;
+  left: 3px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--card-bg);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.18);
+  transition: left 0.2s;
+}
+
+.gc-toggle-track input:checked + .gc-toggle-slider {
+  background: var(--btn-primary);
+  border-color: var(--btn-primary);
+}
+.gc-toggle-track input:checked + .gc-toggle-slider::after {
+  left: calc(100% - 21px);
+}
+
+/* maintenance warning */
+.gc-maintenance-warning {
+  margin-top: 10px;
+  padding: 10px 14px;
+  background: var(--status-error-bg);
+  border: 1px solid var(--status-error);
+  border-radius: 8px;
+  font-size: 13px;
+  color: var(--status-error-text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: fadeToast 0.2s ease;
+}
+
+/* ── Branding card ────────────────────────────────────────────── */
+.gc-color-field {
+  margin-bottom: 20px;
+}
+
+.gc-color-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  background: var(--input-bg);
+  border: 1.5px solid transparent;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: border-color 0.15s;
+}
+.gc-color-input-wrap:focus-within { border-color: var(--focus-outline); }
+
+.gc-color-swatch-btn {
+  width: 40px;
+  height: 42px;
+  border: none;
+  cursor: pointer;
+  flex-shrink: 0;
+  padding: 0;
+  position: relative;
+}
+.gc-color-swatch-btn input[type="color"] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+}
+.gc-color-swatch-preview {
+  width: 100%;
+  height: 100%;
+  border-right: 2px solid rgba(0,0,0,0.08);
+}
+
+.gc-color-text-input {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  padding: 10px 14px;
+  font-size: 15px;
+  font-family: 'DM Mono', monospace;
+  color: var(--text-body);
+}
+
+.gc-color-error {
+  font-size: 12px;
+  color: var(--status-error);
+  margin-top: 5px;
+}
+
+/* ── Logo dropzone ────────────────────────────────────────────── */
+.gc-dropzone {
+  border: 2px dashed var(--border);
+  border-radius: 10px;
+  padding: 32px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  position: relative;
+}
+.gc-dropzone:hover, .gc-dropzone.drag-over {
+  border-color: var(--focus-outline);
+  background: var(--badge-info-light-bg);
+}
+
+.gc-dropzone input[type="file"] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+}
+
+.gc-dropzone-icon {
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+
+.gc-dropzone-text {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+.gc-dropzone-text a {
+  color: var(--link-color);
+  font-weight: 600;
+  text-decoration: none;
+}
+.gc-dropzone-hint {
+  font-size: 12px;
+  color: var(--text-placeholder);
+  margin-top: 4px;
+}
+
+/* Logo preview */
+.gc-logo-preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 10px;
+}
+.gc-logo-preview img {
+  max-height: 80px;
+  max-width: 100%;
+  object-fit: contain;
+  border-radius: 6px;
+}
+.gc-logo-preview-actions {
+  display: flex;
+  gap: 8px;
+}
+.gc-logo-remove-btn {
+  background: none;
+  border: 1px solid var(--btn-danger);
+  color: var(--btn-danger);
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.13s;
+}
+.gc-logo-remove-btn:hover { background: var(--status-error-bg); }
