@@ -96,5 +96,3 @@ export const Icon = {
   Success: CheckCircle2,
   Copy2: Copy,
 };
-
-export default Icon;
