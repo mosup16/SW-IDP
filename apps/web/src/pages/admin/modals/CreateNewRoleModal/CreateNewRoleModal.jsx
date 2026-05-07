@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { X } from 'lucide-react';
 import Icon from '../../../../components/icon.js';
 import Textarea from '../../../../components/ui/Textarea.jsx';
-import '../../../assets/styles/CreateNewRoleModal.css';
+import '../../../../assets/styles/CreateNewRoleModal.css';
+
 export default function CreateNewRoleModal({ isOpen, onClose, role }) {
   const isEdit = !!role;
 
