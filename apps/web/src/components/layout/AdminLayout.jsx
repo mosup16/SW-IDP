@@ -19,7 +19,7 @@ const NAV_ITEMS = [
   { href: '/roles',         label: 'Roles',           icon: <ShieldCheck size={18} /> },
   { href: '/audit-logs',    label: 'Audit Logs',      icon: <ScrollText  size={18} /> },
   { href: '/systemSettings',label: 'System Settings', icon: <Settings    size={18} /> },
-  { href: '/logout',        label: 'Sign Out',        icon: <LogOut      size={18} /> },
+  { href: '/login',        label: 'Sign Out',        icon: <LogOut      size={18} /> },
 ];
 
 export default function AdminLayout() {
