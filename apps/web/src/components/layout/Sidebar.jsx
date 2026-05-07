@@ -8,12 +8,12 @@ export default function Sidebar({ items }) {
 
   return (
     <aside className="sidebar">
-      {/* Brand */}
+      {}
       <div className="sidebar__brand">
         <BrandMark size="sm" />
       </div>
 
-      {/* Nav */}
+      {}
       <nav className="sidebar__nav" aria-label="Main navigation">
         {items.map(({ href, label, icon }) => {
           const active = href === pathname;
