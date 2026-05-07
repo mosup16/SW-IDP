@@ -40,7 +40,15 @@ const mockData = [
 
 export default function IdentityManagement() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [identities] = useState(mockData);
+  const [identities, setIdentities] = useState(mockData);   // ← مهم: غيرناه عشان نقدر نعدل
+
+  const toggleAccess = (id) => {
+    setIdentities(prev => 
+      prev.map(item => 
+        item.id === id ? { ...item, access: !item.access } : item
+      )
+    );
+  };
 
   const columns = [
     {
@@ -68,11 +76,27 @@ export default function IdentityManagement() {
         </span>
       )
     },
-    { key: "regDate", header: "REGISTRATION DATE", cell: (row) => row.regDate },
+    { 
+      key: "regDate", 
+      header: "REGISTRATION DATE", 
+      cell: (row) => row.regDate 
+    },
     {
       key: "access",
       header: "ACCESS CONTROL",
-      cell: (row) => <input type="checkbox" checked={row.access} readOnly />,
+      cell: (row) => (
+        <input
+          type="checkbox"
+          checked={row.access || false}
+          onChange={() => toggleAccess(row.id)}
+          style={{
+            width: "20px",
+            height: "20px",
+            accentColor: "#000000",   // أسود زي التصميم
+            cursor: "pointer"
+          }}
+        />
+      ),
       align: "center"
     },
   ];

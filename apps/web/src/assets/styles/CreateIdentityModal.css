@@ -5,7 +5,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.6);
+  background-color: rgba(0, 0, 0, 0.65);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -17,13 +17,14 @@
   background-color: var(--card-bg);
   border-radius: 12px;
   width: 100%;
-  max-width: 420px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  max-width: 440px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
   overflow: hidden;
 }
 
+/* Header */
 .modal-header {
-  padding: 20px 24px;
+  padding: 24px 28px 16px;
   border-bottom: 1px solid var(--border);
   display: flex;
   justify-content: space-between;
@@ -33,38 +34,37 @@
 .modal-header h2 {
   margin: 0;
   font-size: 20px;
+  font-weight: 600;
   color: var(--text-heading);
 }
 
 .close-btn {
   background: none;
   border: none;
-  font-size: 24px;
+  font-size: 28px;
+  line-height: 1;
   cursor: pointer;
   color: var(--text-muted);
-  padding: 0;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  padding: 4px;
   border-radius: 50%;
 }
 
 .close-btn:hover {
+  color: #000;
   background-color: var(--table-row-hover);
-  color: var(--text-heading);
 }
 
+/* Description */
 .modal-desc {
-  padding: 0 24px 20px;
+  padding: 0 28px 20px;
   color: var(--text-muted);
   font-size: 14.5px;
   line-height: 1.5;
 }
 
+/* Form Fields */
 .form-group {
-  padding: 0 24px 16px;
+  padding: 0 28px 20px;
 }
 
 .form-group label {
@@ -75,13 +75,15 @@
   font-size: 14px;
 }
 
+/* Input Styling */
 .form-group input {
   width: 100%;
-  padding: 10px 14px;
+  padding: 11px 14px 11px 40px;   /* مسافة للأيقونة */
   border: 1px solid var(--border);
   border-radius: 8px;
   background-color: var(--input-bg);
   font-size: 15px;
+  position: relative;
 }
 
 .form-group input:focus {
@@ -90,6 +92,35 @@
   box-shadow: 0 0 0 3px rgba(0, 91, 181, 0.15);
 }
 
+/* Icons in Inputs */
+.form-group .input-wrapper {
+  position: relative;
+}
+
+.form-group .input-wrapper input {
+  padding-left: 40px;
+}
+
+.form-group .input-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  font-size: 18px;
+}
+
+/* Password Eye Icon */
+.eye-icon {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: var(--text-muted);
+}
+
+/* Small Text */
 .form-group small {
   display: block;
   margin-top: 6px;
@@ -97,27 +128,43 @@
   font-size: 13px;
 }
 
+/* Checkbox */
 .checkbox-label {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 8px;
-  padding: 0 24px 20px;
+  padding: 0 28px 24px;
   cursor: pointer;
   font-size: 14.5px;
   color: var(--text-body);
 }
 
+.checkbox-label input[type="checkbox"] {
+  margin-top: 3px;
+  accent-color: var(--btn-primary);
+}
+
+/* Footer Buttons */
 .modal-footer {
-  padding: 20px 24px;
+  padding: 20px 28px 28px;
   border-top: 1px solid var(--border);
   display: flex;
   gap: 12px;
   justify-content: flex-end;
 }
 
+.modal-footer button {
+  padding: 10px 20px;
+  font-weight: 500;
+}
+
 /* Responsive */
 @media (max-width: 480px) {
   .modal-content {
     max-width: 100%;
+  }
+  .modal-header, .form-group, .modal-desc, .modal-footer {
+    padding-left: 20px;
+    padding-right: 20px;
   }
 }
