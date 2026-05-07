@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { X } from 'lucide-react';
-import Icon from '../../../../components/icon.js';
-import Textarea from '../../../../components/ui/Textarea.jsx';
+import Icon from '../../../../components/icon';           // ← بدون .js
+import Textarea from '../../../../components/ui/Textarea'; // ← بدون .jsx
+
 import '../../../../assets/styles/CreateNewRoleModal.css';
 
 export default function CreateNewRoleModal({ isOpen, onClose, role }) {
@@ -101,40 +102,43 @@ export default function CreateNewRoleModal({ isOpen, onClose, role }) {
             </div>
 
             <div className="row g-3">
-              {PERMISSIONS.map(group => (
-                <div
-                  key={group.id}
-                  className={group.id === 'logs' ? 'col-12' : 'col-md-6'}
-                >
-                  <div className="permission-card p-3 rounded-3 border">
-                    <div className="d-flex align-items-center gap-2 mb-3">
-                    <group.icon size={16} className="permission-icon" />
-                      <span className="permission-label-text fw-semibold">
-                        {group.label}
-                      </span>
-                    </div>
-                    <div className="row g-2">
-                      {group.perms.map(perm => (
-                        <div key={perm} className="col-6 d-flex align-items-center gap-2">
-                          <input
-                            type="checkbox"
-                            id={perm}
-                            className="permission-checkbox form-check-input mt-0"
-                            checked={checked[perm]}
-                            onChange={() => toggle(perm)}
-                          />
-                          <label
-                            htmlFor={perm}
-                            className="permission-perm-label mb-0"
-                          >
-                            {perm}
-                          </label>
-                        </div>
-                      ))}
+              {PERMISSIONS.map(group => {
+                const IconComponent = group.icon;   // ← الحل الصحيح للـ dynamic icon
+                return (
+                  <div
+                    key={group.id}
+                    className={group.id === 'logs' ? 'col-12' : 'col-md-6'}
+                  >
+                    <div className="permission-card p-3 rounded-3 border">
+                      <div className="d-flex align-items-center gap-2 mb-3">
+                        <IconComponent size={16} className="permission-icon" />
+                        <span className="permission-label-text fw-semibold">
+                          {group.label}
+                        </span>
+                      </div>
+                      <div className="row g-2">
+                        {group.perms.map(perm => (
+                          <div key={perm} className="col-6 d-flex align-items-center gap-2">
+                            <input
+                              type="checkbox"
+                              id={perm}
+                              className="permission-checkbox form-check-input mt-0"
+                              checked={checked[perm] || false}
+                              onChange={() => toggle(perm)}
+                            />
+                            <label
+                              htmlFor={perm}
+                              className="permission-perm-label mb-0"
+                            >
+                              {perm}
+                            </label>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
 
