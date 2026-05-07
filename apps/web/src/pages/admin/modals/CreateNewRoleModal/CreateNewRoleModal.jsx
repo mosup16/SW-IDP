@@ -1,11 +1,14 @@
+// src/features/roles/modals/CreateNewRoleModal.jsx
 import { useState } from 'react';
 import { X } from 'lucide-react';
 import Icon from '../../../../components/icon.js';
 import Textarea from '../../../../components/ui/Textarea.jsx';
+import { useToast } from '../../../../context/ToastContext';
 import '../../../../assets/styles/CreateNewRoleModal.css';
 
 export default function CreateNewRoleModal({ isOpen, onClose, role }) {
   const isEdit = !!role;
+  const { showToast } = useToast();
 
   const PERMISSIONS = [
     {
@@ -41,6 +44,14 @@ export default function CreateNewRoleModal({ isOpen, onClose, role }) {
 
   const toggle = (perm) => setChecked(prev => ({ ...prev, [perm]: !prev[perm] }));
 
+  const handleSubmit = () => {
+    showToast({
+      message: isEdit ? 'Save Role saved' : 'Role created successfully',
+      type: 'success',
+    });
+    onClose();
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -54,7 +65,7 @@ export default function CreateNewRoleModal({ isOpen, onClose, role }) {
       >
         <div className="modal-content modal-content-custom border-0 shadow-lg">
 
-          <div className="modal-header border-bottom px-4 pt-4 pb-3 d-flex align-items-start">
+          <div className="modal-header border-bottom px-4 pt-4 pb-3 d-flex align-items-start bg-gray">
             <div>
               <h5 className="modal-title-custom fw-bold mb-1">
                 {isEdit ? 'Edit Role' : 'Create New Role'}
@@ -145,7 +156,10 @@ export default function CreateNewRoleModal({ isOpen, onClose, role }) {
             >
               Cancel
             </button>
-            <button className="btn-create-role btn fw-bold px-4 py-2 rounded-3">
+            <button
+              onClick={handleSubmit}
+              className="btn-create-role btn fw-bold px-4 py-2 rounded-3"
+            >
               {isEdit ? 'Save Role' : 'Create Role'}
             </button>
           </div>
