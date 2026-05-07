@@ -33,7 +33,11 @@
 }
 
 .input-underline {
+<<<<<<< HEAD
   background: var(--input-bg) !important;
+=======
+   background: var(--input-bg) !important;
+>>>>>>> 86e1fee781bb79df9432475ed998559c9fa5b253
   border: none !important;
   border-bottom: 2px solid var(--border) !important;
   border-radius: 4px 4px 0 0 !important;
