@@ -3,69 +3,81 @@ import Icon from '../../../components/icon';
 import '../../../assets/styles/RoleFilters.css';
 
 const FILTER_OPTIONS = [
-  { label: 'All roles',    icon: Icon.Infinity },
-  { label: 'System roles', icon: Icon.Shield   },
-  { label: 'Custom roles', icon: Icon.Filter   },
+  { label: 'All', value: 'all' },
+  { label: 'System', value: 'system' },
+  { label: 'Custom', value: 'custom' },
 ];
 
-export default function RoleFilters() {
-  const [open, setOpen]         = useState(false);
-  const [selected, setSelected] = useState('All roles');
+export default function RoleFilters({
+  mode = "roles",
+  searchValue = "",
+  onSearch,
+  filterValue = "all",
+  onFilter,
+  exportData = [],
+  exportFileName = "export",
+}) {
 
-  const handleSelect = (label) => {
-    setSelected(label);
-    setOpen(false);
+  const [open, setOpen] = useState(false);
+
+  const placeholder = mode === "clients" 
+    ? "Filter by client name or ID..." 
+    : "Filter by role name...";
+
+  const handleExport = () => {
+    if (exportData.length === 0) return;
+    
+    const csvContent = "data:text/csv;charset=utf-8," 
+      + exportData.map(row => Object.values(row).join(",")).join("\n");
+    
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `${exportFileName}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   return (
     <div className="role-filters-wrapper">
-
-      {/* Search */}
+      {/* Search Input */}
       <div className="role-filters-search-wrapper">
-        <Icon.Search
-          size={15}
-          className="role-filters-search-icon"
-        />
+        <Icon.Search size={16} className="role-filters-search-icon" />
         <input
           type="text"
-          placeholder="Filter by role name..."
+          placeholder={placeholder}
           className="role-filters-search-input"
+          value={searchValue}
+          onChange={(e) => onSearch(e.target.value)}
         />
       </div>
 
       <div className="role-filters-controls">
-
-        {/* Filters button + dropdown */}
+        {/* Filters Button + Dropdown */}
         <div className="role-filters-dropdown-wrapper">
           <button
             onClick={() => setOpen(prev => !prev)}
             className="role-filters-toggle-btn"
           >
-            <Icon.Filter size={15} />
+            <Icon.Filter size={16} />
             Filters
           </button>
 
           {open && (
             <>
-              {/* backdrop */}
-              <div
-                className="role-filters-backdrop"
-                onClick={() => setOpen(false)}
-              />
-
-              {/* dropdown */}
+              <div className="role-filters-backdrop" onClick={() => setOpen(false)} />
               <div className="role-filters-dropdown">
-                <p className="role-filters-dropdown-label">
-                  Filter by Tier
-                </p>
-
-                {FILTER_OPTIONS.map(({ label, icon: OptionIcon }) => (
+                <p className="role-filters-dropdown-label">Filter by Type</p>
+                {FILTER_OPTIONS.map(({ label, value }) => (
                   <button
-                    key={label}
-                    onClick={() => handleSelect(label)}
-                    className="role-filters-option-btn"
+                    key={value}
+                    onClick={() => {
+                      onFilter(value);
+                      setOpen(false);
+                    }}
+                    className={`role-filters-option-btn ${filterValue === value ? 'active' : ''}`}
                   >
-                    <OptionIcon size={16} />
                     {label}
                   </button>
                 ))}
@@ -74,12 +86,11 @@ export default function RoleFilters() {
           )}
         </div>
 
-        {/* Export CSV */}
-        <button className="role-filters-export-btn">
-          <Icon.Download size={15} />
+        {/* Export CSV Button */}
+        <button className="role-filters-export-btn" onClick={handleExport}>
+          <Icon.Download size={16} />
           Export CSV
         </button>
-
       </div>
     </div>
   );

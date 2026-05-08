@@ -2,11 +2,31 @@ import React from 'react';
 import Icon from '../../../components/icon';
 import RoleFilters from '../RoleManagement/RoleFilters';
 
-const ClientTable = ({ clients, onEditClick, onDeleteClick, onSecretRotateClick }) => {
+const ClientTable = ({
+  clients,
+  totalCount,
+  search,
+  onSearch,
+  filter,
+  onFilter,
+  exportData,
+  onEditClick,
+  onDeleteClick,
+  onSecretRotateClick,
+}) => {
   return (
     <div>
-      {/* Search & Filter — reusing RoleFilters */}
-      <RoleFilters />
+      {/* Search & Filter — passing all live props into RoleFilters */}
+      <RoleFilters
+        mode="clients"
+        searchValue={search}
+        onSearch={onSearch}
+        filterValue={filter}
+        onFilter={onFilter}
+        exportData={exportData}
+        exportFileName="clients-export"
+        placeholder="Filter by client name or ID…"
+      />
 
       {/* Table card */}
       <div className="card-container p-0 overflow-hidden">
@@ -21,7 +41,13 @@ const ClientTable = ({ clients, onEditClick, onDeleteClick, onSecretRotateClick 
             </tr>
           </thead>
           <tbody>
-            {clients.map(client => (
+            {clients.length === 0 ? (
+              <tr>
+                <td colSpan={5} style={{ textAlign: 'center', padding: '48px 24px', color: 'var(--text-muted)', fontSize: '14px' }}>
+                  No clients match your search or filter.
+                </td>
+              </tr>
+            ) : clients.map(client => (
               <tr key={client.id} className="align-middle">
                 <td className="ps-4 py-4">
                   <div className="d-flex align-items-center gap-3">
@@ -77,7 +103,10 @@ const ClientTable = ({ clients, onEditClick, onDeleteClick, onSecretRotateClick 
 
         {/* Pagination */}
         <div className="px-4 py-3 d-flex justify-content-between align-items-center text-secondary small border-top">
-          <span>Showing {clients.length} of 24 clients</span>
+          <span>
+            Showing <strong>{clients.length}</strong> of <strong>{totalCount}</strong> clients
+            {search && <> matching <em>"{search}"</em></>}
+          </span>
           <div className="d-flex align-items-center gap-1">
             <button className="btn btn-sm btn-light border-0 px-2">
               <Icon.ChevronRight size={14} style={{ transform: 'rotate(180deg)' }} />
