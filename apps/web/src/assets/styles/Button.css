@@ -1,8 +1,4 @@
-/* ============================================================
-   Button.css
-   All values resolved from design tokens in index.css.
-   No hardcoded hex values anywhere in this file.
-============================================================ */
+
 
 .btn {
   display: inline-flex;
@@ -69,10 +65,6 @@
   );
 }
 
-/* ── Variant: secondary ─────────────────────────────────────── */
-/*
-  Design spec: bg-secondary-container + text-on-surface + rounded-lg
-*/
 .btn--secondary {
   background-color: var(--secondary-container, #d5e3fc);
   color: var(--on-secondary-fixed-variant, #3a485b);

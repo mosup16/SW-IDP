@@ -1,9 +1,3 @@
-/* ============================================================
-   AdminLayout.css
-   Flex shell: sidebar (fixed width) + scrollable main column.
-   All values from design tokens in index.css.
-============================================================ */
-
 .admin-layout {
   display: flex;
   min-height: 100vh;

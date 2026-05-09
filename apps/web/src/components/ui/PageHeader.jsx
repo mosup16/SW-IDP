@@ -1,4 +1,4 @@
-import './PageHeader.css';
+import '../../assets/styles/PageHeader.css';
 
 export default function PageHeader({ title, description, actions }) {
   return (

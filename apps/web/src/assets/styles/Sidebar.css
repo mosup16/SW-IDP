@@ -1,0 +1,113 @@
+.sidebar {
+  width: 16rem;
+  flex-shrink: 0;
+  background-color: var(--sidebar-bg, #f8f9fa);
+  display: flex;
+  flex-direction: column;
+  padding: 2rem 1rem;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.sidebar__brand {
+  padding: 0 0.5rem;
+  margin-bottom: 2.25rem;
+}
+
+/* Main nav */
+.sidebar__nav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+/* Push the last two items to the bottom */
+.sidebar__nav {
+  justify-content: space-between;
+}
+
+/* Add visual separation + bottom positioning for the last two items */
+.sidebar__item:nth-last-child(2) {
+  margin-top: auto;
+  padding-top: 2rem;
+  position: relative;
+}
+
+/* Divider above System Settings */
+.sidebar__item:nth-last-child(2)::before {
+  position: absolute;
+  top: 1rem;
+  left: 0.875rem;
+  right: 0.875rem;
+  height: 1px;
+  background: var(--section-divider, #e0e3e5);
+}
+
+/* Active state for System Settings (matches your new image) */
+.sidebar__item--active {
+  background-color: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  position: relative;
+}
+
+/* Rest of the styles */
+.sidebar__item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 0.875rem;
+  border-radius: 0.625rem;
+  border: 0;
+  background: transparent;
+  color: var(--text-muted, #45464d);
+  font-family: var(--font-label, 'Inter', sans-serif);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  text-align: left;
+  width: 100%;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.sidebar__item:hover {
+  background-color: rgba(255, 255, 255, 0.6);
+  color: var(--text-heading, #191c1e);
+}
+
+.sidebar__active-pill {
+  position: absolute;
+  left: 0;
+  top: 25%;
+  bottom: 25%;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background-color: #005db5;
+  pointer-events: none;
+}
+
+.sidebar__item-icon {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  color: inherit;
+}
+
+.sidebar__item-label {
+  flex: 1;
+  color: inherit;
+  line-height: 1.25;
+}
+
+.sidebar__item--signout {
+  color: var(--text-muted, #45464d);
+  margin-top: 0.25rem;
+}
+
+.sidebar__item--signout:hover {
+  background-color: var(--status-error-bg, #ffdad6);
+  color: var(--status-error, #ba1a1a);
+}

@@ -1,0 +1,124 @@
+.role-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+.role-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 0;
+}
+
+
+.role-table th {
+  padding: 12px 16px;
+  border: none;
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  background: transparent;
+  white-space: nowrap;
+}
+
+.role-table th.col-actions {
+  text-align: right;
+}
+
+.role-table th.col-identities {
+  text-align: center;
+}
+
+.role-table tbody tr {
+  transition: background 0.15s ease;
+}
+
+.role-table tbody tr:hover {
+  background: var(--table-row-hover);
+}
+
+.role-table td {
+  padding: 12px 16px;
+  border: none;
+  vertical-align: middle;
+}
+
+.role-name-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.role-icon-box {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  border: 1px solid;
+  flex-shrink: 0;
+}
+
+.role-name-text {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--text-heading);
+}
+
+.role-description {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+.col-identities {
+  text-align: center;
+}
+
+.badge-users {
+  display: inline-block;
+  padding: 0.4em 0.9em;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.8rem;
+  letter-spacing: 0.01em;
+  background: var(--badge-active-bg);
+  color: var(--badge-active-text);
+  white-space: nowrap;
+}
+
+.col-actions {
+  text-align: right;
+}
+
+.actions-group {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 4px;
+}
+
+.btn-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color 0.15s ease, background 0.15s ease;
+  line-height: 1;
+}
+
+.btn-action:hover {
+  background: var(--table-row-hover);
+  color: var(--text-heading);
+}
+
+.btn-action.btn-delete:hover {
+  color: #dc3545;
+}

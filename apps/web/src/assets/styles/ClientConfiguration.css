@@ -1,0 +1,66 @@
+/* ── Only what Bootstrap cannot do ──────────────────────────────────────── */
+
+/* letter-spacing — not available in Bootstrap */
+.cc-breadcrumb      { letter-spacing: 0.5px; }
+.cc-breadcrumb__sep { font-size: 10px; }
+
+.cc-sublabel {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: #8c8c8c;
+}
+
+/* Fixed-size icon circle — Bootstrap has no 38px utility */
+.cc-card-icon {
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+}
+
+/* Underline-style input — completely different from Bootstrap's default */
+.cc-input.form-control {
+  background: #f5f5f5;
+  border: none;
+  border-bottom: 2px solid #e8e8e8;
+  border-radius: 4px 4px 0 0;
+  font-size: 14px;
+  color: #141414;
+  transition: border-color 0.2s;
+  box-shadow: none;
+}
+.cc-input.form-control:focus {
+  border-bottom-color: #1677ff;
+  background: #f5f5f5;
+  box-shadow: none;
+}
+
+/* Custom brand colors not in Bootstrap palette */
+.cc-alert-danger  { background: #fff1f0; }
+.cc-security-card { background: #001b3d; }
+.cc-draft-banner  { background: #e6f4ff; border: 1px solid #bae0ff; }
+.cc-draft-banner .cc-sublabel { color: #1677ff; }
+
+/* White-tinted row divider inside dark card */
+.cc-security-row--bordered { border-top: 1px solid rgba(255, 255, 255, 0.1); }
+
+/* https badge — custom brand colors */
+.cc-https-badge {
+  background: rgba(22, 119, 255, 0.15);
+  color: #4096ff;
+  padding: 3px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* Chevron rotation animation — no Bootstrap equivalent */
+.cc-chevron { transition: transform 0.2s; }
+.cc-chevron--open { transform: rotate(90deg); }
+
+/* Modal max-width constraint (Bootstrap w-* has no 480px step) */
+.cc-modal { max-width: 480px; width: 90%; }
+
+/* Fixed-size modal icon circle */
+.cc-modal__icon { width: 72px; height: 72px; min-width: 72px; }

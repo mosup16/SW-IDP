@@ -1,0 +1,44 @@
+.role-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.75rem;
+}
+
+.role-header__title {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--text-heading);
+  line-height: 1.15;
+  margin-bottom: 0.5rem;
+}
+
+.role-header__subtitle {
+  max-width: 560px;
+  font-size: 0.9rem;
+  line-height: 1.65;
+  color: var(--text-muted);
+  margin-bottom: 0;
+}
+
+.role-header__btn {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: var(--btn-primary);
+  color: var(--btn-primary-text);
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.55rem 1.2rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.18s ease;
+  flex-shrink: 0;
+}
+
+.role-header__btn:hover {
+  background: var(--btn-primary-hover);
+}

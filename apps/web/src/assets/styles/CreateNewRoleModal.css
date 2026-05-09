@@ -1,0 +1,211 @@
+/* CreateNewRoleModal.css - Clean Modern Design */
+
+.modal-overlay {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  background-color: rgba(0, 0, 0, 0.75) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 9999 !important;
+  padding: 20px;
+}
+
+.modal-content-custom {
+  background-color: #ffffff !important;
+  border-radius: 14px !important;
+  width: 100% !important;
+  max-width: 540px !important;
+  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.4) !important;
+  overflow: hidden !important;
+  border: 1px solid #e5e5e5 !important;
+}
+
+/* Header */
+.modal-header {
+  padding: 28px 32px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.modal-title-custom {
+  margin: 0;
+  font-size: 21px;
+  font-weight: 600;
+  color: var(--text-heading);
+}
+
+.modal-subtitle {
+  color: var(--text-muted);
+  font-size: 14.5px;
+  margin-top: 4px;
+}
+
+.modal-close-btn {
+  background: none;
+  border: none;
+  font-size: 26px;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--text-muted);
+  padding: 4px 8px;
+  border-radius: 50%;
+}
+
+.modal-close-btn:hover {
+  color: #111;
+  background-color: var(--table-row-hover);
+}
+
+/* Section Labels */
+.section-label {
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin: 24px 32px 12px;
+  text-transform: uppercase;
+}
+
+/* Form Fields */
+.form-group {
+  padding: 0 32px 20px;
+}
+
+.form-label-custom {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: var(--text-label);
+  font-size: 14px;
+}
+
+input[type="text"], textarea {
+  width: 100%;
+  background: #f8f9fa !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 8px !important;
+  padding: 12px 16px !important;
+  font-size: 15px;
+}
+
+input:focus, textarea:focus {
+  border-color: var(--focus-outline) !important;
+  box-shadow: 0 0 0 3px rgba(0, 91, 181, 0.15) !important;
+  outline: none;
+}
+
+/* ==================== PERMISSIONS MATRIX ==================== */
+
+.permission-matrix {
+  padding: 0 32px 24px;
+}
+
+.permissions-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.permission-card {
+  background: #f8f9fa;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+}
+
+.permission-card h4 {
+  margin: 0 0 16px 0;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.permission-icon {
+  color: var(--text-muted);
+  font-size: 1.1rem;
+}
+
+/* Checkboxes - Stacked Vertically */
+.permission-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.permission-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.permission-checkbox {
+  width: 18px;
+  height: 18px;
+  accent-color: #1a1a1a;
+  cursor: pointer;
+}
+
+.permission-perm-label {
+  font-size: 0.85rem;
+  font-family: monospace;
+  color: var(--text-body);
+  user-select: none;                    
+  -webkit-user-select: none;            
+  -moz-user-select: none;               
+  -ms-user-select: none;
+}
+
+/* System Logs - Full Width */
+.permission-card:last-child {
+  grid-column: 1 / -1;
+}
+
+/* Footer */
+.modal-footer {
+  padding: 24px 32px 32px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.modal-footer button {
+  padding: 11px 28px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+/* Cancel */
+.modal-footer button:first-child {
+  background-color: transparent !important;
+  color: var(--text-muted) !important;
+  border: 1px solid var(--border) !important;
+}
+
+.modal-footer button:first-child:hover {
+  background-color: #f5f5f5 !important;
+}
+
+/* Create Button */
+.btn-create-role,
+.modal-footer button:last-child {
+  background-color: #1a1a1a !important;
+  color: white !important;
+  border: none !important;
+}
+
+.btn-create-role:hover,
+.modal-footer button:last-child:hover {
+  background-color: #000 !important;
+  transform: translateY(-1px);
+}

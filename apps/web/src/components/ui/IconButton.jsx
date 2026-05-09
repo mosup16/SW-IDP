@@ -1,4 +1,4 @@
-import './IconButton.css';
+import '../../assets/styles/IconButton.css';
 
 export default function IconButton({ 'aria-label': ariaLabel, className = '', children, ...props }) {
   return (
