@@ -20,7 +20,7 @@ public class RefreshToken {
     private String jti;
 
     @Column(name = "client_id", nullable = false)
-    private UUID clientId;
+    private String clientId;
 
     @Column(name = "identity_id", nullable = false)
     private UUID identityId;
@@ -36,4 +36,7 @@ public class RefreshToken {
 
     @Column(name = "revoked_at")
     private OffsetDateTime revokedAt;
+
+    @Column(name = "used_at")
+    private OffsetDateTime usedAt;
 }

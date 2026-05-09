@@ -8,7 +8,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 12345
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -18,6 +18,7 @@ services:
   eureka:
     build:
       context: ./eureka
+      network: host
     container_name: eureka
     ports:
       - "8761:8761"
@@ -27,6 +28,7 @@ services:
   config-server:
     build:
       context: ./config-server
+      network: host
     container_name: config-server
     ports:
       - "8888:8888"
@@ -38,6 +40,7 @@ services:
   identity-service:
     build:
       context: ./identity-service
+      network: host
     container_name: identity-service
     ports:
       - "8081:8081"
@@ -49,12 +52,14 @@ services:
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: 12345
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka/
+      ADMIN_SERVICE_URL: http://admin-service:8082
     networks:
       - iam-network
 
   oauth-service:
     build:
       context: ./oauth-service
+      network: host
     container_name: oauth-service
     ports:
       - "8083:8083"
@@ -66,12 +71,19 @@ services:
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: 12345
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka/
+      IDENTITY_SERVICE_URL: http://identity-service:8081/api/identity
+      ADMIN_SERVICE_URL: http://admin-service:8082
+      JWT_PRIVATE_KEY_PATH: /app/keys/dev-private.pem
+      JWT_PUBLIC_KEY_PATH: /app/keys/dev-public.pem
+    volumes:
+      - ./keys:/app/keys:ro
     networks:
       - iam-network
 
   admin-service:
     build:
       context: ./admin-service
+      network: host
     container_name: admin-service
     ports:
       - "8082:8082"
@@ -89,6 +101,7 @@ services:
   gateway:
     build:
       context: ./gateway
+      network: host
     container_name: gateway
     ports:
       - "8080:8080"

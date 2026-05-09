@@ -1,23 +1,48 @@
 import { useState } from 'react';
 import { Eye, EyeOff, ArrowRight } from 'lucide-react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, useSearchParams, Link } from 'react-router-dom';
+import { useAuth } from '../../../hooks/useAuth';
 
 export default function LoginForm() {
   const [showPw, setShowPw] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
+  const [search] = useSearchParams();
+  const { signIn } = useAuth();
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
+    setError(null);
+    setLoading(true);
+    try {
+      await signIn({ email, password });
 
-    // Authentication logic here
-    navigate('/userProfile');
+      const clientId = search.get('client_id');
+      if (clientId) {
+        const params = new URLSearchParams({
+          client_id: clientId,
+          redirect_uri: search.get('redirect_uri') ?? '',
+          response_type: search.get('response_type') ?? 'code',
+          state: search.get('state') ?? '',
+        });
+        window.location.assign(`/oauth/authorize?${params}`);
+        return;
+      }
+      navigate('/userProfile');
+    } catch (err) {
+      setError(err.status === 403 ? 'Account is disabled.' : 'Invalid email or password.');
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
     <form onSubmit={handleSubmit} className="login-form">
+      {error && <p style={{ color: 'red', marginBottom: '0.5rem' }}>{error}</p>}
       {/* Email */}
       <div>
         <label htmlFor="login-email">Email Address</label>
@@ -61,8 +86,8 @@ export default function LoginForm() {
       </div>
 
       {/* Submit */}
-      <button type="submit" className="login-btn">
-        Log In <ArrowRight size={18} />
+      <button type="submit" className="login-btn" disabled={loading}>
+        {loading ? 'Signing in…' : <><span>Log In</span> <ArrowRight size={18} /></>}
       </button>
 
       {/* Register */}

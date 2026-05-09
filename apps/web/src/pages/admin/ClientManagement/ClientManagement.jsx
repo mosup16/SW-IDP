@@ -1,13 +1,14 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import ClientHeader from './ClientHeader';
 import ClientTable from './ClientTable';
-import { clients as STATIC_CLIENTS } from './clients';
+import { oauthService } from '../../../services/oauthService';
 import DeleteClientPopup from '../modals/DeleteClientPopup/DeleteClientPopup';
 import SecretRotationModal from '../modals/SecretRotationModal/SecretRotationModal';
 import ClientConfiguration from '../ClientConfiguration/ClientConfiguration';
 
 const ClientManagement = () => {
-  const [clients, setClients]               = useState(STATIC_CLIENTS);
+  const [clients, setClients]               = useState([]);
+  const [loading, setLoading]               = useState(true);
   const [search, setSearch]                 = useState('');
   const [filter, setFilter]                 = useState('all');
   const [isDeleteOpen, setIsDeleteOpen]     = useState(false);
@@ -19,13 +20,20 @@ const ClientManagement = () => {
 
   const itemsPerPage = 4;
 
+  useEffect(() => {
+    oauthService.listClients()
+      .then(data => setClients(Array.isArray(data) ? data : (data?.content ?? [])))
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
   const filteredClients = useMemo(() => {
     return clients.filter(client => {
       const matchesSearch =
-        client.name.toLowerCase().includes(search.toLowerCase()) ||
-        client.clientId.toLowerCase().includes(search.toLowerCase());
+        client.name?.toLowerCase().includes(search.toLowerCase()) ||
+        client.clientId?.toLowerCase().includes(search.toLowerCase());
       const matchesFilter =
-        filter === 'all' || client.type.toLowerCase() === filter;
+        filter === 'all' || client.type?.toLowerCase() === filter;
       return matchesSearch && matchesFilter;
     });
   }, [clients, search, filter]);
@@ -40,35 +48,51 @@ const ClientManagement = () => {
     Name: name,
     Type: type,
     'Client ID': clientId,
-    'Redirect URIs': redirectUris.join(' | '),
+    'Redirect URIs': (redirectUris ?? []).join(' | '),
     'Created At': createdAt,
   }));
 
   const handleDeleteClick  = (client) => { setSelectedClient(client); setIsDeleteOpen(true); };
-  const handleSecretClick  = (client) => {
+  const handleSecretClick  = async (client) => {
     setSelectedClient(client);
-    const generated = 'sec_v2_' + Math.random().toString(36).substring(2, 18).toUpperCase();
-    setNewSecret(generated);
     setIsSecretOpen(true);
+    try {
+      const res = await oauthService.rotateSecret(client.clientId);
+      setNewSecret(res?.secret ?? '');
+    } catch {
+      setNewSecret('');
+    }
   };
   const handleEditClick    = (client) => { setEditingClient(client); };
   const handleCreateClick  = ()       => { setEditingClient({}); };
   const handleBackFromConfig = ()     => { setEditingClient(null); };
 
-  const handleConfirmDelete = () => {
-    setClients(prev => prev.filter(c => c.clientId !== selectedClient.clientId));
+  const handleConfirmDelete = async () => {
+    try {
+      await oauthService.deleteClient(selectedClient.clientId);
+      setClients(prev => prev.filter(c => c.clientId !== selectedClient.clientId));
+      const newTotal = filteredClients.length - 1;
+      const newTotalPages = Math.ceil(newTotal / itemsPerPage);
+      if (currentPage > newTotalPages) setCurrentPage(Math.max(1, newTotalPages));
+    } catch {
+      // keep modal open so user sees it failed
+      return;
+    }
     setIsDeleteOpen(false);
     setSelectedClient(null);
-    const newTotal = filteredClients.length - 1;
-    const newTotalPages = Math.ceil(newTotal / itemsPerPage);
-    if (currentPage > newTotalPages) setCurrentPage(Math.max(1, newTotalPages));
   };
 
-  const handleSaveClient = (savedClient, isEdit) => {
-    if (isEdit) {
-      setClients(prev => prev.map(c => c.clientId === savedClient.clientId ? savedClient : c));
-    } else {
-      setClients(prev => [...prev, savedClient]);
+  const handleSaveClient = async (savedClient, isEdit) => {
+    try {
+      if (isEdit) {
+        const updated = await oauthService.updateClient(savedClient.clientId, savedClient);
+        setClients(prev => prev.map(c => c.clientId === savedClient.clientId ? (updated ?? savedClient) : c));
+      } else {
+        const created = await oauthService.createClient(savedClient);
+        setClients(prev => [...prev, created ?? savedClient]);
+      }
+    } catch {
+      // swallow — page will retain old state
     }
     setEditingClient(null);
   };
@@ -81,6 +105,10 @@ const ClientManagement = () => {
         onSave={handleSaveClient}
       />
     );
+  }
+
+  if (loading) {
+    return <div className="p-5">Loading clients…</div>;
   }
 
   return (
@@ -113,7 +141,6 @@ const ClientManagement = () => {
         onClose={() => setIsDeleteOpen(false)}
         clientName={selectedClient?.name || ''}
         clientId={selectedClient?.clientId || ''}
-        activeTokens="12"
         onDelete={handleConfirmDelete}
       />
 

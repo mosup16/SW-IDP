@@ -32,50 +32,6 @@ function avatarClass(name = '') {
   return 'light';
 }
 
-const DEMO_LOGS = [
-  {
-    id: 'l1', timestamp: '2023-10-27T14:32:01Z',
-    actorName: 'System Admin', actorEmail: 'admin@sovereign.local',
-    action: 'Policy Update', detail: 'ID: pol_8x9f2a',
-    status: 'SUCCESS', ip: '192.168.1.45', type: 'Policy Change',
-  },
-  {
-    id: 'l2', timestamp: '2023-10-27T14:28:15Z',
-    actorName: 'Billing Service', actorEmail: 'Client Credentials',
-    action: 'Token Issued', detail: 'Scope: read:billing',
-    status: 'SUCCESS', ip: '10.0.4.22', type: 'Token Issued',
-  },
-  {
-    id: 'l3', timestamp: '2023-10-27T14:15:02Z',
-    actorName: 'Unknown User', actorEmail: 'jdoe@external.com',
-    action: 'Login Attempt', detail: 'Invalid Credentials',
-    status: 'FAILED', ip: '203.0.113.42', type: 'Authentication',
-  },
-  {
-    id: 'l4', timestamp: '2023-10-27T13:55:44Z',
-    actorName: 'Mike Kumar', actorEmail: 'mkumar@sovereign.local',
-    action: 'Interactive Login', detail: 'MFA Verified',
-    status: 'SUCCESS', ip: '192.168.1.105', type: 'Authentication',
-  },
-  {
-    id: 'l5', timestamp: '2023-10-27T13:40:12Z',
-    actorName: 'System Admin', actorEmail: 'admin@sovereign.local',
-    action: 'Client Created', detail: 'App: Analytics_Dash',
-    status: 'SUCCESS', ip: '192.168.1.45', type: 'Client Created',
-  },
-  {
-    id: 'l6', timestamp: '2023-10-27T12:11:00Z',
-    actorName: 'Maria Lopez', actorEmail: 'maria.lopez@sovereign.idp',
-    action: 'Interactive Login', detail: 'MFA Verified',
-    status: 'SUCCESS', ip: '10.10.2.88', type: 'Authentication',
-  },
-  {
-    id: 'l7', timestamp: '2023-10-27T11:05:33Z',
-    actorName: 'Unknown User', actorEmail: 'attacker@evil.io',
-    action: 'Login Attempt', detail: 'Invalid Credentials',
-    status: 'FAILED', ip: '45.33.99.11', type: 'Authentication',
-  },
-];
 
 const PAGE_SIZE = 5;
 
@@ -180,27 +136,37 @@ function EventTypeDropdown({ value, onChange }) {
   );
 }
 export default function AuditLogs() {
-  const [logs, setLogs] = useState(DEMO_LOGS);
+  const [logs, setLogs] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [eventType, setEventType] = useState('All Event Types');
   const [dateLabel, setDateLabel] = useState('Last 7 Days');
+  const [dateRange, setDateRange] = useState(() => {
+    const to = new Date();
+    const from = new Date();
+    from.setDate(from.getDate() - 7);
+    return { from: toDateInputValue(from), to: toDateInputValue(to) };
+  });
   const [page, setPage] = useState(1);
 
   useEffect(() => {
-    adminService.listAuditLogs({}).then(data => {
-      if (Array.isArray(data) && data.length > 0) setLogs(data);
-    }).catch(() => {});
-  }, []);
+    setLoading(true);
+    const action = eventType === 'All Event Types' ? undefined : eventType;
+    adminService.listAuditLogs({ from: dateRange.from, to: dateRange.to, action })
+      .then(data => {
+        const arr = Array.isArray(data) ? data : (data?.content ?? []);
+        setLogs(arr);
+      })
+      .catch(() => setLogs([]))
+      .finally(() => setLoading(false));
+  }, [eventType, dateRange]);
 
-  // Filter
-  const filtered = logs.filter(l =>
-    eventType === 'All Event Types' || l.type === eventType
-  );
-
+  const filtered = logs;
   const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
   const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
-  function handleDateApply({ label }) {
+  function handleDateApply({ label, from, to }) {
     setDateLabel(label);
+    setDateRange({ from, to });
     setPage(1);
   }
 
@@ -220,6 +186,10 @@ export default function AuditLogs() {
     const a = document.createElement('a');
     a.href = url; a.download = 'audit-logs.csv'; a.click();
     URL.revokeObjectURL(url);
+  }
+
+  if (loading) {
+    return <div className="audit-page" style={{ padding: '2rem' }}>Loading audit logs…</div>;
   }
 
   return (

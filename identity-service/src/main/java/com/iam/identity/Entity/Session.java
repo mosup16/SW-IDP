@@ -48,4 +48,10 @@ public class Session {
 
     @Column(name = "is_current")
     private Boolean isCurrent;
+
+    @Column(name = "token_hash", unique = true)
+    private String tokenHash;
+
+    @Column(name = "expires_at")
+    private OffsetDateTime expiresAt;
 }

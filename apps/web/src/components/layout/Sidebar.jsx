@@ -2,7 +2,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import BrandMark from '../ui/BrandMark';
 import '../../assets/styles/Sidebar.css';
 
-export default function Sidebar({ items }) {
+export default function Sidebar({ items, onSignOut }) {
   const { pathname } = useLocation();
   const navigate = useNavigate();
 
@@ -27,7 +27,7 @@ export default function Sidebar({ items }) {
                 active     ? 'sidebar__item--active'  : '',
                 isSignOut  ? 'sidebar__item--signout' : '',
               ].filter(Boolean).join(' ')}
-              onClick={() => navigate(href)}
+              onClick={() => isSignOut ? onSignOut?.() : navigate(href)}
               aria-current={active ? 'page' : undefined}
             >
               <span className="sidebar__item-icon" aria-hidden="true">

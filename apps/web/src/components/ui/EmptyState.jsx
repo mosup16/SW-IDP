@@ -1,4 +1,4 @@
-import "../../assets/styles/EmptyState.scss";
+import "../../assets/styles/EmptyState.css";
 
 const EmptyState = ({ icon, title, description, action }) => {
   return (

@@ -1,20 +1,35 @@
 import { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '../../../hooks/useAuth';
 
 export default function RegisterForm() {
   const [showPw, setShowPw] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
+  const { signUp } = useAuth();
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
-
-    // Authentication logic here
-    navigate('/userProfile');
+    setError(null);
+    if (password !== confirmPassword) {
+      setError('Passwords do not match.');
+      return;
+    }
+    setLoading(true);
+    try {
+      await signUp({ email, password });
+      navigate('/userProfile');
+    } catch (err) {
+      setError(err.body?.message ?? 'Registration failed. Email may already be in use.');
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -27,6 +42,7 @@ export default function RegisterForm() {
         </p>
       </header>
 
+      {error && <p style={{ color: 'red', marginBottom: '0.5rem' }}>{error}</p>}
       <form onSubmit={handleSubmit} className="register-form">
         {/* Email */}
         <div>
@@ -81,8 +97,8 @@ export default function RegisterForm() {
         </div>
 
         {/* Submit */}
-        <button type="submit" className="register-btn">
-          Register
+        <button type="submit" className="register-btn" disabled={loading}>
+          {loading ? 'Registering…' : 'Register'}
         </button>
       </form>
 

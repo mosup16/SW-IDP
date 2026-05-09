@@ -1,19 +1,24 @@
 package com.iam.identity.Service.Implement;
 
 
+import com.iam.identity.DTO.AuthenticationDTO.LoginSuccessResponse;
 import com.iam.identity.DTO.AuthenticationDTO.Logindto;
 import com.iam.identity.DTO.AuthenticationDTO.Registerdto;
 import com.iam.identity.Entity.Identity;
 import com.iam.identity.Enum.Status;
 import com.iam.identity.Repository.AuthenticationRepository.AuthRepository;
 import com.iam.identity.Service.Interface.AuthenticationService;
+import com.iam.identity.Service.Interface.SessionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.SecureRandom;
 import java.time.OffsetDateTime;
+import java.util.Base64;
 import java.util.UUID;
 
 @Service
@@ -22,6 +27,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     private final AuthRepository authRepository;
     private final PasswordEncoder passwordEncoder;
+    private final SessionService sessionService;
+
+    private static final SecureRandom RANDOM = new SecureRandom();
 
     @Override
     public void register(Registerdto dto) {
@@ -33,17 +41,15 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .email(dto.email())
                 .passwordHash(passwordEncoder.encode(dto.password()))
                 .displayName(dto.displayName())
-                .status(Status.DISABLED)
+                .status(Status.ENABLED)
                 .registeredAt(OffsetDateTime.now())
                 .build();
-
 
         authRepository.save(identity);
     }
 
-
-    public boolean login(Logindto request) {
-
+    @Override
+    public LoginSuccessResponse login(Logindto request, String userAgent, String ipAddress) {
         Identity user = authRepository.findByEmail(request.email())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
@@ -51,7 +57,20 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new BadCredentialsException("Invalid email or password");
         }
 
-        return true;
+        if (user.getStatus() == Status.DISABLED) {
+            throw new DisabledException("Account is disabled");
+        }
+
+        user.setLastLoginAt(OffsetDateTime.now());
+        authRepository.save(user);
+
+        byte[] tokenBytes = new byte[32];
+        RANDOM.nextBytes(tokenBytes);
+        String plainToken = Base64.getUrlEncoder().withoutPadding().encodeToString(tokenBytes);
+
+        sessionService.createSession(user.getId(), plainToken, userAgent, ipAddress);
+
+        return new LoginSuccessResponse(user.getId(), user.getEmail(), plainToken);
     }
 
     @Override
