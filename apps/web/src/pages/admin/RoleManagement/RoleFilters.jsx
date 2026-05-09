@@ -41,7 +41,6 @@ export default function RoleFilters({
 
   return (
     <div className="role-filters-wrapper">
-      {/* Search Input */}
       <div className="role-filters-search-wrapper">
         <Icon.Search size={16} className="role-filters-search-icon" />
         <input
@@ -54,7 +53,6 @@ export default function RoleFilters({
       </div>
 
       <div className="role-filters-controls">
-        {/* Filters Button + Dropdown */}
         <div className="role-filters-dropdown-wrapper">
           <button
             onClick={() => setOpen(prev => !prev)}
@@ -86,7 +84,7 @@ export default function RoleFilters({
           )}
         </div>
 
-        {/* Export CSV Button */}
+
         <button className="role-filters-export-btn" onClick={handleExport}>
           <Icon.Download size={16} />
           Export CSV

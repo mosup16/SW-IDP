@@ -61,7 +61,6 @@ export default function RoleManagement() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedRole, setSelectedRole]           = useState(null);
 
-  // ── Derived filtered list ─────────────────────────────────────
   const filteredRoles = useMemo(() => {
     return roles.filter(role => {
       const matchesSearch =
@@ -72,7 +71,7 @@ export default function RoleManagement() {
     });
   }, [roles, search, filter]);
 
-  // ── CSV export shape ──────────────────────────────────────────
+
   const exportData = filteredRoles.map(({ name, description, assignedUsers, tier }) => ({
     Name: name,
     Description: description,
@@ -80,7 +79,6 @@ export default function RoleManagement() {
     Tier: tier,
   }));
 
-  // ── Handlers ─────────────────────────────────────────────────
   const handleEdit   = (role) => { setSelectedRole(role); setIsCreateModalOpen(true); };
   const handleDelete = (role) => { setSelectedRole(role); setIsDeleteModalOpen(true); };
   const handleCreate = ()     => { setSelectedRole(null); setIsCreateModalOpen(true); };

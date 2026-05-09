@@ -2,14 +2,18 @@ import React from 'react';
 import Icon from '../../../../components/icon';
 import '../../../../assets/styles/DeleteClient.css';
 
-const DeleteClientPopup = ({ isOpen, onClose, clientName, clientId, activeTokens }) => {
+const DeleteClientPopup = ({ isOpen, onClose, clientName, clientId, activeTokens, onDelete }) => {
   if (!isOpen) return null;
+
+  const handleDelete = () => {
+    if (onDelete) onDelete();
+    onClose();
+  };
 
   return (
     <div className="modal-overlay">
       <div className="delete-modal">
 
-        {/* Header */}
         <div className="delete-modal__header">
           <div className="delete-modal__icon">
             <Icon.Warning size={22} />
@@ -23,7 +27,6 @@ const DeleteClientPopup = ({ isOpen, onClose, clientName, clientId, activeTokens
           </div>
         </div>
 
-        {/* Info box */}
         <div className="delete-modal__info">
           <div className="delete-modal__info-row">
             <span className="delete-modal__info-label">Client ID</span>
@@ -35,12 +38,11 @@ const DeleteClientPopup = ({ isOpen, onClose, clientName, clientId, activeTokens
           </div>
         </div>
 
-        {/* Footer */}
         <div className="delete-modal__footer">
           <button className="delete-modal__btn-cancel" onClick={onClose}>
             Keep Application
           </button>
-          <button className="delete-modal__btn-delete" onClick={onClose}>
+          <button className="delete-modal__btn-delete" onClick={handleDelete}>
             <Icon.Trash2 size={16} />
             Delete Permanently
           </button>

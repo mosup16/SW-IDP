@@ -19,7 +19,6 @@ const ClientTable = ({
   onPageChange,
 }) => {
 
-  // Build the page number buttons: always show first, last, current, and neighbours
   const getPageNumbers = () => {
     const pages = [];
     for (let i = 1; i <= totalPages; i++) {
@@ -30,7 +29,6 @@ const ClientTable = ({
 
   return (
     <div>
-      {/* Search & Filter Bar */}
       <RoleFilters
         mode="clients"
         searchValue={search}
@@ -41,7 +39,6 @@ const ClientTable = ({
         exportFileName="clients-export"
       />
 
-      {/* Table */}
       <div className="card-container p-0 overflow-hidden">
         <table className="table client-table mb-0">
           <thead>
@@ -120,7 +117,6 @@ const ClientTable = ({
           </tbody>
         </table>
 
-        {/* ✅ Pagination — now fully dynamic and wired up */}
         <div className="px-4 py-3 d-flex justify-content-between align-items-center text-secondary small border-top">
           <span>
             Showing <strong>{clients.length}</strong> of <strong>{totalClients}</strong> clients
@@ -130,7 +126,6 @@ const ClientTable = ({
           </span>
 
           <div className="d-flex align-items-center gap-1">
-            {/* Prev */}
             <button
               className="btn btn-sm btn-light border-0 px-2"
               onClick={() => onPageChange(currentPage - 1)}
@@ -139,7 +134,6 @@ const ClientTable = ({
               <Icon.ChevronRight size={14} style={{ transform: 'rotate(180deg)' }} />
             </button>
 
-            {/* Page number buttons */}
             {getPageNumbers().map(page => (
               <button
                 key={page}
@@ -154,8 +148,6 @@ const ClientTable = ({
                 {page}
               </button>
             ))}
-
-            {/* Next */}
             <button
               className="btn btn-sm btn-light border-0 px-2"
               onClick={() => onPageChange(currentPage + 1)}

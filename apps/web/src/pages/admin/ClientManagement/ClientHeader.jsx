@@ -4,7 +4,6 @@ import Icon from '../../../components/icon';
 const ClientHeader = ({ totalClients, onCreateClick }) => {
   return (
     <div className="d-flex align-items-start justify-content-between mb-4">
-      {/* Left: title + subtitle */}
       <div>
         <h1 className="fw-bold mb-1" style={{ fontSize: '28px', color: '#141414' }}>
           Client Applications
@@ -14,9 +13,7 @@ const ClientHeader = ({ totalClients, onCreateClick }) => {
         </p>
       </div>
 
-      {/* Right: total clients + button */}
       <div className="d-flex align-items-center gap-3">
-        {/* Total Clients box */}
         <div className="d-flex align-items-center gap-2">
           <div
             className="d-flex align-items-center justify-content-center rounded-2"
@@ -34,7 +31,6 @@ const ClientHeader = ({ totalClients, onCreateClick }) => {
           </div>
         </div>
 
-        {/* Create button */}
         <button
           className="btn d-flex align-items-center gap-2 fw-bold"
           style={{
