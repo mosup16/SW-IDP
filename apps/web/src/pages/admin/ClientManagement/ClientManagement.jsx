@@ -1,32 +1,26 @@
 import React, { useState, useMemo } from 'react';
 import ClientHeader from './ClientHeader';
 import ClientTable from './ClientTable';
-import { clients as ALL_CLIENTS } from './clients';
+import { clients as STATIC_CLIENTS } from './clients';
 import DeleteClientPopup from '../modals/DeleteClientPopup/DeleteClientPopup';
 import SecretRotationModal from '../modals/SecretRotationModal/SecretRotationModal';
 import ClientConfiguration from '../ClientConfiguration/ClientConfiguration';
 
 const ClientManagement = () => {
-  const [search, setSearch]             = useState('');
-  const [filter, setFilter]             = useState('all');
-  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-  const [isSecretOpen, setIsSecretOpen] = useState(false);
+  const [clients, setClients]               = useState(STATIC_CLIENTS);
+  const [search, setSearch]                 = useState('');
+  const [filter, setFilter]                 = useState('all');
+  const [isDeleteOpen, setIsDeleteOpen]     = useState(false);
+  const [isSecretOpen, setIsSecretOpen]     = useState(false);
   const [selectedClient, setSelectedClient] = useState(null);
   const [editingClient, setEditingClient]   = useState(null);
-  const [editingClient, setEditingClient] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage]       = useState(1);
+  const [newSecret, setNewSecret]           = useState('');
 
   const itemsPerPage = 4;
-  const totalPages = Math.ceil(clients.length / itemsPerPage);
-  const paginatedClients = clients.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
 
-
-  // ── Derived filtered list ─────────────────────────────────────
   const filteredClients = useMemo(() => {
-    return ALL_CLIENTS.filter(client => {
+    return clients.filter(client => {
       const matchesSearch =
         client.name.toLowerCase().includes(search.toLowerCase()) ||
         client.clientId.toLowerCase().includes(search.toLowerCase());
@@ -34,9 +28,14 @@ const ClientManagement = () => {
         filter === 'all' || client.type.toLowerCase() === filter;
       return matchesSearch && matchesFilter;
     });
-  }, [search, filter]);
+  }, [clients, search, filter]);
 
-  // ── CSV export shape ──────────────────────────────────────────
+  const totalPages       = Math.ceil(filteredClients.length / itemsPerPage);
+  const paginatedClients = filteredClients.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
   const exportData = filteredClients.map(({ name, type, clientId, redirectUris, createdAt }) => ({
     Name: name,
     Type: type,
@@ -45,18 +44,41 @@ const ClientManagement = () => {
     'Created At': createdAt,
   }));
 
-  // ── Handlers ─────────────────────────────────────────────────
   const handleDeleteClick  = (client) => { setSelectedClient(client); setIsDeleteOpen(true); };
-  const handleSecretClick  = (client) => { setSelectedClient(client); setIsSecretOpen(true); };
+  const handleSecretClick  = (client) => {
+    setSelectedClient(client);
+    const generated = 'sec_v2_' + Math.random().toString(36).substring(2, 18).toUpperCase();
+    setNewSecret(generated);
+    setIsSecretOpen(true);
+  };
   const handleEditClick    = (client) => { setEditingClient(client); };
   const handleCreateClick  = ()       => { setEditingClient({}); };
   const handleBackFromConfig = ()     => { setEditingClient(null); };
+
+  const handleConfirmDelete = () => {
+    setClients(prev => prev.filter(c => c.clientId !== selectedClient.clientId));
+    setIsDeleteOpen(false);
+    setSelectedClient(null);
+    const newTotal = filteredClients.length - 1;
+    const newTotalPages = Math.ceil(newTotal / itemsPerPage);
+    if (currentPage > newTotalPages) setCurrentPage(Math.max(1, newTotalPages));
+  };
+
+  const handleSaveClient = (savedClient, isEdit) => {
+    if (isEdit) {
+      setClients(prev => prev.map(c => c.clientId === savedClient.clientId ? savedClient : c));
+    } else {
+      setClients(prev => [...prev, savedClient]);
+    }
+    setEditingClient(null);
+  };
 
   if (editingClient !== null) {
     return (
       <ClientConfiguration
         client={editingClient}
         onBack={handleBackFromConfig}
+        onSave={handleSaveClient}
       />
     );
   }
@@ -64,26 +86,23 @@ const ClientManagement = () => {
   return (
     <div className="p-5">
       <ClientHeader
-        totalClients={ALL_CLIENTS.length}
+        totalClients={clients.length}
         onCreateClick={handleCreateClick}
       />
+
       <ClientTable
-        clients={filteredClients}
-        totalCount={ALL_CLIENTS.length}
+        clients={paginatedClients}
+        totalCount={clients.length}
+        totalClients={filteredClients.length}
         search={search}
         onSearch={setSearch}
         filter={filter}
         onFilter={setFilter}
         exportData={exportData}
-        totalClients={clients.length}
-        onCreateClick={handleCreateClick}
-      />
-      <ClientTable
-        clients={paginatedClients}
-        totalClients={clients.length}
         currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={setCurrentPage}
+        onCreateClick={handleCreateClick}
         onDeleteClick={handleDeleteClick}
         onSecretRotateClick={handleSecretClick}
         onEditClick={handleEditClick}
@@ -95,13 +114,14 @@ const ClientManagement = () => {
         clientName={selectedClient?.name || ''}
         clientId={selectedClient?.clientId || ''}
         activeTokens="12"
+        onDelete={handleConfirmDelete}
       />
 
       <SecretRotationModal
         isOpen={isSecretOpen}
         onClose={() => setIsSecretOpen(false)}
         appName={selectedClient?.name || ''}
-        newSecret="sec_v2_98fHk2mPqL5vXyNw8R..."
+        newSecret={newSecret}
       />
     </div>
   );

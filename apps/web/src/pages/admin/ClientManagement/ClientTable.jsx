@@ -5,6 +5,7 @@ import RoleFilters from '../RoleManagement/RoleFilters';
 const ClientTable = ({
   clients,
   totalCount,
+  totalClients,
   search,
   onSearch,
   filter,
@@ -13,10 +14,21 @@ const ClientTable = ({
   onEditClick,
   onDeleteClick,
   onSecretRotateClick,
+  currentPage,
+  totalPages,
+  onPageChange,
 }) => {
+
+  const getPageNumbers = () => {
+    const pages = [];
+    for (let i = 1; i <= totalPages; i++) {
+      pages.push(i);
+    }
+    return pages;
+  };
+
   return (
     <div>
-      {/* Search & Filter Bar */}
       <RoleFilters
         mode="clients"
         searchValue={search}
@@ -27,7 +39,6 @@ const ClientTable = ({
         exportFileName="clients-export"
       />
 
-      {/* Table */}
       <div className="card-container p-0 overflow-hidden">
         <table className="table client-table mb-0">
           <thead>
@@ -106,23 +117,42 @@ const ClientTable = ({
           </tbody>
         </table>
 
-                {/* Pagination */}
         <div className="px-4 py-3 d-flex justify-content-between align-items-center text-secondary small border-top">
           <span>
-            Showing <strong>{clients.length}</strong> of <strong>{totalCount}</strong> clients
+            Showing <strong>{clients.length}</strong> of <strong>{totalClients}</strong> clients
             {search && (
               <> matching <em>&quot;{search}&quot;</em></>
             )}
           </span>
 
           <div className="d-flex align-items-center gap-1">
-            <button className="btn btn-sm btn-light border-0 px-2">
+            <button
+              className="btn btn-sm btn-light border-0 px-2"
+              onClick={() => onPageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+            >
               <Icon.ChevronRight size={14} style={{ transform: 'rotate(180deg)' }} />
             </button>
-            <button className="btn btn-sm px-3 text-white fw-bold" style={{ background: 'black', borderRadius: '6px' }}>1</button>
-            <button className="btn btn-sm btn-light border-0 px-3">2</button>
-            <button className="btn btn-sm btn-light border-0 px-3">3</button>
-            <button className="btn btn-sm btn-light border-0 px-2">
+
+            {getPageNumbers().map(page => (
+              <button
+                key={page}
+                className="btn btn-sm px-3 fw-bold"
+                style={
+                  page === currentPage
+                    ? { background: 'black', color: 'white', borderRadius: '6px' }
+                    : { background: 'transparent', border: '0' }
+                }
+                onClick={() => onPageChange(page)}
+              >
+                {page}
+              </button>
+            ))}
+            <button
+              className="btn btn-sm btn-light border-0 px-2"
+              onClick={() => onPageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+            >
               <Icon.ChevronRight size={14} />
             </button>
           </div>

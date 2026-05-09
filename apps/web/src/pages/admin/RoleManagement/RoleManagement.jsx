@@ -54,24 +54,24 @@ const INITIAL_ROLES = [
 ];
 
 export default function RoleManagement() {
-  const [roles, setRoles]                   = useState(INITIAL_ROLES);
-  const [search, setSearch]                 = useState('');
-  const [filter, setFilter]                 = useState('all');
+  const [roles, setRoles]                         = useState(INITIAL_ROLES);
+  const [search, setSearch]                       = useState('');
+  const [filter, setFilter]                       = useState('all');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [selectedRole, setSelectedRole]     = useState(null);
+  const [selectedRole, setSelectedRole]           = useState(null);
 
-  // ── Derived filtered list ─────────────────────────────────────
   const filteredRoles = useMemo(() => {
     return roles.filter(role => {
-      const matchesSearch = role.name.toLowerCase().includes(search.toLowerCase()) ||
-                            role.description.toLowerCase().includes(search.toLowerCase());
+      const matchesSearch =
+        role.name.toLowerCase().includes(search.toLowerCase()) ||
+        role.description.toLowerCase().includes(search.toLowerCase());
       const matchesFilter = filter === 'all' || role.tier === filter;
       return matchesSearch && matchesFilter;
     });
   }, [roles, search, filter]);
 
-  // ── CSV export shape ──────────────────────────────────────────
+
   const exportData = filteredRoles.map(({ name, description, assignedUsers, tier }) => ({
     Name: name,
     Description: description,
@@ -79,10 +79,23 @@ export default function RoleManagement() {
     Tier: tier,
   }));
 
-  // ── Handlers ─────────────────────────────────────────────────
   const handleEdit   = (role) => { setSelectedRole(role); setIsCreateModalOpen(true); };
   const handleDelete = (role) => { setSelectedRole(role); setIsDeleteModalOpen(true); };
   const handleCreate = ()     => { setSelectedRole(null); setIsCreateModalOpen(true); };
+
+  const handleConfirmDelete = () => {
+    setRoles(prev => prev.filter(r => r.id !== selectedRole.id));
+    setIsDeleteModalOpen(false);
+    setSelectedRole(null);
+  };
+
+  const handleSaveRole = (savedRole, isEdit) => {
+    if (isEdit) {
+      setRoles(prev => prev.map(r => r.id === savedRole.id ? savedRole : r));
+    } else {
+      setRoles(prev => [...prev, savedRole]);
+    }
+  };
 
   return (
     <div className="role-management">
@@ -104,7 +117,6 @@ export default function RoleManagement() {
           onDelete={handleDelete}
         />
 
-        {/* Empty state */}
         {filteredRoles.length === 0 && (
           <div style={{
             padding: '48px 24px',
@@ -122,14 +134,17 @@ export default function RoleManagement() {
           isOpen={isCreateModalOpen}
           onClose={() => setIsCreateModalOpen(false)}
           role={selectedRole}
+          onSave={handleSaveRole}
         />
       )}
+
       {isDeleteModalOpen && selectedRole && (
         <DeleteRoleModal
           isOpen={isDeleteModalOpen}
           onClose={() => setIsDeleteModalOpen(false)}
           roleName={selectedRole.name}
           userCount={selectedRole.assignedUsers}
+          onDelete={handleConfirmDelete}
         />
       )}
     </div>
