@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { CheckCircle2, Copy, AlertTriangle } from "lucide-react";
-import GeneralSettings    from "./GeneralSettings";
+import GeneralSettings     from "./GeneralSettings";
 import CredentialsSettings from "./CredentialsSettings";
-import SecurityStandards  from "./SecurityStandards";
-import QuickHelp          from "./QuickHelp";
+import SecurityStandards   from "./SecurityStandards";
+import QuickHelp           from "./QuickHelp";
 import "../../../assets/styles/ClientConfiguration.css";
 
 // ── Secret Rotation Modal ────────────────────────────────────────────────────
@@ -52,16 +52,39 @@ const SecretModal = ({ isOpen, onClose, appName, newSecret }) => {
 };
 
 // ── Main Component ───────────────────────────────────────────────────────────
-export default function ClientConfiguration() {
-  const [modalOpen, setModalOpen] = useState(false);
-  const [uris, setUris] = useState([
-    "https://app.acme.com/auth/callback",
-    "https://localhost:3000/callback",
-  ]);
+// ✅ Now correctly accepts `client` and `onBack` props from ClientManagement
+export default function ClientConfiguration({ client = {}, onBack }) {
+  const isEditing = client && client.id;
 
-  const addUri    = ()          => setUris(prev => [...prev, ""]);
-  const removeUri = (i)         => setUris(prev => prev.filter((_, idx) => idx !== i));
-  const updateUri = (i, val)    => setUris(prev => prev.map((u, idx) => idx === i ? val : u));
+  const [modalOpen, setModalOpen] = useState(false);
+  const [appName, setAppName]     = useState(client?.name || "");
+  const [uris, setUris]           = useState(
+    client?.redirectUris?.filter(u => !u.startsWith('+')) || [
+      "https://app.acme.com/auth/callback",
+      "https://localhost:3000/callback",
+    ]
+  );
+
+  const addUri    = ()       => setUris(prev => [...prev, ""]);
+  const removeUri = (i)      => setUris(prev => prev.filter((_, idx) => idx !== i));
+  const updateUri = (i, val) => setUris(prev => prev.map((u, idx) => idx === i ? val : u));
+
+  // ✅ Save Changes handler — extend with your API call as needed
+  const handleSave = () => {
+    const payload = {
+      ...(isEditing ? { id: client.id } : {}),
+      name: appName,
+      redirectUris: uris.filter(u => u.trim() !== ""),
+    };
+    console.log(isEditing ? "Updating client:" : "Creating client:", payload);
+    // TODO: call your API, then navigate back on success
+    if (onBack) onBack();
+  };
+
+  // ✅ Cancel navigates back to the client list
+  const handleCancel = () => {
+    if (onBack) onBack();
+  };
 
   return (
     <div className="min-vh-100 bg-light">
@@ -69,9 +92,17 @@ export default function ClientConfiguration() {
 
         {/* Breadcrumb */}
         <nav className="cc-breadcrumb d-flex align-items-center gap-1 mb-2 text-uppercase fw-semibold">
-          <span className="text-secondary" style={{ cursor: "pointer" }}>Clients</span>
+          <span
+            className="text-secondary"
+            style={{ cursor: "pointer" }}
+            onClick={handleCancel}   // ✅ clicking "Clients" also goes back
+          >
+            Clients
+          </span>
           <span className="cc-breadcrumb__sep text-secondary">›</span>
-          <span className="text-dark">Create New Client</span>
+          <span className="text-dark">
+            {isEditing ? `Edit: ${client.name}` : "Create New Client"}
+          </span>
         </nav>
 
         <h1 className="fw-bold text-dark mb-4 fs-2">Client Configuration</h1>
@@ -81,6 +112,8 @@ export default function ClientConfiguration() {
           {/* Left Column */}
           <div className="col">
             <GeneralSettings
+              appName={appName}
+              onAppNameChange={setAppName}
               uris={uris}
               onAddUri={addUri}
               onRemoveUri={removeUri}
@@ -97,10 +130,20 @@ export default function ClientConfiguration() {
 
         </div>
 
-        {/* Footer */}
+        {/* ✅ Footer buttons are now wired up */}
         <div className="d-flex justify-content-end gap-3 mt-5">
-          <button className="btn btn-outline-secondary px-5 py-3 fw-semibold rounded-3">Cancel</button>
-          <button className="btn btn-dark px-5 py-3 fw-semibold rounded-3">Save Changes</button>
+          <button
+            className="btn btn-outline-secondary px-5 py-3 fw-semibold rounded-3"
+            onClick={handleCancel}
+          >
+            Cancel
+          </button>
+          <button
+            className="btn btn-dark px-5 py-3 fw-semibold rounded-3"
+            onClick={handleSave}
+          >
+            Save Changes
+          </button>
         </div>
 
       </div>
@@ -108,7 +151,7 @@ export default function ClientConfiguration() {
       <SecretModal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
-        appName="Monolith_Production_App"
+        appName={appName || "this client"}
         newSecret="sec_v2_98fHk2mPqL5vXyNw8R..."
       />
     </div>
