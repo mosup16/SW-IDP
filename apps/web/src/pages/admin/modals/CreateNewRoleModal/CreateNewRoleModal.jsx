@@ -1,11 +1,10 @@
 import { useState } from 'react';
 import { X } from 'lucide-react';
-import Icon from '../../../../components/icon';           // ← بدون .js
-import Textarea from '../../../../components/ui/Textarea'; // ← بدون .jsx
-
+import Icon from '../../../../components/icon';
+import Textarea from '../../../../components/ui/Textarea';
 import '../../../../assets/styles/CreateNewRoleModal.css';
 
-export default function CreateNewRoleModal({ isOpen, onClose, role }) {
+export default function CreateNewRoleModal({ isOpen, onClose, role, onSave }) {
   const isEdit = !!role;
 
   const PERMISSIONS = [
@@ -29,26 +28,45 @@ export default function CreateNewRoleModal({ isOpen, onClose, role }) {
     },
   ];
 
-  const [checked, setChecked] = useState(() => {
+  const [roleName, setRoleName]       = useState(isEdit ? role.name : '');
+  const [description, setDescription] = useState(isEdit ? role.description : '');
+  const [checked, setChecked]         = useState(() => {
     const init = {};
     PERMISSIONS.forEach(g => g.perms.forEach(p => (init[p] = false)));
     if (isEdit) {
-      init['users.read'] = true;
+      init['users.read']   = true;
       init['clients.read'] = true;
-      init['logs.view'] = true;
+      init['logs.view']    = true;
     }
     return init;
   });
 
   const toggle = (perm) => setChecked(prev => ({ ...prev, [perm]: !prev[perm] }));
 
+  const handleSave = () => {
+    if (!roleName.trim()) return;
+
+    const savedRole = {
+      id:              isEdit ? role.id : Date.now().toString(),
+      name:            roleName.trim(),
+      description:     description.trim(),
+      assignedUsers:   isEdit ? role.assignedUsers : 0,
+      tier:            isEdit ? role.tier : 'custom',
+      icon:            isEdit ? role.icon : Icon.Shield,
+      iconBgColor:     isEdit ? role.iconBgColor    : 'var(--sidebar-bg)',
+      iconBorderColor: isEdit ? role.iconBorderColor : 'var(--border)',
+      iconColor:       isEdit ? role.iconColor      : 'var(--text-muted)',
+      permissions:     Object.keys(checked).filter(p => checked[p]),
+    };
+
+    if (onSave) onSave(savedRole, isEdit);
+    onClose();
+  };
+
   if (!isOpen) return null;
 
   return (
-    <div
-      className="modal-overlay modal fade show d-block"
-      onClick={onClose}
-    >
+    <div className="modal-overlay modal fade show d-block" onClick={onClose}>
       <div
         className="modal-dialog modal-dialog-centered modal-lg"
         onClick={e => e.stopPropagation()}
@@ -85,13 +103,17 @@ export default function CreateNewRoleModal({ isOpen, onClose, role }) {
               <input
                 type="text"
                 className="input-underline form-control"
-                defaultValue={isEdit ? role.name : ''}
+                value={roleName}
+                onChange={e => setRoleName(e.target.value)}
                 placeholder="e.g. Financial Analyst"
               />
             </div>
 
             <div className="mb-4">
-              <Textarea />
+              <Textarea
+                value={description}
+                onChange={e => setDescription(e.target.value)}
+              />
             </div>
 
             <div className="d-flex align-items-center gap-2 mb-3">
@@ -103,7 +125,7 @@ export default function CreateNewRoleModal({ isOpen, onClose, role }) {
 
             <div className="row g-3">
               {PERMISSIONS.map(group => {
-                const IconComponent = group.icon;   // ← الحل الصحيح للـ dynamic icon
+                const IconComponent = group.icon;
                 return (
                   <div
                     key={group.id}
@@ -126,10 +148,7 @@ export default function CreateNewRoleModal({ isOpen, onClose, role }) {
                               checked={checked[perm] || false}
                               onChange={() => toggle(perm)}
                             />
-                            <label
-                              htmlFor={perm}
-                              className="permission-perm-label mb-0"
-                            >
+                            <label htmlFor={perm} className="permission-perm-label mb-0">
                               {perm}
                             </label>
                           </div>
@@ -149,7 +168,10 @@ export default function CreateNewRoleModal({ isOpen, onClose, role }) {
             >
               Cancel
             </button>
-            <button className="btn-create-role btn fw-bold px-4 py-2 rounded-3">
+            <button
+              onClick={handleSave}
+              className="btn-create-role btn fw-bold px-4 py-2 rounded-3"
+            >
               {isEdit ? 'Save Role' : 'Create Role'}
             </button>
           </div>

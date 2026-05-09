@@ -1,8 +1,14 @@
-import { motion, AnimatePresence } from  "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import '../../../../assets/styles/DeleteRoleModal.css';
 import Icon from '../../../../components/icon';
 
-export default function DeleteRoleModal({ isOpen, onClose, roleName, userCount }) {
+export default function DeleteRoleModal({ isOpen, onClose, roleName, userCount, onDelete }) {
+
+  const handleDelete = () => {
+    if (onDelete) onDelete();
+    onClose();
+  };
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -69,7 +75,7 @@ export default function DeleteRoleModal({ isOpen, onClose, roleName, userCount }
                 <button className="delete-modal__btn-keep" onClick={onClose}>
                   Keep Role
                 </button>
-                <button className="delete-modal__btn-delete">
+                <button className="delete-modal__btn-delete" onClick={handleDelete}>
                   <Icon.Delete size={16} />
                   Delete Role
                 </button>
