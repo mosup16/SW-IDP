@@ -22,9 +22,11 @@ public class GatewayConfig {
                         .uri("lb://identity-service"))
                 .route("oauth-service", r -> r
                         .path("/api/oauth/**")
+                        .filters(f -> f.stripPrefix(2))
                         .uri("lb://oauth-service"))
                 .route("admin-service", r -> r
                         .path("/api/admin/**")
+                        .filters(f -> f.stripPrefix(2))
                         .uri("lb://admin-service"))
                 .build();
     }

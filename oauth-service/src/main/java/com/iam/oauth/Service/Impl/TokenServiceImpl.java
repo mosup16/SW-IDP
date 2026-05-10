@@ -122,7 +122,7 @@ public class TokenServiceImpl implements TokenService {
 
             RefreshToken refreshToken = RefreshToken.builder()
                     .jti(at.jti())
-                    .clientId(UUID.fromString(client.getClientId()))
+                    .clientId(client.getClientId())
                     .identityId(identityId)
                     .tokenHash(rtHash)
                     .issuedAt(OffsetDateTime.ofInstant(at.issuedAt(), java.time.ZoneOffset.UTC))

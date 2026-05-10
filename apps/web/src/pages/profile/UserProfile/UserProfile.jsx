@@ -1,39 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Icon from '../../../components/icon';
+import { useAuth } from '../../../hooks/useAuth';
+import { adminService } from '../../../services/adminService';
+import { authService } from '../../../services/authService';
 import '../../../assets/styles/UserProfile.css';
-
-const SESSIONS_SEED = [
-  {
-    id: 's1',
-    deviceLabel: 'MacBook Pro - Safari',
-    os: 'macOS 14.2',
-    icon: 'Monitor',
-    location: 'San Francisco, CA',
-    ip: '192.168.1.104',
-    lastActive: 'Just now',
-    isCurrent: true,
-  },
-  {
-    id: 's2',
-    deviceLabel: 'iPhone 14 Pro - Native App',
-    os: 'iOS 17.1',
-    icon: 'Smartphone',
-    location: 'San Jose, CA',
-    ip: '172.20.10.4',
-    lastActive: '2 hours ago',
-    isCurrent: false,
-  },
-  {
-    id: 's3',
-    deviceLabel: 'Windows Workstation - Chrome',
-    os: 'Windows 11',
-    icon: 'Monitor',
-    location: 'New York, NY',
-    ip: '10.0.0.45',
-    lastActive: '3 days ago',
-    isCurrent: false,
-  },
-];
 
 function PasswordField({ id, label, value, onChange, placeholder, hint, error }) {
   const [visible, setVisible] = useState(false);
@@ -70,16 +40,51 @@ function PasswordField({ id, label, value, onChange, placeholder, hint, error })
   );
 }
 
+function relativeTime(iso) {
+  if (!iso) return '—';
+  const diff = Date.now() - new Date(iso).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 2) return 'Just now';
+  if (mins < 60) return `${mins} minute${mins !== 1 ? 's' : ''} ago`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours} hour${hours !== 1 ? 's' : ''} ago`;
+  const days = Math.floor(hours / 24);
+  return `${days} day${days !== 1 ? 's' : ''} ago`;
+}
+
+function isMobile(userAgent) {
+  if (!userAgent) return false;
+  return /mobile|android|iphone|ipad/i.test(userAgent);
+}
+
 export default function UserProfile() {
-  const [currentPw, setCurrentPw] = useState('••••••••');
+  const { currentUser } = useAuth();
+
+  const [currentPw, setCurrentPw] = useState('');
   const [newPw, setNewPw] = useState('');
   const [confirmPw, setConfirmPw] = useState('');
   const [pwError, setPwError] = useState('');
   const [pwSuccess, setPwSuccess] = useState(false);
+  const [pwLoading, setPwLoading] = useState(false);
 
-  const [sessions, setSessions] = useState(SESSIONS_SEED);
+  const [sessions, setSessions] = useState([]);
+  const [sessionsLoading, setSessionsLoading] = useState(true);
+  const [displayName, setDisplayName] = useState('');
 
-  function handleUpdatePassword() {
+  useEffect(() => {
+    adminService.listSessions()
+      .then(data => {
+        if (Array.isArray(data)) {
+          setSessions(data);
+          const current = data.find(s => s.isCurrent);
+          if (current?.identity?.displayName) setDisplayName(current.identity.displayName);
+        }
+      })
+      .catch(() => {})
+      .finally(() => setSessionsLoading(false));
+  }, []);
+
+  async function handleUpdatePassword() {
     setPwError('');
     setPwSuccess(false);
     if (newPw.length < 12) {
@@ -90,35 +95,51 @@ export default function UserProfile() {
       setPwError('Passwords do not match.');
       return;
     }
-    setPwSuccess(true);
-    setNewPw('');
-    setConfirmPw('');
-    setTimeout(() => setPwSuccess(false), 3000);
+    setPwLoading(true);
+    try {
+      await authService.updatePassword({ currentPassword: currentPw, newPassword: newPw });
+      setPwSuccess(true);
+      setCurrentPw('');
+      setNewPw('');
+      setConfirmPw('');
+      setTimeout(() => setPwSuccess(false), 3000);
+    } catch (err) {
+      setPwError(err.body?.message ?? 'Failed to update password.');
+    } finally {
+      setPwLoading(false);
+    }
   }
 
   function handleCancelPassword() {
+    setCurrentPw('');
     setNewPw('');
     setConfirmPw('');
     setPwError('');
     setPwSuccess(false);
   }
 
-  function revokeSession(id) {
-    setSessions(prev => prev.filter(s => s.id !== id));
+  async function revokeSession(id) {
+    try {
+      await adminService.revokeSession(id);
+      setSessions(prev => prev.filter(s => s.id !== id));
+    } catch { /* keep state */ }
   }
 
-  function revokeAll() {
-    setSessions(prev => prev.filter(s => s.isCurrent));
+  async function revokeAll() {
+    try {
+      await adminService.revokeAllSessions();
+      setSessions(prev => prev.filter(s => s.isCurrent));
+    } catch { /* keep state */ }
   }
 
   const nonCurrentCount = sessions.filter(s => !s.isCurrent).length;
+  const email = currentUser?.email ?? '—';
 
   return (
     <div className="up-main">
       <h1 className="up-page-title">User Profile</h1>
       <p className="up-page-sub">Manage your identity details, security credentials, and active sessions.</p>
 
-      {/* Top grid - Profile + Security */}
       <div className="up-top-grid">
         {/* Profile Card */}
         <div className="up-profile-card">
@@ -131,8 +152,8 @@ export default function UserProfile() {
             </button>
           </div>
 
-          <p className="up-profile-name">Alexander Vance</p>
-          <p className="up-profile-email">alexander.vance@sovereign.idp</p>
+          <p className="up-profile-name">{displayName || '—'}</p>
+          <p className="up-profile-email">{email}</p>
 
           <div className="up-status-badge">
             <span className="up-status-dot" />
@@ -141,16 +162,14 @@ export default function UserProfile() {
 
           <div className="up-profile-meta">
             <div className="up-meta-row">
-              <span className="up-meta-label">Role</span>
-              <span className="up-meta-value">Super Administrator</span>
+              <span className="up-meta-label">Identity ID</span>
+              <span className="up-meta-value" style={{ fontSize: '12px', wordBreak: 'break-all' }}>
+                {currentUser?.identityId ?? '—'}
+              </span>
             </div>
             <div className="up-meta-row">
-              <span className="up-meta-label">Department</span>
-              <span className="up-meta-value">Security Ops</span>
-            </div>
-            <div className="up-meta-row">
-              <span className="up-meta-label">Last Login</span>
-              <span className="up-meta-value">Today, 08:42 AM</span>
+              <span className="up-meta-label">Active Sessions</span>
+              <span className="up-meta-value">{sessionsLoading ? '…' : sessions.length}</span>
             </div>
           </div>
         </div>
@@ -169,6 +188,7 @@ export default function UserProfile() {
             label="Current Password"
             value={currentPw}
             onChange={setCurrentPw}
+            placeholder="Enter current password"
           />
 
           <PasswordField
@@ -196,13 +216,15 @@ export default function UserProfile() {
                 Password updated!
               </span>
             )}
-            <button className="up-btn-cancel" onClick={handleCancelPassword}>Cancel</button>
+            <button className="up-btn-cancel" onClick={handleCancelPassword} disabled={pwLoading}>
+              Cancel
+            </button>
             <button
               className="up-btn-primary"
               onClick={handleUpdatePassword}
-              disabled={!newPw || !confirmPw}
+              disabled={!currentPw || !newPw || !confirmPw || pwLoading}
             >
-              Update Password
+              {pwLoading ? 'Updating…' : 'Update Password'}
             </button>
           </div>
         </div>
@@ -238,8 +260,20 @@ export default function UserProfile() {
             </tr>
           </thead>
           <tbody>
-            {sessions.map(session => {
-              const DevIcon = session.icon === 'Smartphone' ? Icon.Smartphone : Icon.Monitor;
+            {sessionsLoading ? (
+              <tr>
+                <td colSpan={4} style={{ textAlign: 'center', padding: '32px', color: 'var(--text-muted)' }}>
+                  Loading…
+                </td>
+              </tr>
+            ) : sessions.length === 0 ? (
+              <tr>
+                <td colSpan={4} style={{ textAlign: 'center', padding: '32px', color: 'var(--text-muted)' }}>
+                  No active sessions.
+                </td>
+              </tr>
+            ) : sessions.map(session => {
+              const DevIcon = isMobile(session.userAgent) ? Icon.Smartphone : Icon.Monitor;
               return (
                 <tr key={session.id}>
                   <td>
@@ -247,18 +281,18 @@ export default function UserProfile() {
                       <DevIcon size={20} className="up-device-icon" />
                       <div>
                         <div className="up-device-name">
-                          {session.deviceLabel}
+                          {session.deviceLabel || 'Unknown device'}
                           {session.isCurrent && <span className="up-current-chip">Current</span>}
                         </div>
-                        <div className="up-device-os">{session.os}</div>
+                        <div className="up-device-os">{session.userAgent || '—'}</div>
                       </div>
                     </div>
                   </td>
                   <td>
-                    <div className="up-location-city">{session.location}</div>
-                    <div className="up-location-ip">{session.ip}</div>
+                    <div className="up-location-city">{session.location || '—'}</div>
+                    <div className="up-location-ip">{session.ipAddress || '—'}</div>
                   </td>
-                  <td>{session.lastActive}</td>
+                  <td>{relativeTime(session.lastActiveAt)}</td>
                   <td>
                     {session.isCurrent ? (
                       <span className="up-action-active">Active</span>

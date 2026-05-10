@@ -1,5 +1,6 @@
 package com.iam.identity.Service.Implement;
 
+import com.iam.identity.Audit.Audited;
 import com.iam.identity.DTO.IdentityRoleDto.AssignRoleToIdentity;
 import com.iam.identity.DTO.IdentityRoleDto.IdentityRoleResponse;
 import com.iam.identity.DTO.IdentityRoleDto.RemoveRoleFromIdentity;
@@ -30,6 +31,7 @@ public class IdentityRoleServiceImpl implements IdentityRoleService {
 
     @Override
     @Transactional
+    @Audited(action = "ROLE_ASSIGNED", targetType = "IDENTITY_ROLE", targetIdExpr = "#args[0].identityId")
     public IdentityRoleResponse assignRole(AssignRoleToIdentity dto) {
         // 1. تتأكد إن الـ identity موجودة
         Identity identity = authRepository.findById(dto.identityId())
@@ -59,6 +61,7 @@ public class IdentityRoleServiceImpl implements IdentityRoleService {
 
     @Override
     @Transactional
+    @Audited(action = "ROLE_REMOVED", targetType = "IDENTITY_ROLE", targetIdExpr = "#args[0].identityId")
     public void removeRole(RemoveRoleFromIdentity dto) {
         // 1. تتأكد إن الـ record موجود أصلاً
         if (!identityRoleRepository.existsByIdentityIdAndRoleId(dto.identityId(), dto.roleId())) {

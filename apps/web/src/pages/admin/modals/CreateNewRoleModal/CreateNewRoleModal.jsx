@@ -45,20 +45,12 @@ export default function CreateNewRoleModal({ isOpen, onClose, role, onSave }) {
 
   const handleSave = () => {
     if (!roleName.trim()) return;
-
     const savedRole = {
-      id:              isEdit ? role.id : Date.now().toString(),
-      name:            roleName.trim(),
-      description:     description.trim(),
-      assignedUsers:   isEdit ? role.assignedUsers : 0,
-      tier:            isEdit ? role.tier : 'custom',
-      icon:            isEdit ? role.icon : Icon.Shield,
-      iconBgColor:     isEdit ? role.iconBgColor    : 'var(--sidebar-bg)',
-      iconBorderColor: isEdit ? role.iconBorderColor : 'var(--border)',
-      iconColor:       isEdit ? role.iconColor      : 'var(--text-muted)',
-      permissions:     Object.keys(checked).filter(p => checked[p]),
+      id:          isEdit ? role.id : undefined,
+      name:        roleName.trim(),
+      description: description.trim(),
+      type:        isEdit ? role.type : 'CUSTOM',
     };
-
     if (onSave) onSave(savedRole, isEdit);
     onClose();
   };

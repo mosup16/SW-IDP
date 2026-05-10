@@ -59,20 +59,22 @@ const ClientTable = ({
               </tr>
             ) : (
               clients.map(client => (
-                <tr key={client.id} className="align-middle">
+                <tr key={client.clientId} className="align-middle">
                   <td className="ps-4 py-4">
                     <div className="d-flex align-items-center gap-3">
-                      <div className="avatar-initials">{client.initials}</div>
+                      <div className="avatar-initials">{client.initials ?? client.name?.[0]?.toUpperCase()}</div>
                       <div>
                         <div className="fw-bold" style={{ color: '#262626' }}>
                           {client.name}
                         </div>
-                        <span
-                          className={`badge rounded-pill mt-1 px-2 py-1 badge-${client.type.toLowerCase()}`}
-                          style={{ fontSize: '10px' }}
-                        >
-                          {client.type}
-                        </span>
+                        {client.type && (
+                          <span
+                            className={`badge rounded-pill mt-1 px-2 py-1 badge-${client.type.toLowerCase()}`}
+                            style={{ fontSize: '10px' }}
+                          >
+                            {client.type}
+                          </span>
+                        )}
                       </div>
                     </div>
                   </td>
@@ -80,7 +82,7 @@ const ClientTable = ({
                     <span className="mono-text">{client.clientId}</span>
                   </td>
                   <td style={{ maxWidth: '300px' }}>
-                    {client.redirectUris.map((uri, idx) => (
+                    {(client.redirectUris ?? []).map((uri, idx) => (
                       <div key={idx} className="text-secondary small mb-1">
                         <span className={uri.startsWith('+') ? 'text-primary fw-bold' : ''}>
                           {uri}

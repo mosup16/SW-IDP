@@ -21,5 +21,5 @@ export const apiClient = {
   post:   (p, b) => request(p, { method: 'POST',   body: JSON.stringify(b) }),
   put:    (p, b) => request(p, { method: 'PUT',    body: JSON.stringify(b) }),
   patch:  (p, b) => request(p, { method: 'PATCH',  body: JSON.stringify(b) }),
-  delete: (p)    => request(p, { method: 'DELETE' }),
+  delete: (p, b) => request(p, { method: 'DELETE', ...(b !== undefined && { body: JSON.stringify(b) }) }),
 };

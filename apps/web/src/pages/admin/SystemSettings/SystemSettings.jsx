@@ -1,10 +1,59 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import Icon from '../../../components/icon';
+import { useAuth } from '../../../hooks/useAuth';
+import { adminService } from '../../../services/adminService';
 import '../../../assets/styles/SystemSettings.css';
 
 // ── Helpers ───────────────────────────────────────────────────────
 function isValidHex(val) {
   return /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(val);
+}
+
+function parseValue(rawValue, type) {
+  if (type === 'INT')  return Number(rawValue);
+  if (type === 'BOOL') return rawValue === 'true';
+  return rawValue ?? '';
+}
+
+const DEFAULTS = {
+  accessTokenTtl:    60,
+  refreshTokenTtl:   30,
+  passwordMinLength: 12,
+  complexity: { uppercase: false, number: true, special: true },
+  maintenanceMode:   false,
+  primaryColor:      '#000000',
+  companyLogoUrl:    '',
+};
+
+function settingsToForm(list) {
+  const map = Object.fromEntries((list ?? []).map(s => [s.key, s]));
+  return {
+    accessTokenTtl:    parseValue(map['access_token_ttl']?.value,              'INT')  ?? DEFAULTS.accessTokenTtl,
+    refreshTokenTtl:   parseValue(map['refresh_token_ttl']?.value,             'INT')  ?? DEFAULTS.refreshTokenTtl,
+    passwordMinLength: parseValue(map['password_min_length']?.value,           'INT')  ?? DEFAULTS.passwordMinLength,
+    complexity: {
+      uppercase: parseValue(map['password_complexity_uppercase']?.value ?? 'false', 'BOOL'),
+      number:    parseValue(map['password_complexity_number']?.value    ?? 'true',  'BOOL'),
+      special:   parseValue(map['password_complexity_special']?.value   ?? 'true',  'BOOL'),
+    },
+    maintenanceMode: parseValue(map['maintenance_mode']?.value ?? 'false', 'BOOL'),
+    primaryColor:    map['primary_color']?.value    ?? DEFAULTS.primaryColor,
+    companyLogoUrl:  map['company_logo_url']?.value ?? DEFAULTS.companyLogoUrl,
+  };
+}
+
+function formToUpdates(form) {
+  return [
+    { key: 'access_token_ttl',              value: String(form.accessTokenTtl),         type: 'INT'    },
+    { key: 'refresh_token_ttl',             value: String(form.refreshTokenTtl),        type: 'INT'    },
+    { key: 'password_min_length',           value: String(form.passwordMinLength),      type: 'INT'    },
+    { key: 'password_complexity_uppercase', value: String(form.complexity.uppercase),   type: 'BOOL'   },
+    { key: 'password_complexity_number',    value: String(form.complexity.number),      type: 'BOOL'   },
+    { key: 'password_complexity_special',   value: String(form.complexity.special),     type: 'BOOL'   },
+    { key: 'maintenance_mode',              value: String(form.maintenanceMode),        type: 'BOOL'   },
+    { key: 'primary_color',                 value: form.primaryColor,                   type: 'STRING' },
+    { key: 'company_logo_url',              value: form.companyLogoUrl,                 type: 'IMAGE'  },
+  ];
 }
 
 // ── Custom Checkbox ───────────────────────────────────────────────
@@ -174,27 +223,25 @@ function LogoDropzone({ logoUrl, onChange }) {
   );
 }
 
-// ── Initial state (from adminService seededSettings) ──────────────
-const INIT = {
-  accessTokenTtl:   60,
-  refreshTokenTtl:  30,
-  passwordMinLength: 12,
-  complexity: {
-    uppercase: false,
-    number:    true,
-    special:   true,
-  },
-  maintenanceMode: false,
-  primaryColor:    '#000000',
-  companyLogoUrl:  '',
-};
-
 // ── Main Page ─────────────────────────────────────────────────────
 export default function SystemSettings() {
-  const [form, setForm]       = useState(INIT);
-  const [saved, setSaved]     = useState(INIT);
-  const [toast, setToast]     = useState(false);
-  const [saving, setSaving]   = useState(false);
+  const { currentUser } = useAuth();
+  const [form, setForm]     = useState(DEFAULTS);
+  const [saved, setSaved]   = useState(DEFAULTS);
+  const [loading, setLoading] = useState(true);
+  const [toast, setToast]   = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    adminService.listSettings()
+      .then(list => {
+        const parsed = settingsToForm(list);
+        setForm(parsed);
+        setSaved(parsed);
+      })
+      .catch(() => { /* keep DEFAULTS */ })
+      .finally(() => setLoading(false));
+  }, []);
 
   const isDirty = JSON.stringify(form) !== JSON.stringify(saved);
 
@@ -211,16 +258,35 @@ export default function SystemSettings() {
 
   async function handleSave() {
     setSaving(true);
-    // Simulate API call
-    await new Promise(r => setTimeout(r, 700));
-    setSaved(form);
-    setSaving(false);
-    setToast(true);
-    setTimeout(() => setToast(false), 3000);
+    try {
+      const identityId = currentUser?.identityId;
+      await Promise.all(
+        formToUpdates(form).map(({ key, value, type }) =>
+          adminService.updateSetting(key, { value, type, updatedBy: identityId })
+        )
+      );
+      setSaved(form);
+      setToast(true);
+      setTimeout(() => setToast(false), 3000);
+    } catch { /* keep unsaved state */ } finally {
+      setSaving(false);
+    }
   }
 
   function handleReset() {
     setForm(saved);
+  }
+
+  if (loading) {
+    return (
+      <div className="gc-page">
+        <main className="gc-main">
+          <div style={{ padding: '64px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '14px' }}>
+            Loading configuration…
+          </div>
+        </main>
+      </div>
+    );
   }
 
   return (

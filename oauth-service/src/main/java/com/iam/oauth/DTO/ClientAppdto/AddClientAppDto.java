@@ -1,8 +1,6 @@
 package com.iam.oauth.DTO.ClientAppdto;
 
-import com.iam.oauth.Enum.Status;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.util.List;
@@ -18,12 +16,7 @@ public record AddClientAppDto(
         String description,
 
         @NotBlank(message = "Client secret is required")
-        String clientSecret
+        String clientSecret,
 
-
-
-)
-
-
-{
-}
+        List<String> redirectUris
+) {}

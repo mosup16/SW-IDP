@@ -7,13 +7,16 @@ services:
       POSTGRES_DB: IAM
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 12345
-    ports:
-      - "127.0.0.1:5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - iam-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d IAM"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   eureka:
     build:
@@ -24,29 +27,34 @@ services:
       - "8761:8761"
     networks:
       - iam-network
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c 'echo > /dev/tcp/localhost/8761'"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
 
-  config-server:
-    build:
-      context: ./config-server
-      network: host
-    container_name: config-server
-    ports:
-      - "8888:8888"
-    depends_on:
-      - eureka
-    networks:
-      - iam-network
+  # config-server:
+  #   build:
+  #     context: ./config-server
+  #     network: host
+  #   container_name: config-server
+  #   depends_on:
+  #     eureka:
+  #       condition: service_healthy
+  #   networks:
+  #     - iam-network
 
   identity-service:
     build:
       context: ./identity-service
       network: host
     container_name: identity-service
-    ports:
-      - "8081:8081"
     depends_on:
-      - postgres
-      - eureka
+      postgres:
+        condition: service_healthy
+      eureka:
+        condition: service_healthy
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/IAM
       SPRING_DATASOURCE_USERNAME: postgres
@@ -61,11 +69,11 @@ services:
       context: ./oauth-service
       network: host
     container_name: oauth-service
-    ports:
-      - "8083:8083"
     depends_on:
-      - postgres
-      - eureka
+      postgres:
+        condition: service_healthy
+      eureka:
+        condition: service_healthy
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/IAM
       SPRING_DATASOURCE_USERNAME: postgres
@@ -85,11 +93,11 @@ services:
       context: ./admin-service
       network: host
     container_name: admin-service
-    ports:
-      - "8082:8082"
     depends_on:
-      - postgres
-      - eureka
+      postgres:
+        condition: service_healthy
+      eureka:
+        condition: service_healthy
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/IAM
       SPRING_DATASOURCE_USERNAME: postgres
@@ -104,12 +112,16 @@ services:
       network: host
     container_name: gateway
     ports:
-      - "8080:8080"
+      - "9090:8080"
     depends_on:
-      - eureka
-      - identity-service
-      - oauth-service
-      - admin-service
+      eureka:
+        condition: service_healthy
+      identity-service:
+        condition: service_started
+      oauth-service:
+        condition: service_started
+      admin-service:
+        condition: service_started
     environment:
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka/
     networks:

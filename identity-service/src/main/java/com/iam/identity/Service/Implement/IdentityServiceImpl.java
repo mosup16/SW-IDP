@@ -1,5 +1,6 @@
 package com.iam.identity.Service.Implement;
 
+import com.iam.identity.Audit.Audited;
 import com.iam.identity.DTO.IdentityDto.*;
 import com.iam.identity.Entity.Identity;
 import com.iam.identity.Enum.Status;
@@ -38,8 +39,8 @@ public class IdentityServiceImpl implements IdentityService {
 
     @Override
     @Transactional
+    @Audited(action = "IDENTITY_CREATED", targetType = "IDENTITY", targetIdExpr = "#result.id")
     public IdentityResponse createIdentity(CreateIdentityRequest request) {
-        // 1. تتأكد إن الـ email مش موجود قبل كده
         if (identityRepository.existsByEmail(request.email())) {
             throw new IllegalStateException("Email already exists");
         }
@@ -63,6 +64,7 @@ public class IdentityServiceImpl implements IdentityService {
 
     @Override
     @Transactional
+    @Audited(action = "IDENTITY_UPDATED", targetType = "IDENTITY", targetIdExpr = "#args[0]")
     public IdentityResponse updateIdentity(UUID id, UpdateIdentityRequest request) {
         Identity identity = findById(id);
 
@@ -85,6 +87,7 @@ public class IdentityServiceImpl implements IdentityService {
 
     @Override
     @Transactional
+    @Audited(action = "IDENTITY_DELETED", targetType = "IDENTITY", targetIdExpr = "#args[0]")
     public void deleteIdentity(UUID id) {
         if (!identityRepository.existsById(id)) {
             throw new EntityNotFoundException("Identity not found");

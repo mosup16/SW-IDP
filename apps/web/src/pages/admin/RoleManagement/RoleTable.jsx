@@ -19,26 +19,19 @@ export default function RoleTable({ roles, onEdit, onDelete }) {
             <tr key={role.id}>
               <td>
                 <div className="role-name-cell">
-                  <div
-                    className="role-icon-box"
-                    style={{
-                      background: role.iconBgColor,
-                      borderColor: role.iconBorderColor,
-                      color: role.iconColor,
-                    }}
-                  >
-                    <role.icon size={18} />
+                  <div className="role-icon-box">
+                    <Icon.Shield size={18} />
                   </div>
                   <span className="role-name-text">{role.name}</span>
                 </div>
               </td>
 
               <td>
-                <span className="role-description">{role.description}</span>
+                <span className="role-description">{role.description ?? '—'}</span>
               </td>
 
               <td className="col-identities">
-                <span className="badge-users">{role.assignedUsers} Users</span>
+                <span className="badge-users">{role.assignedUsers ?? 0} Users</span>
               </td>
 
               <td className="col-actions">

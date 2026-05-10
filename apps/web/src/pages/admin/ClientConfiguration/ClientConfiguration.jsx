@@ -90,6 +90,7 @@ export default function ClientConfiguration({ client, onBack, onSave }) {
 
   const handleSave = () => {
     if (!name.trim()) return;
+    if (!isEdit && !newSecret) return;
 
     const savedClient = {
       ...(isEdit ? client : {}),
@@ -99,7 +100,8 @@ export default function ClientConfiguration({ client, onBack, onSave }) {
       redirectUris: uris.filter(u => u.trim() !== ''),
       createdAt:    isEdit ? client.createdAt : new Date().toISOString().split('T')[0],
       ...(isEdit ? {} : {
-        status:      'active',
+        clientSecret:  newSecret,
+        status:        'active',
         assignedUsers: 0,
       }),
     };

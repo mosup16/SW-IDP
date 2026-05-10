@@ -5,6 +5,7 @@ import com.iam.oauth.DTO.ClientAppdto.AddClientAppDto;
 import com.iam.oauth.DTO.ClientAppdto.ClientResponsedto;
 import com.iam.oauth.DTO.ClientAppdto.RotateSecretdto;
 import com.iam.oauth.Entity.ClientApplication;
+import com.iam.oauth.Entity.RedirectUri;
 import com.iam.oauth.Enum.Status;
 import com.iam.oauth.Repository.ClientAppRepository;
 import com.iam.oauth.Service.Interface.ClientApplicationService;
@@ -34,8 +35,15 @@ public class ClientApplicationServiceImpl implements ClientApplicationService {
                 .description(dto.description())
                 .clientSecretHash(passwordEncoder.encode(dto.clientSecret()))
                 .status(Status.ACTIVE)
-
                 .build();
+
+        if (dto.redirectUris() != null && !dto.redirectUris().isEmpty()) {
+            List<RedirectUri> uris = dto.redirectUris().stream()
+                    .filter(u -> u != null && !u.isBlank())
+                    .map(u -> RedirectUri.builder().clientApplication(client).uri(u).build())
+                    .toList();
+            client.setRedirectUris(uris);
+        }
 
         clientAppRepository.save(client);
         return "Client created successfully";
@@ -90,6 +98,8 @@ public class ClientApplicationServiceImpl implements ClientApplicationService {
     }
 
     private ClientResponsedto toDto(ClientApplication client) {
+        List<String> uris = client.getRedirectUris() == null ? List.of() :
+                client.getRedirectUris().stream().map(r -> r.getUri()).toList();
         return new ClientResponsedto(
                 client.getClientId(),
                 client.getName(),
@@ -97,7 +107,8 @@ public class ClientApplicationServiceImpl implements ClientApplicationService {
                 client.getStatus(),
                 client.getCreatedAt(),
                 client.getSecretRotatedAt(),
-                client.getCreatedBy()
+                client.getCreatedBy(),
+                uris
         );
     }
 }

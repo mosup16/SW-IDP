@@ -1,5 +1,6 @@
 package com.iam.identity.Service.Implement;
 
+import com.iam.identity.Audit.Audited;
 import com.iam.identity.DTO.RoleDto.AddRoledto;
 import com.iam.identity.DTO.RoleDto.RoleResponse;
 import com.iam.identity.Entity.Role;
@@ -20,6 +21,7 @@ public class RoleServiceImpl implements RoleService {
     private final RoleRepository roleRepository;
 
     @Override
+    @Audited(action = "ROLE_CREATED", targetType = "ROLE")
     public void AddRole(AddRoledto request) {
         if (roleRepository.existsByName(request.name())) {
             throw new RuntimeException("Role already exists");
@@ -52,6 +54,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
+    @Audited(action = "ROLE_UPDATED", targetType = "ROLE", targetIdExpr = "#args[0]")
     public String Update(UUID id, AddRoledto request) {
         Role role = roleRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Role not found"));
@@ -71,6 +74,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
+    @Audited(action = "ROLE_DELETED", targetType = "ROLE", targetIdExpr = "#args[0]")
     public String Delete(UUID id) {
         Role role = roleRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Role not found"));

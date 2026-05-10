@@ -37,7 +37,7 @@ public class AuditLog {
     @Column(name = "ip_address")
     private String ipAddress;
 
-    @Column(columnDefinition = "jsonb")
+    @Column(columnDefinition = "text")
     private String metadata;
 
 

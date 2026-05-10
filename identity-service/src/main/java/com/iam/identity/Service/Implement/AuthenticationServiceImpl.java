@@ -1,6 +1,7 @@
 package com.iam.identity.Service.Implement;
 
 
+import com.iam.identity.Audit.Audited;
 import com.iam.identity.DTO.AuthenticationDTO.LoginSuccessResponse;
 import com.iam.identity.DTO.AuthenticationDTO.Logindto;
 import com.iam.identity.DTO.AuthenticationDTO.Registerdto;
@@ -32,6 +33,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private static final SecureRandom RANDOM = new SecureRandom();
 
     @Override
+    @Audited(action = "IDENTITY_REGISTERED", targetType = "IDENTITY")
     public void register(Registerdto dto) {
         if (authRepository.existsByEmail(dto.email())) {
             throw new RuntimeException("This Email Is Found !!!! ");
@@ -49,6 +51,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
+    @Audited(action = "AUTH_LOGIN", targetType = "IDENTITY", targetIdExpr = "#result.identityId")
     public LoginSuccessResponse login(Logindto request, String userAgent, String ipAddress) {
         Identity user = authRepository.findByEmail(request.email())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
