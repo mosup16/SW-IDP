@@ -1,19 +1,5 @@
 # SW-IDP — Entity Relationship Diagrams
 
-Derived from `design/REQUIREMENTS.md` (SRS + Stitch design). Four diagrams: a full-model overview, then three zoomed views.
-
-Assumptions baked into the model:
-
-- **Admin vs. end-user is a role, not a separate entity.** The SRS distinguishes "Identity" from "Identity Admin", but since the design already introduces RBAC with a `Global Administrator` role, admins are modelled as `Identity` rows that hold that role. This avoids duplicate user tables.
-- **Tokens are stored for revocation/audit.** Access tokens are JWTs (self-contained), but we persist a row per issuance so "Rotate Secret", revoke-on-logout, and audit trails work.
-- **`RedirectUri` is its own table** because `admin_create_edit_client` shows multiple URIs per client.
-- **OAuth scopes are out of scope for the PoC.** No `Scope` entity, no per-client scope allowlist, no scopes field on tokens/codes. See `design/STACK.md` ("Out of scope").
-- **Access Policies are out of scope.** No `AccessPolicy` entity, no policy table, no policy endpoints. Policy-shaped requirements are absorbed by role management (`Role` + `Permission` + `RolePermission`). See `STACK.md`.
-- **PKCE is out of scope.** `AuthorizationCode` does not carry `code_challenge` / `code_challenge_method`. See `STACK.md`.
-- Surrogate `uuid` PKs everywhere. Timestamps are `timestamptz`.
-
----
-
 ## 1. Full model — overview
 
 ```mermaid
