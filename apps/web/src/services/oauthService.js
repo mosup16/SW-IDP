@@ -11,5 +11,6 @@ export const oauthService = {
 
   deleteClient: async (clientId) => apiClient.delete(`/api/oauth/clients/${clientId}`),
 
-  rotateSecret: async (clientId) => apiClient.post(`/api/oauth/clients/${clientId}/rotate-secret`),
+  rotateSecret: async (clientId, newSecret) =>
+    apiClient.post(`/api/oauth/clients/${clientId}/rotate-secret`, { newSecret }),
 };

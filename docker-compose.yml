@@ -124,6 +124,8 @@ services:
         condition: service_started
     environment:
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka/
+      IDENTITY_SERVICE_URL: http://identity-service:8081/api/identity
+      INTERNAL_SECRET: ${INTERNAL_SECRET:-dev-internal-secret}
     networks:
       - iam-network
 

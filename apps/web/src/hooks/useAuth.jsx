@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { authService } from '../services/authService';
 
 const AuthCtx = createContext(null);
@@ -12,15 +12,17 @@ export function AuthProvider({ children }) {
   }, []);
 
   async function signIn(creds) {
-    const u = await authService.signIn(creds);
-    setCurrentUser(u);
-    return u;
+    await authService.signIn(creds);
+    const fresh = await authService.me();
+    setCurrentUser(fresh);
+    return fresh;
   }
 
   async function signUp(creds) {
-    const u = await authService.register(creds);
-    setCurrentUser(u);
-    return u;
+    await authService.register(creds);
+    const fresh = await authService.me();
+    setCurrentUser(fresh);
+    return fresh;
   }
 
   async function signOut() {
@@ -28,14 +30,23 @@ export function AuthProvider({ children }) {
     setCurrentUser(null);
   }
 
-  return (
-    <AuthCtx.Provider value={{ 
-      currentUser, 
-      loading, 
-      signIn, 
+  const value = useMemo(() => {
+    const authorities = new Set(currentUser?.authorities ?? []);
+    const roles = new Set(currentUser?.roles ?? []);
+    return {
+      currentUser,
+      loading,
+      signIn,
       signUp,
-      signOut 
-    }}>
+      signOut,
+      hasAuthority: (authority) => authorities.has(authority),
+      hasAnyAuthority: (...list) => list.some(a => authorities.has(a)),
+      hasRole: (role) => roles.has(role),
+    };
+  }, [currentUser, loading]);
+
+  return (
+    <AuthCtx.Provider value={value}>
       {children}
     </AuthCtx.Provider>
   );

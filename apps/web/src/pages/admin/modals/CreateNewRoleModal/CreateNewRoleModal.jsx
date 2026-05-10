@@ -1,58 +1,78 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import Icon from '../../../../components/icon';
 import Textarea from '../../../../components/ui/Textarea';
+import { adminService } from '../../../../services/adminService';
 import '../../../../assets/styles/CreateNewRoleModal.css';
+
+const PERMISSIONS = [
+  { id: 'users',    label: 'Users',               icon: Icon.Users,       perms: ['users.read', 'users.write'] },
+  { id: 'roles',    label: 'Roles & Permissions', icon: Icon.ShieldCheck, perms: ['roles.read', 'roles.write'] },
+  { id: 'clients',  label: 'Clients',             icon: Icon.LayoutGrid,  perms: ['clients.read', 'clients.write'] },
+  { id: 'settings', label: 'System Settings',     icon: Icon.Settings,    perms: ['settings.read', 'settings.write'] },
+  { id: 'logs',     label: 'Audit Logs',          icon: Icon.ScrollText,  perms: ['logs.view'] },
+];
+
+const ALL_PERMS = PERMISSIONS.flatMap(g => g.perms);
+
+function emptyChecked() {
+  const init = {};
+  ALL_PERMS.forEach(p => (init[p] = false));
+  return init;
+}
 
 export default function CreateNewRoleModal({ isOpen, onClose, role, onSave }) {
   const isEdit = !!role;
 
-  const PERMISSIONS = [
-    {
-      id: 'users',
-      label: 'Users',
-      icon: Icon.Users,
-      perms: ['users.read', 'users.write'],
-    },
-    {
-      id: 'clients',
-      label: 'Clients',
-      icon: Icon.LayoutGrid,
-      perms: ['clients.read', 'clients.manage'],
-    },
-    {
-      id: 'logs',
-      label: 'System Logs',
-      icon: Icon.ScrollText,
-      perms: ['logs.view', 'logs.export'],
-    },
-  ];
+  const [roleName, setRoleName]       = useState('');
+  const [description, setDescription] = useState('');
+  const [checked, setChecked]         = useState(emptyChecked);
+  const [loading, setLoading]         = useState(false);
+  const [saving, setSaving]           = useState(false);
 
-  const [roleName, setRoleName]       = useState(isEdit ? role.name : '');
-  const [description, setDescription] = useState(isEdit ? role.description : '');
-  const [checked, setChecked]         = useState(() => {
-    const init = {};
-    PERMISSIONS.forEach(g => g.perms.forEach(p => (init[p] = false)));
-    if (isEdit) {
-      init['users.read']   = true;
-      init['clients.read'] = true;
-      init['logs.view']    = true;
+  useEffect(() => {
+    if (!isOpen) return;
+    setRoleName(role?.name ?? '');
+    setDescription(role?.description ?? '');
+
+    if (!isEdit) {
+      setChecked(emptyChecked());
+      return;
     }
-    return init;
-  });
+
+    setLoading(true);
+    adminService.listRolePermissions(role.id)
+      .then(list => {
+        const next = emptyChecked();
+        (list ?? []).forEach(rp => {
+          if (rp.permissionCode in next) next[rp.permissionCode] = true;
+        });
+        setChecked(next);
+      })
+      .catch(() => setChecked(emptyChecked()))
+      .finally(() => setLoading(false));
+  }, [isOpen, isEdit, role?.id]);
 
   const toggle = (perm) => setChecked(prev => ({ ...prev, [perm]: !prev[perm] }));
 
-  const handleSave = () => {
-    if (!roleName.trim()) return;
+  const handleSave = async () => {
+    if (!roleName.trim() || saving) return;
+    setSaving(true);
+
     const savedRole = {
       id:          isEdit ? role.id : undefined,
       name:        roleName.trim(),
       description: description.trim(),
       type:        isEdit ? role.type : 'CUSTOM',
+      permissionCodes: ALL_PERMS.filter(p => checked[p]),
     };
-    if (onSave) onSave(savedRole, isEdit);
-    onClose();
+
+    try {
+      if (onSave) await onSave(savedRole, isEdit);
+      onClose();
+    } finally {
+      setSaving(false);
+    }
   };
 
   if (!isOpen) return null;
@@ -113,6 +133,9 @@ export default function CreateNewRoleModal({ isOpen, onClose, role, onSave }) {
               <p className="section-label text-uppercase fw-bold mb-0">
                 Permissions Matrix
               </p>
+              {loading && (
+                <span className="text-muted ms-2" style={{ fontSize: 12 }}>loading…</span>
+              )}
             </div>
 
             <div className="row g-3">
@@ -130,20 +153,19 @@ export default function CreateNewRoleModal({ isOpen, onClose, role, onSave }) {
                           {group.label}
                         </span>
                       </div>
-                      <div className="row g-2">
+                      <div className="permission-options">
                         {group.perms.map(perm => (
-                          <div key={perm} className="col-6 d-flex align-items-center gap-2">
+                          <label key={perm} htmlFor={perm} className="permission-option">
                             <input
                               type="checkbox"
                               id={perm}
                               className="permission-checkbox form-check-input mt-0"
                               checked={checked[perm] || false}
                               onChange={() => toggle(perm)}
+                              disabled={loading || saving}
                             />
-                            <label htmlFor={perm} className="permission-perm-label mb-0">
-                              {perm}
-                            </label>
-                          </div>
+                            <span className="permission-perm-label">{perm}</span>
+                          </label>
                         ))}
                       </div>
                     </div>
@@ -156,15 +178,17 @@ export default function CreateNewRoleModal({ isOpen, onClose, role, onSave }) {
           <div className="modal-footer border-0 px-4 pb-4 pt-2 d-flex justify-content-end gap-3">
             <button
               onClick={onClose}
+              disabled={saving}
               className="btn btn-link text-dark fw-bold text-decoration-none shadow-none px-3"
             >
               Cancel
             </button>
             <button
               onClick={handleSave}
+              disabled={saving || loading || !roleName.trim()}
               className="btn-create-role btn fw-bold px-4 py-2 rounded-3"
             >
-              {isEdit ? 'Save Role' : 'Create Role'}
+              {saving ? 'Saving…' : (isEdit ? 'Save Role' : 'Create Role')}
             </button>
           </div>
 

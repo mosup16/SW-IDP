@@ -1,7 +1,9 @@
 package com.iam.identity.Controller;
 
+import com.iam.identity.DTO.Internal.ClaimsResponse;
 import com.iam.identity.DTO.Internal.SessionPrincipal;
 import com.iam.identity.Entity.Session;
+import com.iam.identity.Service.Interface.IdentityClaimsService;
 import com.iam.identity.Service.Interface.SessionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +17,7 @@ import java.util.UUID;
 public class SessionController {
 
     private final SessionService sessionService;
+    private final IdentityClaimsService claimsService;
 
     @GetMapping("/api/v1/sessions/me")
     public ResponseEntity<List<Session>> listMySessions(
@@ -22,6 +25,18 @@ public class SessionController {
         if (sessionToken == null) return ResponseEntity.status(401).build();
         SessionPrincipal principal = sessionService.verifySession(sessionToken);
         return ResponseEntity.ok(sessionService.listActiveSessions(principal.identityId()));
+    }
+
+    @GetMapping("/api/v1/me/claims")
+    public ResponseEntity<ClaimsResponse> myClaims(
+            @CookieValue(name = "SESSION", required = false) String sessionToken) {
+        if (sessionToken == null) return ResponseEntity.status(401).build();
+        try {
+            SessionPrincipal principal = sessionService.verifySession(sessionToken);
+            return ResponseEntity.ok(claimsService.getClaims(principal.identityId()));
+        } catch (SecurityException e) {
+            return ResponseEntity.status(401).build();
+        }
     }
 
     @PostMapping("/api/v1/sessions/{sessionId}/revoke")
@@ -47,7 +62,7 @@ public class SessionController {
         }
         try {
             SessionPrincipal principal = sessionService.verifySession(sessionToken);
-            return ResponseEntity.ok(principal);
+            return ResponseEntity.ok(claimsService.getClaims(principal.identityId()));
         } catch (SecurityException e) {
             return ResponseEntity.status(401).body("{\"error\":\"invalid_session\"}");
         }

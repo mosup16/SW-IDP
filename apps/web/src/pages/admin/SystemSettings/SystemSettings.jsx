@@ -2,6 +2,7 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import Icon from '../../../components/icon';
 import { useAuth } from '../../../hooks/useAuth';
 import { adminService } from '../../../services/adminService';
+import RequireAuthority from '../../../components/auth/RequireAuthority';
 import '../../../assets/styles/SystemSettings.css';
 
 // ── Helpers ───────────────────────────────────────────────────────
@@ -315,16 +316,18 @@ export default function SystemSettings() {
                 </button>
               </>
             )}
-            <button
-              className="gc-save-btn"
-              onClick={handleSave}
-              disabled={!isDirty || saving}
-            >
-              {saving
-                ? <><Icon.RefreshCw size={14} style={{ animation: 'spin 1s linear infinite' }} /> Saving…</>
-                : <><Icon.Download size={14} /> Save Configuration</>
-              }
-            </button>
+            <RequireAuthority authority="settings.write">
+              <button
+                className="gc-save-btn"
+                onClick={handleSave}
+                disabled={!isDirty || saving}
+              >
+                {saving
+                  ? <><Icon.RefreshCw size={14} style={{ animation: 'spin 1s linear infinite' }} /> Saving…</>
+                  : <><Icon.Download size={14} /> Save Configuration</>
+                }
+              </button>
+            </RequireAuthority>
           </div>
         </div>
 

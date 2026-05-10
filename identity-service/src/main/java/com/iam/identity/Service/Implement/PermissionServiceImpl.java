@@ -7,6 +7,7 @@ import com.iam.identity.Repository.PermissionRepository.PermissionRepository;
 import com.iam.identity.Service.Interface.PermissionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -18,6 +19,7 @@ public class PermissionServiceImpl implements PermissionService {
     private final PermissionRepository permissionRepository;
 
     @Override
+    @Transactional
     public String AddPermission(AddPermissiondto dto) {
         if (permissionRepository.existsByCode(dto.code())) {
             throw new RuntimeException("Permission already exists");
@@ -35,6 +37,7 @@ public class PermissionServiceImpl implements PermissionService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<AllPermissiondto> GetAll() {
         return permissionRepository.findAll()
                 .stream()
@@ -43,6 +46,7 @@ public class PermissionServiceImpl implements PermissionService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public AllPermissiondto GetById(UUID id) {
         Permission permission = permissionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Permission not found"));
@@ -50,6 +54,7 @@ public class PermissionServiceImpl implements PermissionService {
     }
 
     @Override
+    @Transactional
     public String Update(UUID id, AddPermissiondto dto) {
         Permission permission = permissionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Permission not found"));
@@ -68,6 +73,7 @@ public class PermissionServiceImpl implements PermissionService {
     }
 
     @Override
+    @Transactional
     public String Delete(UUID id) {
         Permission permission = permissionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Permission not found"));

@@ -16,6 +16,7 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
 import java.time.OffsetDateTime;
@@ -33,6 +34,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private static final SecureRandom RANDOM = new SecureRandom();
 
     @Override
+    @Transactional
     @Audited(action = "IDENTITY_REGISTERED", targetType = "IDENTITY")
     public void register(Registerdto dto) {
         if (authRepository.existsByEmail(dto.email())) {
@@ -51,6 +53,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
+    @Transactional
     @Audited(action = "AUTH_LOGIN", targetType = "IDENTITY", targetIdExpr = "#result.identityId")
     public LoginSuccessResponse login(Logindto request, String userAgent, String ipAddress) {
         Identity user = authRepository.findByEmail(request.email())

@@ -19,9 +19,9 @@ public class RoleController {
     private final RoleService roleService;
 
     @PostMapping
-    public ResponseEntity<Void> addRole(@Valid @RequestBody AddRoledto request) {
-        roleService.AddRole(request);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<RoleResponse> addRole(@Valid @RequestBody AddRoledto request) {
+        return ResponseEntity.status(org.springframework.http.HttpStatus.CREATED)
+                .body(roleService.AddRole(request));
     }
 
     @GetMapping

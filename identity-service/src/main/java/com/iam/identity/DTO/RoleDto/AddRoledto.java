@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+import java.util.List;
+
 public record AddRoledto(
 
         @NotBlank(message = "Role name is required")
@@ -15,7 +17,9 @@ public record AddRoledto(
         String description,
 
         @NotNull(message = "Role type is required")
-        Type type
+        Type type,
+
+        List<String> permissionCodes
 
 
 ) {

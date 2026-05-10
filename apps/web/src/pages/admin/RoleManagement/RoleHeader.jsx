@@ -1,7 +1,7 @@
 import '../../../assets/styles/RoleHeader.css';
 import Icon from '../../../components/icon';
 
-export default function RoleHeader({ onCreateClick }) {
+export default function RoleHeader({ onCreateClick, canWrite = true }) {
   return (
     <div className="role-header">
       <div>
@@ -12,10 +12,12 @@ export default function RoleHeader({ onCreateClick }) {
         </p>
       </div>
 
-      <button className="role-header__btn" onClick={onCreateClick}>
-        <Icon.Add size={17} />
-        Create New Role
-      </button>
+      {canWrite && (
+        <button className="role-header__btn" onClick={onCreateClick}>
+          <Icon.Add size={17} />
+          Create New Role
+        </button>
+      )}
     </div>
   );
 }

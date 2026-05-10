@@ -6,6 +6,8 @@ import DataTable from '../../../components/ui/DataTable';
 import CreateIdentityModal from '../modals/CreateIdentityModal/CreateIdentityModal';
 import EditIdentityModal from '../modals/EditIdentityModal/EditIdentityModal';
 import DeleteIdentityModal from '../modals/DeleteIdentityModal/DeleteIdentityModal';
+import RequireAuthority from '../../../components/auth/RequireAuthority';
+import { useAuth } from '../../../hooks/useAuth';
 import { adminService } from '../../../services/adminService';
 import '../../../assets/styles/IdentityManagement.css';
 
@@ -28,6 +30,8 @@ function fmtDate(iso) {
 }
 
 export default function IdentityManagement() {
+  const { hasAuthority } = useAuth();
+  const canWrite = hasAuthority('users.write');
   const [identities, setIdentities] = useState([]);
   const [totalUsers, setTotalUsers] = useState(0);
   const [activeNow, setActiveNow]   = useState(0);
@@ -147,15 +151,21 @@ export default function IdentityManagement() {
         <input
           type="checkbox"
           checked={row.status === 'ENABLED'}
-          onChange={() => toggleAccess(row)}
+          onChange={() => canWrite && toggleAccess(row)}
+          disabled={!canWrite}
           aria-label={`Toggle access for ${row.email}`}
           data-cy={`toggle-access-${row.id}`}
-          style={{ width: '20px', height: '20px', accentColor: '#000000', cursor: 'pointer' }}
+          style={{
+            width: '20px', height: '20px',
+            accentColor: '#000000',
+            cursor: canWrite ? 'pointer' : 'not-allowed',
+            opacity: canWrite ? 1 : 0.4,
+          }}
         />
       ),
       align: 'center',
     },
-    {
+    ...(canWrite ? [{
       key: 'actions',
       header: 'ACTIONS',
       cell: (row) => (
@@ -183,7 +193,7 @@ export default function IdentityManagement() {
         </div>
       ),
       align: 'center',
-    },
+    }] : []),
   ];
 
   return (
@@ -195,9 +205,11 @@ export default function IdentityManagement() {
             Manage and provision digital sovereign identities across your enterprise ecosystem.
           </p>
         </div>
-        <Button variant="primary" onClick={() => setCreateOpen(true)} data-cy="create-identity-btn">
-          + Create Identity
-        </Button>
+        <RequireAuthority authority="users.write">
+          <Button variant="primary" onClick={() => setCreateOpen(true)} data-cy="create-identity-btn">
+            + Create Identity
+          </Button>
+        </RequireAuthority>
       </div>
 
       <div className="stats-container">

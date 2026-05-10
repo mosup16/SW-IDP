@@ -82,8 +82,15 @@ export default function ClientConfiguration({ client, onBack, onSave }) {
   const removeUri = (i)      => setUris(prev => prev.filter((_, idx) => idx !== i));
   const updateUri = (i, val) => setUris(prev => prev.map((u, idx) => idx === i ? val : u));
 
+  const generateSecret = () => {
+    const bytes = new Uint8Array(32);
+    crypto.getRandomValues(bytes);
+    return 'sec_' + btoa(String.fromCharCode(...bytes))
+      .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  };
+
   const handleReveal = () => {
-    const generated = 'sec_v2_' + Math.random().toString(36).substring(2, 18).toUpperCase();
+    const generated = generateSecret();
     setNewSecret(generated);
     setModalOpen(true);
   };
@@ -92,15 +99,17 @@ export default function ClientConfiguration({ client, onBack, onSave }) {
     if (!name.trim()) return;
     if (!isEdit && !newSecret) return;
 
+    const secretForRequest = newSecret || generateSecret();
+
     const savedClient = {
       ...(isEdit ? client : {}),
       clientId,
       name:         name.trim(),
       type,
+      clientSecret: secretForRequest,
       redirectUris: uris.filter(u => u.trim() !== ''),
       createdAt:    isEdit ? client.createdAt : new Date().toISOString().split('T')[0],
       ...(isEdit ? {} : {
-        clientSecret:  newSecret,
         status:        'active',
         assignedUsers: 0,
       }),

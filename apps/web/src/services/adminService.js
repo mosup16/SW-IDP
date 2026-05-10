@@ -24,6 +24,14 @@ export const adminService = {
   // Permissions
   listPermissions: async () => apiClient.get('/api/identity/permissions'),
 
+  // Role-Permissions
+  listRolePermissions: async (roleId) =>
+    apiClient.get(`/api/identity/role-permissions/${roleId}/permissions`),
+  assignPermissionToRole: async ({ roleId, permissionId }) =>
+    apiClient.post('/api/identity/role-permissions', { roleId, permissionId }),
+  removePermissionFromRole: async (roleId, permissionId) =>
+    apiClient.delete(`/api/identity/role-permissions/${roleId}/permissions/${permissionId}`),
+
   // Sessions
   listSessions: async () => apiClient.get('/api/identity/api/v1/sessions/me'),
   revokeSession: async (sessionId) => apiClient.post(`/api/identity/api/v1/sessions/${sessionId}/revoke`),

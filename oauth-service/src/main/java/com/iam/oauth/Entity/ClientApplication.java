@@ -36,7 +36,7 @@ public class ClientApplication {
     @Column(name = "created_by")
     private UUID createdBy;
 
-    @OneToMany(mappedBy = "clientApplication", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "clientApplication", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RedirectUri> redirectUris;
 
     @OneToMany(mappedBy = "clientApplication", cascade = CascadeType.ALL)

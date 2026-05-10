@@ -26,6 +26,7 @@ public class RolePermissionServiceImpl implements RolePermissionService {
     private final PermissionRepository permissionRepository;
 
     @Override
+    @Transactional
     public String AssignPermissionToRole(AddRolePermissiondto dto) {
         Role role = roleRepository.findById(dto.roleId())
                 .orElseThrow(() -> new RuntimeException("Role not found"));
@@ -58,6 +59,7 @@ public class RolePermissionServiceImpl implements RolePermissionService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<AllRolePermission> GetPermissionsByRole(UUID roleId) {
         roleRepository.findById(roleId)
                 .orElseThrow(() -> new RuntimeException("Role not found"));

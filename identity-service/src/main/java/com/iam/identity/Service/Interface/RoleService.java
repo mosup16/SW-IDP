@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface RoleService {
-    void AddRole(AddRoledto addRoledto);
+    RoleResponse AddRole(AddRoledto addRoledto);
     List<RoleResponse> GetAll();
     RoleResponse GetById(UUID Id);
     String Update(UUID Id ,AddRoledto addRoledto );

@@ -4,10 +4,13 @@ import DeleteRoleModal from '../modals/DeleteRoleModal/DeleteRoleModal';
 import RoleHeader from './RoleHeader';
 import RoleFilters from './RoleFilters';
 import RoleTable from './RoleTable';
+import { useAuth } from '../../../hooks/useAuth';
 import { adminService } from '../../../services/adminService';
 import '../../../assets/styles/RoleManagment.css';
 
 export default function RoleManagement() {
+  const { hasAuthority } = useAuth();
+  const canWrite = hasAuthority('roles.write');
   const [roles, setRoles]                         = useState([]);
   const [loading, setLoading]                     = useState(true);
   const [search, setSearch]                       = useState('');
@@ -62,18 +65,16 @@ export default function RoleManagement() {
 
   const handleSaveRole = async (roleData, isEdit) => {
     try {
+      const payload = {
+        name: roleData.name,
+        description: roleData.description,
+        type: roleData.type,
+        permissionCodes: roleData.permissionCodes ?? [],
+      };
       if (isEdit) {
-        await adminService.updateRole(roleData.id, {
-          name: roleData.name,
-          description: roleData.description,
-          type: roleData.type,
-        });
+        await adminService.updateRole(roleData.id, payload);
       } else {
-        await adminService.createRole({
-          name: roleData.name,
-          description: roleData.description,
-          type: 'CUSTOM',
-        });
+        await adminService.createRole({ ...payload, type: 'CUSTOM' });
       }
       await load();
     } catch { /* keep state */ }
@@ -82,7 +83,7 @@ export default function RoleManagement() {
 
   return (
     <div className="role-management">
-      <RoleHeader onCreateClick={handleCreate} />
+      <RoleHeader onCreateClick={canWrite ? handleCreate : undefined} canWrite={canWrite} />
 
       <div className="role-management__card mt-4">
         <RoleFilters
@@ -100,7 +101,12 @@ export default function RoleManagement() {
             Loading…
           </div>
         ) : (
-          <RoleTable roles={filteredRoles} onEdit={handleEdit} onDelete={handleDelete} />
+          <RoleTable
+            roles={filteredRoles}
+            onEdit={canWrite ? handleEdit : undefined}
+            onDelete={canWrite ? handleDelete : undefined}
+            canWrite={canWrite}
+          />
         )}
 
         {!loading && filteredRoles.length === 0 && (

@@ -2,11 +2,21 @@ import React, { useState, useMemo, useEffect } from 'react';
 import ClientHeader from './ClientHeader';
 import ClientTable from './ClientTable';
 import { oauthService } from '../../../services/oauthService';
+import { useAuth } from '../../../hooks/useAuth';
 import DeleteClientPopup from '../modals/DeleteClientPopup/DeleteClientPopup';
 import SecretRotationModal from '../modals/SecretRotationModal/SecretRotationModal';
 import ClientConfiguration from '../ClientConfiguration/ClientConfiguration';
 
+function generateClientSecret() {
+  const bytes = new Uint8Array(32);
+  crypto.getRandomValues(bytes);
+  return 'sec_' + btoa(String.fromCharCode(...bytes))
+    .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
 const ClientManagement = () => {
+  const { hasAuthority } = useAuth();
+  const canWrite = hasAuthority('clients.write');
   const [clients, setClients]               = useState([]);
   const [loading, setLoading]               = useState(true);
   const [search, setSearch]                 = useState('');
@@ -56,9 +66,10 @@ const ClientManagement = () => {
   const handleSecretClick  = async (client) => {
     setSelectedClient(client);
     setIsSecretOpen(true);
+    const generated = generateClientSecret();
     try {
-      const res = await oauthService.rotateSecret(client.clientId);
-      setNewSecret(res?.secret ?? '');
+      await oauthService.rotateSecret(client.clientId, generated);
+      setNewSecret(generated);
     } catch {
       setNewSecret('');
     }
@@ -115,7 +126,8 @@ const ClientManagement = () => {
     <div className="p-5">
       <ClientHeader
         totalClients={clients.length}
-        onCreateClick={handleCreateClick}
+        onCreateClick={canWrite ? handleCreateClick : undefined}
+        canWrite={canWrite}
       />
 
       <ClientTable
@@ -130,10 +142,11 @@ const ClientManagement = () => {
         currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={setCurrentPage}
-        onCreateClick={handleCreateClick}
-        onDeleteClick={handleDeleteClick}
-        onSecretRotateClick={handleSecretClick}
-        onEditClick={handleEditClick}
+        onCreateClick={canWrite ? handleCreateClick : undefined}
+        onDeleteClick={canWrite ? handleDeleteClick : undefined}
+        onSecretRotateClick={canWrite ? handleSecretClick : undefined}
+        onEditClick={canWrite ? handleEditClick : undefined}
+        canWrite={canWrite}
       />
 
       <DeleteClientPopup

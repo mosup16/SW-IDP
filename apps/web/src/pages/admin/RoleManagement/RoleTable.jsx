@@ -1,7 +1,7 @@
 import Icon from '../../../components/icon';
 import '../../../assets/styles/RoleTable.css';
 
-export default function RoleTable({ roles, onEdit, onDelete }) {
+export default function RoleTable({ roles, onEdit, onDelete, canWrite = true }) {
   return (
     <div className="role-table-wrapper">
       <table className="role-table">
@@ -10,7 +10,7 @@ export default function RoleTable({ roles, onEdit, onDelete }) {
             <th>Role Name</th>
             <th>Description</th>
             <th className="col-identities">Assigned Identities</th>
-            <th className="col-actions">Actions</th>
+            {canWrite && <th className="col-actions">Actions</th>}
           </tr>
         </thead>
 
@@ -34,24 +34,26 @@ export default function RoleTable({ roles, onEdit, onDelete }) {
                 <span className="badge-users">{role.assignedUsers ?? 0} Users</span>
               </td>
 
-              <td className="col-actions">
-                <div className="actions-group">
-                  <button
-                    onClick={() => onEdit(role)}
-                    className="btn-action"
-                    title="Edit"
-                  >
-                    <Icon.Edit size={16} />
-                  </button>
-                  <button
-                    onClick={() => onDelete(role)}
-                    className="btn-action btn-delete"
-                    title="Delete"
-                  >
-                    <Icon.Delete size={16} />
-                  </button>
-                </div>
-              </td>
+              {canWrite && (
+                <td className="col-actions">
+                  <div className="actions-group">
+                    <button
+                      onClick={() => onEdit?.(role)}
+                      className="btn-action"
+                      title="Edit"
+                    >
+                      <Icon.Edit size={16} />
+                    </button>
+                    <button
+                      onClick={() => onDelete?.(role)}
+                      className="btn-action btn-delete"
+                      title="Delete"
+                    >
+                      <Icon.Delete size={16} />
+                    </button>
+                  </div>
+                </td>
+              )}
             </tr>
           ))}
         </tbody>

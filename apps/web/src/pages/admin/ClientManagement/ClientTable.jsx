@@ -17,6 +17,7 @@ const ClientTable = ({
   currentPage,
   totalPages,
   onPageChange,
+  canWrite = true,
 }) => {
 
   const getPageNumbers = () => {
@@ -47,13 +48,13 @@ const ClientTable = ({
               <th className="py-3">CLIENT ID</th>
               <th className="py-3">REDIRECT URIS</th>
               <th className="py-3">CREATED DATE</th>
-              <th className="pe-4 py-3 text-end">ACTIONS</th>
+              {canWrite && <th className="pe-4 py-3 text-end">ACTIONS</th>}
             </tr>
           </thead>
           <tbody>
             {clients.length === 0 ? (
               <tr>
-                <td colSpan={5} style={{ textAlign: 'center', padding: '48px 24px', color: 'var(--text-muted)', fontSize: '14px' }}>
+                <td colSpan={canWrite ? 5 : 4} style={{ textAlign: 'center', padding: '48px 24px', color: 'var(--text-muted)', fontSize: '14px' }}>
                   No clients match your search or filter.
                 </td>
               </tr>
@@ -91,28 +92,30 @@ const ClientTable = ({
                     ))}
                   </td>
                   <td className="text-secondary">{client.createdAt}</td>
-                  <td className="pe-4 text-end">
-                    <div className="d-flex justify-content-end align-items-center gap-3">
-                      <Icon.Key
-                        size={17}
-                        className="cursor-pointer"
-                        style={{ color: '#8c8c8c' }}
-                        onClick={() => onSecretRotateClick(client)}
-                      />
-                      <Icon.Edit
-                        size={17}
-                        className="cursor-pointer"
-                        style={{ color: '#8c8c8c' }}
-                        onClick={() => onEditClick(client)}
-                      />
-                      <Icon.Trash2
-                        size={17}
-                        className="cursor-pointer"
-                        style={{ color: '#ff4d4f' }}
-                        onClick={() => onDeleteClick(client)}
-                      />
-                    </div>
-                  </td>
+                  {canWrite && (
+                    <td className="pe-4 text-end">
+                      <div className="d-flex justify-content-end align-items-center gap-3">
+                        <Icon.Key
+                          size={17}
+                          className="cursor-pointer"
+                          style={{ color: '#8c8c8c' }}
+                          onClick={() => onSecretRotateClick?.(client)}
+                        />
+                        <Icon.Edit
+                          size={17}
+                          className="cursor-pointer"
+                          style={{ color: '#8c8c8c' }}
+                          onClick={() => onEditClick?.(client)}
+                        />
+                        <Icon.Trash2
+                          size={17}
+                          className="cursor-pointer"
+                          style={{ color: '#ff4d4f' }}
+                          onClick={() => onDeleteClick?.(client)}
+                        />
+                      </div>
+                    </td>
+                  )}
                 </tr>
               ))
             )}

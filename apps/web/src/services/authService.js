@@ -2,10 +2,14 @@ import { apiClient } from './apiClient';
 
 export const authService = {
   me: async () => {
-    const sessions = await apiClient.get('/api/identity/api/v1/sessions/me').catch(() => null);
-    if (!sessions?.length) return null;
-    const identity = sessions[0].identity;
-    return { identityId: identity.id, email: identity.email };
+    const claims = await apiClient.get('/api/identity/api/v1/me/claims').catch(() => null);
+    if (!claims) return null;
+    return {
+      identityId: claims.identityId,
+      email: claims.email,
+      roles: claims.roles ?? [],
+      authorities: claims.permissions ?? [],
+    };
   },
 
   signIn: async (creds) => apiClient.post('/api/identity/login', creds),

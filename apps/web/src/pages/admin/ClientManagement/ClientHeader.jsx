@@ -1,7 +1,7 @@
 import React from 'react';
 import Icon from '../../../components/icon';
 
-const ClientHeader = ({ totalClients, onCreateClick }) => {
+const ClientHeader = ({ totalClients, onCreateClick, canWrite = true }) => {
   return (
     <div className="d-flex align-items-start justify-content-between mb-4">
       <div>
@@ -31,21 +31,23 @@ const ClientHeader = ({ totalClients, onCreateClick }) => {
           </div>
         </div>
 
-        <button
-          className="btn d-flex align-items-center gap-2 fw-bold"
-          style={{
-            background: '#000000',
-            color: 'white',
-            border: 'none',
-            borderRadius: '8px',
-            padding: '10px 20px',
-            fontSize: '14px',
-          }}
-          onClick={onCreateClick}
-        >
-          <span style={{ fontSize: '18px', lineHeight: 1 }}>+</span>
-          Create New Client
-        </button>
+        {canWrite && (
+          <button
+            className="btn d-flex align-items-center gap-2 fw-bold"
+            style={{
+              background: '#000000',
+              color: 'white',
+              border: 'none',
+              borderRadius: '8px',
+              padding: '10px 20px',
+              fontSize: '14px',
+            }}
+            onClick={onCreateClick}
+          >
+            <span style={{ fontSize: '18px', lineHeight: 1 }}>+</span>
+            Create New Client
+          </button>
+        )}
       </div>
     </div>
   );
